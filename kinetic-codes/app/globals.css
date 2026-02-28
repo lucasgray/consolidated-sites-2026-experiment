@@ -70,3 +70,73 @@ body {
   background: var(--neon-cyan);
   color: var(--background);
 }
+
+/* Hobby world theme — clean white, like the original lucasegray.com */
+[data-world="hobby"] {
+  --hobby-accent: #e11d48;
+}
+
+/* MDX prose styles — pro world (dark bg) */
+.prose {
+  max-width: 70ch;
+}
+
+.prose pre {
+  background: #111 !important;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.prose code:not(pre code) {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+/* Pro post prose (white text on dark) */
+:not([data-world="hobby"]) .prose {
+  color: var(--foreground);
+}
+
+:not([data-world="hobby"]) .prose h1,
+:not([data-world="hobby"]) .prose h2,
+:not([data-world="hobby"]) .prose h3,
+:not([data-world="hobby"]) .prose h4 {
+  color: var(--foreground);
+}
+
+:not([data-world="hobby"]) .prose a {
+  color: var(--neon-cyan);
+}
+
+:not([data-world="hobby"]) .prose blockquote {
+  border-left: 4px solid var(--neon-cyan);
+  color: var(--muted);
+}
+
+/* Hobby post prose (dark text on white) */
+[data-world="hobby"] .prose {
+  color: #111827;
+}
+
+[data-world="hobby"] .prose h1,
+[data-world="hobby"] .prose h2,
+[data-world="hobby"] .prose h3,
+[data-world="hobby"] .prose h4 {
+  color: #111827;
+}
+
+[data-world="hobby"] .prose a {
+  color: #be123c;
+}
+
+[data-world="hobby"] .prose blockquote {
+  border-left: 4px solid #e11d48;
+  color: #4b5563;
+}
+
+[data-world="hobby"] .prose code:not(pre code) {
+  background: #f3f4f6;
+  color: #111827;
+}

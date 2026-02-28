@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import AnimatedSection from "@/components/AnimatedSection";
 import TechBadge from "@/components/TechBadge";
@@ -8,6 +9,7 @@ import EngagementCard from "@/components/EngagementCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import ContactForm from "@/components/ContactForm";
 import TypewriterText from "@/components/TypewriterText";
+import { sortedProPosts } from "@/lib/contentlayer";
 
 const ParticleBackground = dynamic(
   () => import("@/components/ParticleBackground"),
@@ -176,9 +178,7 @@ export default function Home() {
 
             <p className="text-center">
               <a
-                href="https://lucasegray.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/hobby"
                 className="text-cyan-600 hover:text-cyan-700 hover:underline transition-all"
               >
                 See my personal projects →
@@ -205,9 +205,63 @@ export default function Home() {
           </div>
         </AnimatedSection>
 
+        {/* Writing Section */}
+        <div className="bg-white border-y border-gray-300 shadow-[inset_0_15px_20px_-15px_rgba(0,0,0,0.35),inset_0_-15px_20px_-15px_rgba(0,0,0,0.35)]">
+          <AnimatedSection className="py-24 px-6 text-background">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex items-end justify-between mb-12">
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-3">Writing</h2>
+                  <p className="text-background/70 max-w-xl">
+                    Technical deep-dives on engineering, architecture, and team leadership.
+                  </p>
+                </div>
+                <Link
+                  href="/blog"
+                  className="hidden md:inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 transition-colors text-sm shrink-0 mb-1"
+                >
+                  All posts →
+                </Link>
+              </div>
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                {sortedProPosts.slice(0, 3).map((post) => (
+                  <Link
+                    key={post.slug}
+                    href={`/blog/${post.slug}`}
+                    className="group block border border-gray-200 rounded-lg p-6 hover:border-cyan-400 hover:shadow-md transition-all duration-200"
+                  >
+                    <h3 className="font-semibold text-background group-hover:text-cyan-700 transition-colors mb-3 leading-snug">
+                      {post.title}
+                    </h3>
+                    {post.summary && (
+                      <p className="text-sm text-background/60 leading-relaxed mb-4 line-clamp-3">
+                        {post.summary}
+                      </p>
+                    )}
+                    <time className="text-xs text-background/40" dateTime={post.date}>
+                      {new Date(post.date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </time>
+                  </Link>
+                ))}
+              </div>
+              <Link
+                href="/blog"
+                className="md:hidden inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 transition-colors text-sm"
+              >
+                All posts →
+              </Link>
+            </div>
+          </AnimatedSection>
+        </div>
+
         {/* Why Kinetic Section */}
+        <div className="relative overflow-hidden bg-gradient-to-b from-cyan-950 via-cyan-900 to-cyan-950 border-y border-cyan-800 shadow-[0_15px_20px_-15px_rgba(0,0,0,0.35)]">
         <AnimatedSection
-          className="py-32 px-6 relative overflow-hidden bg-gradient-to-b from-cyan-950 via-cyan-900 to-cyan-950 border-y border-cyan-800 shadow-[0_15px_20px_-15px_rgba(0,0,0,0.35)]">
+          className="py-32 px-6 relative overflow-hidden">
           {/* Hexagon pattern overlay */}
           <svg className="absolute inset-0 w-full h-full opacity-10" preserveAspectRatio="xMidYMid slice">
             <defs>
@@ -235,6 +289,7 @@ export default function Home() {
             </p>
           </div>
         </AnimatedSection>
+        </div>
 
         {/* Testimonials Section */}
         <div className="bg-white">
@@ -300,12 +355,16 @@ export default function Home() {
                 LinkedIn
               </a>
               <a
-                href="https://lucasegray.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/blog"
                 className="text-neon-cyan/70 hover:text-neon-cyan hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.5)] transition-all"
               >
-                Blog
+                Writing
+              </a>
+              <a
+                href="/hobby"
+                className="text-neon-cyan/70 hover:text-neon-cyan hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.5)] transition-all"
+              >
+                Hobby
               </a>
             </div>
           </div>
