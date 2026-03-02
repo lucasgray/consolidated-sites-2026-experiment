@@ -33,14 +33,14 @@ const projects = [
 export default function HobbyProjectsPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">
-      <Link href="/hobby" className="text-sm text-gray-600 hover:text-gray-900 underline underline-offset-2 transition-colors mb-10 inline-block">
+      <Link href="/hobby" className="text-sm text-white hover:text-[#FF69B4] hover:underline transition-colors mb-10 inline-block">
         ← Back
       </Link>
 
-      <h1 className="text-4xl font-bold text-gray-900 mb-2">Projects</h1>
-      <p className="text-gray-600 mb-12 text-lg">Games, apps, and creative experiments.</p>
+      <h1 className="text-4xl font-bold text-gray-100 mb-2">Projects</h1>
+      <p className="text-gray-400 mb-12 text-lg">Games, apps, and creative experiments.</p>
 
-      <div className="divide-y divide-gray-200 border-t border-gray-200">
+      <div className="divide-y divide-gray-700 border-t border-gray-700">
         {projects.map((project) => (
           <Link
             key={project.title}
@@ -49,15 +49,15 @@ export default function HobbyProjectsPage() {
             {...(project.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
           >
             {project.imgSrc && (
-              <div className="relative w-36 h-24 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+              <div className="relative w-36 h-24 shrink-0 rounded-lg overflow-hidden bg-gray-800">
                 <Image src={project.imgSrc} alt="" fill className="object-cover" />
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-semibold text-gray-900 group-hover:text-rose-700 transition-colors mb-2">
+              <h2 className="text-lg font-semibold text-gray-100 group-hover:text-[#FF69B4] group-hover:underline transition-colors mb-2">
                 {project.title}
               </h2>
-              <p className="text-base text-gray-600 leading-relaxed">{project.description}</p>
+              <p className="text-base text-gray-400 leading-relaxed">{project.description}</p>
             </div>
           </Link>
         ))}

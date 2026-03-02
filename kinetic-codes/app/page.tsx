@@ -10,6 +10,7 @@ import TestimonialCard from "@/components/TestimonialCard";
 import ContactForm from "@/components/ContactForm";
 import TypewriterText from "@/components/TypewriterText";
 import { sortedProPosts } from "@/lib/contentlayer";
+import { usePageTransition } from "@/contexts/TransitionContext";
 
 const ParticleBackground = dynamic(
   () => import("@/components/ParticleBackground"),
@@ -65,28 +66,16 @@ const engagements = [
 const testimonials = [
   {
     quote:
-      "Lucas joined us when we were a scrappy team of three engineers with big ambitions but no real process. Within six months, he'd helped us build out a robust CI/CD pipeline, establish code review practices that actually stuck, and architect a system that could handle 10x our traffic. More importantly, he mentored our junior devs in a way that made them genuinely better engineers. When he eventually rolled off, we had a team that could stand on its own.",
-    name: "Jane Smith",
-    role: "CTO",
-    company: "TechCorp",
-  },
-  {
-    quote:
-      "When Lucas came on board, we had a product held together by duct tape and caffeine. He didn't just write software, he built the foundation that let us scale without losing our velocity or culture. The processes he put in place meant we never lost a single engineer to burnout or frustration, even as we grew to 8-figure ARR. I've worked with a lot of technical leaders, but Lucas is the rare one who can see both the architecture and the people.",
-    name: "Michael Chen",
-    role: "CEO",
-    company: "StartupCo",
-  },
-  {
-    quote:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    name: "Sarah Johnson",
-    role: "CEO",
-    company: "GrowthLabs",
+      "I had the privilege of working with Lucas during the earliest and most critical stages of building our company. As our founding Director of Engineering, he was instrumental in bringing our first product to life—combining technical depth with scrappiness, speed, and an unwavering commitment to getting the job done. He didn't just build a website; he built the foundation that allowed our business to grow.\n\nBeyond his technical leadership, what truly set him apart was the heart he brought to the work. He built and mentored a strong engineering team and served as a thoughtful steward of our culture at a time when it mattered most.\n\nHis enthusiasm, resilience, and ability to inspire others helped carry us through the volatility of our early days, and his impact continues to be felt in the company today.",
+    name: "Anne Fulenwider",
+    role: "Co-Founder & Co-CEO",
+    company: "Alloy Women's Health",
+    image: "/images/anne-fulenwider.jpg",
   },
 ];
 
 export default function Home() {
+  const { triggerTransition } = usePageTransition();
   return (
     <>
       <ParticleBackground/>
@@ -177,12 +166,12 @@ export default function Home() {
             </div>
 
             <p className="text-center">
-              <a
-                href="/hobby"
-                className="text-cyan-600 hover:text-cyan-700 hover:underline transition-all"
+              <button
+                onClick={() => triggerTransition("/hobby", "hobby")}
+                className="text-cyan-600 hover:text-cyan-400 hover:underline transition-all cursor-pointer"
               >
                 See my personal projects →
-              </a>
+              </button>
             </p>
           </div>
         </AnimatedSection>
@@ -218,7 +207,7 @@ export default function Home() {
                 </div>
                 <Link
                   href="/blog"
-                  className="hidden md:inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 transition-colors text-sm shrink-0 mb-1"
+                  className="hidden md:inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-400 transition-colors text-sm shrink-0 mb-1"
                 >
                   All posts →
                 </Link>
@@ -230,7 +219,7 @@ export default function Home() {
                     href={`/blog/${post.slug}`}
                     className="group block border border-gray-200 rounded-lg p-6 hover:border-cyan-400 hover:shadow-md transition-all duration-200"
                   >
-                    <h3 className="font-semibold text-background group-hover:text-cyan-700 transition-colors mb-3 leading-snug">
+                    <h3 className="font-semibold text-background group-hover:underline mb-3 leading-snug">
                       {post.title}
                     </h3>
                     {post.summary && (
@@ -250,7 +239,7 @@ export default function Home() {
               </div>
               <Link
                 href="/blog"
-                className="md:hidden inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-700 transition-colors text-sm"
+                className="md:hidden inline-flex items-center gap-2 text-cyan-600 hover:text-cyan-400 transition-colors text-sm"
               >
                 All posts →
               </Link>
@@ -284,7 +273,7 @@ export default function Home() {
               Always in motion. Building systems that anticipate change. Every ounce of
               energy directed towards the right solve, the first time.
             </p>
-            <p className="text-xl md:text-2xl font-semibold text-neon-cyan border-t border-cyan-700/50 pt-6 mt-6">
+            <p className="text-xl md:text-2xl font-semibold text-neon-cyan border-t border-cyan-400/50 pt-6 mt-6">
               That&apos;s the kinetic way.
             </p>
           </div>
@@ -300,9 +289,9 @@ export default function Home() {
               What People Say
             </h2>
             <p className="text-background/70 text-center mb-12">
-              From clients and colleagues I&apos;ve worked with
+              From clients and colleagues
             </p>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
               {testimonials.map((testimonial, index) => (
                 <TestimonialCard key={testimonial.name} {...testimonial} index={index}/>
               ))}
@@ -360,12 +349,12 @@ export default function Home() {
               >
                 Writing
               </a>
-              <a
-                href="/hobby"
-                className="text-neon-cyan/70 hover:text-neon-cyan hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.5)] transition-all"
+              <button
+                onClick={() => triggerTransition("/hobby", "hobby")}
+                className="text-neon-cyan/70 hover:text-neon-cyan hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.5)] transition-all cursor-pointer"
               >
                 Hobby
-              </a>
+              </button>
             </div>
           </div>
         </footer>

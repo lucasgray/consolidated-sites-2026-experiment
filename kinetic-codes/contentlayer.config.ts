@@ -46,7 +46,7 @@ const mdxOptions = {
     [
       rehypeAutolinkHeadings,
       {
-        behavior: 'prepend',
+        behavior: 'append',
         headingProperties: { className: ['content-header'] },
         content: icon,
       },

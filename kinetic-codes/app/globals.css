@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --background: #0a0a0a;
@@ -26,23 +27,6 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--muted);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--neon-cyan);
-}
 
 /* Neon glow utilities */
 .neon-glow-cyan {
@@ -76,67 +60,132 @@ body {
   --hobby-accent: #e11d48;
 }
 
-/* MDX prose styles — pro world (dark bg) */
-.prose {
-  max-width: 70ch;
-}
-
+/* MDX prose styles */
 .prose pre {
-  background: #111 !important;
   border-radius: 6px;
   overflow-x: auto;
 }
 
 .prose code:not(pre code) {
-  background: rgba(255, 255, 255, 0.08);
   padding: 0.15em 0.35em;
   border-radius: 3px;
   font-size: 0.9em;
 }
 
-/* Pro post prose (white text on dark) */
-:not([data-world="hobby"]) .prose {
-  color: var(--foreground);
+/* Heading anchor link icons — hidden by default, appear on hover */
+.content-header-link {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  margin-left: 0.4em;
+  color: #9ca3af;
 }
 
-:not([data-world="hobby"]) .prose h1,
-:not([data-world="hobby"]) .prose h2,
-:not([data-world="hobby"]) .prose h3,
-:not([data-world="hobby"]) .prose h4 {
-  color: var(--foreground);
+.content-header:hover .content-header-link {
+  opacity: 1;
 }
 
-:not([data-world="hobby"]) .prose a {
-  color: var(--neon-cyan);
+.linkicon {
+  display: inline;
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: middle;
+  position: relative;
+  top: -0.1em;
 }
 
-:not([data-world="hobby"]) .prose blockquote {
-  border-left: 4px solid var(--neon-cyan);
-  color: var(--muted);
-}
-
-/* Hobby post prose (dark text on white) */
+/* Hobby post prose (light text on dark purple) */
 [data-world="hobby"] .prose {
-  color: #111827;
+  color: #A6ACCD;
 }
 
 [data-world="hobby"] .prose h1,
 [data-world="hobby"] .prose h2,
 [data-world="hobby"] .prose h3,
 [data-world="hobby"] .prose h4 {
-  color: #111827;
+  color: #e2e4f0;
 }
 
 [data-world="hobby"] .prose a {
-  color: #be123c;
+  color: #ffffff;
+  font-weight: 700;
+  transition: color 0.15s ease;
+}
+
+[data-world="hobby"] .prose a:hover {
+  color: #FF69B4;
 }
 
 [data-world="hobby"] .prose blockquote {
-  border-left: 4px solid #e11d48;
-  color: #4b5563;
+  border-left: 4px solid #FF69B4;
+  color: #676E95;
 }
 
 [data-world="hobby"] .prose code:not(pre code) {
-  background: #f3f4f6;
-  color: #111827;
+  background: #292D3E;
+  color: #FF69B4;
 }
+
+/* Syntax highlighting (Prism — Material Palenight) */
+pre[class*="language-"],
+code[class*="language-"] {
+  color: #A6ACCD;
+  background: #292D3E;
+  font-size: 0.875em;
+  text-align: left;
+  white-space: pre-wrap;
+  word-spacing: normal;
+  word-break: break-word;
+  tab-size: 2;
+  hyphens: none;
+}
+
+pre[class*="language-"] {
+  padding: 1.25em 1.5em;
+  border-radius: 8px;
+  overflow: auto;
+  border: 1px solid #3a3f58;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata { color: #676E95; font-style: italic; }
+
+.token.punctuation { color: #89DDFF; }
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol { color: #F78C6C; }
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin { color: #C3E88D; }
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.token.inserted { color: #89DDFF; }
+
+.token.variable { color: #F07178; }
+
+.token.atrule,
+.token.attr-value,
+.token.keyword { color: #C792EA; }
+
+.token.function { color: #82AAFF; }
+
+.token.class-name { color: #FFCB6B; }
+
+.token.regex,
+.token.important,
+.token.deleted { color: #F07178; }
+
+.token.important,
+.token.bold { font-weight: bold; }
+.token.italic { font-style: italic; }

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
 import Script from "next/script";
 import WorldSwitcher from "@/components/WorldSwitcher";
+import PageTransition from "@/components/PageTransition";
+import { TransitionProvider } from "@/contexts/TransitionContext";
 import "./globals.css";
 
 const GA_ID = "G-N0B2S2BF68";
@@ -126,7 +128,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${pressStart2P.variable} antialiased bg-background text-foreground`}
       >
-        <WorldSwitcher />
+        <TransitionProvider>
+          <WorldSwitcher />
+          <PageTransition />
+          {children}
+        </TransitionProvider>
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
           strategy="afterInteractive"
@@ -139,7 +145,6 @@ export default function RootLayout({
             gtag('config', '${GA_ID}');
           `}
         </Script>
-        {children}
       </body>
     </html>
   );

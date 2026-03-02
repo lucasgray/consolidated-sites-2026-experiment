@@ -8,20 +8,23 @@ interface Props {
 
 export default function ProPostLayout({ post, children }: Props) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-white text-gray-900">
       <div className="max-w-3xl mx-auto px-6 py-16">
         <Link
           href="/blog"
-          className="inline-flex items-center gap-2 text-neon-cyan/70 hover:text-neon-cyan transition-colors mb-10 text-sm"
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-800 hover:underline transition-colors mb-10 text-sm"
         >
           ← Back to writing
         </Link>
 
-        <header className="mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-glow-cyan">
+        <header className="mb-14 pb-10 border-b border-gray-200">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 leading-tight text-gray-900">
             {post.title}
           </h1>
-          <div className="flex items-center gap-4 text-muted text-sm">
+          {post.summary && (
+            <p className="text-lg text-gray-500 leading-relaxed mb-4" style={{ fontVariant: 'small-caps' }}>{post.summary}</p>
+          )}
+          <div className="flex items-center gap-4 text-gray-400 text-sm">
             <time dateTime={post.date}>
               {new Date(post.date).toLocaleDateString('en-US', {
                 year: 'numeric',
@@ -36,19 +39,21 @@ export default function ProPostLayout({ post, children }: Props) {
               </>
             )}
           </div>
-          {post.summary && (
-            <p className="mt-4 text-lg text-muted leading-relaxed">{post.summary}</p>
-          )}
         </header>
 
-        <article className="prose prose-invert max-w-none">
+        <article className="prose prose-gray max-w-none prose-lg
+          prose-headings:font-bold
+          prose-strong:font-semibold
+          prose-h1:text-2xl prose-h1:mt-12
+          prose-h2:text-2xl prose-h2:mt-12 prose-h3:text-xl prose-h3:mt-10
+        ">
           {children}
         </article>
 
-        <footer className="mt-16 pt-8 border-t border-cyan-900/40">
+        <footer className="mt-16 pt-8 border-t border-gray-200">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-neon-cyan/70 hover:text-neon-cyan transition-colors text-sm"
+            className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors text-sm"
           >
             ← Back to writing
           </Link>
