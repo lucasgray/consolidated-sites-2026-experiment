@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { HobbyPost } from 'contentlayer/generated'
+import BackButton from '@/components/BackButton'
 
 interface Props {
   post: HobbyPost
@@ -9,9 +9,7 @@ interface Props {
 export default function HobbyPostLayout({ post, children }: Props) {
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
-      <Link href="/hobby/blog" className="text-sm text-white hover:text-[#FF69B4] hover:underline transition-colors mb-8 inline-block">
-        ← Back to blog
-      </Link>
+      <BackButton className="text-sm text-white hover:text-[#FF69B4] hover:underline transition-colors mb-8 inline-block" label="← Back" />
 
       <header className="mb-14 pb-10 border-b border-gray-700">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-100 mb-2 leading-tight">
@@ -47,9 +45,7 @@ export default function HobbyPostLayout({ post, children }: Props) {
       </article>
 
       <footer className="mt-16 pt-8 border-t border-gray-700">
-        <Link href="/hobby/blog" className="text-sm text-white hover:text-[#FF69B4] hover:underline transition-colors">
-          ← Back to blog
-        </Link>
+        <BackButton className="text-sm text-white hover:text-[#FF69B4] hover:underline transition-colors" label="← Back" />
       </footer>
     </div>
   )
