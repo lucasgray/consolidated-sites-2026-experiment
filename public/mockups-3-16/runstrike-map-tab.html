@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Runstrike — Map Tab</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --pink:   #ff2d6b;
+  --cyan:   #00e5ff;
+  --orange: #ff8c00;
+  --green:  #00ff88;
+  --purple: #b060ff;
+  --bg:     #080810;
+  --card:   #0d0d18;
+  --border: #1e1e2e;
+  --text:   #e0e0f0;
+  --muted:  #555570;
+  --mono:   'Share Tech Mono', 'Courier New', monospace;
+  --pixel:  'Press Start 2P', monospace;
+}
+
+body {
+  background: #060610;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 60px;
+  font-family: var(--mono);
+  gap: 22px;
+}
+
+.header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.header-title { color: var(--cyan); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; }
+.header-sub { color: var(--muted); font-size: 11px; }
+
+.screen-nav {
+  display: flex; gap: 4px;
+  background: rgba(255,255,255,0.03);
+  padding: 4px; border-radius: 20px;
+  border: 1px solid #1a1a2a;
+}
+.nav-btn {
+  background: transparent; border: none;
+  color: var(--muted); padding: 7px 18px; border-radius: 16px;
+  cursor: pointer; font-size: 11px; font-family: var(--mono);
+  letter-spacing: 0.05em; transition: all 0.15s;
+}
+.nav-btn:hover { color: #aaa; }
+.nav-btn.active { background: var(--pink); color: #000; font-weight: 700; }
+
+/* Phone */
+.phone {
+  width: 390px; height: 844px;
+  background: var(--bg); border-radius: 50px; overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 2px #1a1a2e, 0 0 0 4px #0d0d18, 0 40px 100px rgba(0,0,0,0.8);
+  flex-shrink: 0;
+}
+.notch {
+  position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 130px; height: 34px;
+  background: var(--bg); border-radius: 0 0 22px 22px; z-index: 200;
+}
+.screen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  background: var(--bg); z-index: 1;
+}
+.screen.active { display: flex; }
+
+.status-bar {
+  height: 44px; padding: 12px 22px 0;
+  display: flex; align-items: center;
+  justify-content: space-between; flex-shrink: 0; z-index: 20;
+}
+.status-time { color: #fff; font-size: 15px; font-weight: 600; }
+.status-right { display: flex; gap: 5px; align-items: center; font-size: 12px; color: #fff; }
+
+/* Map tab internal toggle */
+.map-toggle {
+  display: flex; background: #0d0d18;
+  border-bottom: 1px solid #1a1a2a;
+  flex-shrink: 0; padding: 8px 16px; gap: 8px;
+}
+.toggle-btn {
+  flex: 1; padding: 9px 8px; text-align: center;
+  font-family: var(--mono); font-size: 10px;
+  font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; cursor: pointer;
+  border-radius: 4px; transition: all 0.15s;
+  color: var(--muted); background: transparent;
+  border: 1px solid #1a1a2a;
+}
+.toggle-btn.active { background: var(--cyan); color: #000; border-color: var(--cyan); }
+
+/* ── RADAR VIEW ── */
+.radar-wrap {
+  flex: 1; position: relative; overflow: hidden;
+}
+.radar-wrap svg { width: 100%; height: 100%; display: block; }
+
+.radar-legend {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(8,8,16,0.88); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px; padding: 9px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.legend-row { display: flex; align-items: center; gap: 8px; font-size: 9px; color: #999; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── WORLD MAP VIEW ── */
+.world-wrap {
+  flex: 1; position: relative; overflow: auto;
+  cursor: grab;
+}
+.world-wrap:active { cursor: grabbing; }
+
+.world-map-canvas {
+  width: 780px; height: 960px;
+  position: relative; flex-shrink: 0;
+}
+.world-map-canvas svg {
+  width: 780px; height: 960px;
+  display: block;
+}
+
+/* Location bottom sheet */
+.loc-sheet {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: #0d0d18;
+  border-radius: 16px 16px 0 0;
+  border-top: 1px solid #1e1e2e;
+  padding: 10px 18px 44px;
+  z-index: 100;
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+}
+.loc-sheet.open { transform: translateY(0); }
+
+.sheet-handle { width: 36px; height: 4px; background: #2a2a3a; border-radius: 2px; margin: 0 auto 14px; cursor: pointer; }
+.loc-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 5px; }
+.loc-name { font-family: var(--pixel); font-size: 13px; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+.loc-sub { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+
+.loc-status-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.status-pip { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.travel-bar-wrap { margin-bottom: 12px; }
+.travel-bar-labels {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--muted); margin-bottom: 4px;
+}
+.travel-bar-track { height: 5px; background: #1a1a2a; border-radius: 2px; overflow: hidden; }
+.travel-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--cyan), rgba(0,229,255,0.6)); }
+
+.quest-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(176,96,255,0.1); border: 1px solid rgba(176,96,255,0.3);
+  border-radius: 3px; padding: 5px 10px;
+  font-size: 10px; color: var(--purple);
+  letter-spacing: 0.06em; margin-bottom: 12px;
+}
+
+.loc-cta {
+  width: 100%; padding: 13px; text-align: center;
+  font-family: var(--mono); font-size: 13px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border-radius: 3px; cursor: pointer;
+}
+.cta-cyan   { background: var(--cyan);   color: #000; }
+.cta-orange { background: var(--orange); color: #000; }
+.cta-ghost  { background: transparent; color: var(--muted); border: 1px solid #2a2a3a; }
+
+.loc-dismiss {
+  text-align: center; font-size: 10px; color: var(--muted);
+  cursor: pointer; padding: 8px 0; margin-top: 6px;
+  letter-spacing: 0.08em;
+}
+
+/* Bottom nav */
+.bottom-nav {
+  height: 80px; background: rgba(8,8,16,0.97);
+  border-top: 1px solid #1a1a2a;
+  display: flex; align-items: flex-start;
+  padding-top: 10px; flex-shrink: 0; z-index: 20;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; cursor: pointer; padding: 2px 0;
+}
+.nav-icon { font-size: 20px; color: var(--muted); }
+.nav-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.nav-item.active .nav-icon { color: var(--pink); }
+.nav-item.active .nav-label { color: var(--pink); }
+
+/* Pulse animation */
+@keyframes pulse-ring {
+  0%   { r: 14; opacity: 0.6; }
+  100% { r: 22; opacity: 0; }
+}
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+.blink { animation: blink 1.8s infinite; }
+
+/* Fog shimmer */
+@keyframes fog-shimmer {
+  0%,100% { opacity: 0.92; }
+  50% { opacity: 0.85; }
+}
+.fog-shimmer { animation: fog-shimmer 4s ease-in-out infinite; }
+
+/* Design notes */
+.note-card {
+  background: #0d0d18; border: 1px solid #1e1e2e;
+  border-radius: 8px; padding: 14px 16px; display: none;
+}
+.note-card.visible { display: block; }
+.note-title { color: var(--cyan); font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+.note-body { color: #888; font-size: 11px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Runstrike · Map Tab</div>
+  <div class="header-sub">Radar · World Map · Location sheet</div>
+</div>
+
+<div class="screen-nav">
+  <button class="nav-btn active" onclick="showMain(0,this)">① Radar</button>
+  <button class="nav-btn"        onclick="showMain(1,this)">② World map</button>
+  <button class="nav-btn"        onclick="showMain(1,this);openSheet('warehouse')">③ Traveling here</button>
+  <button class="nav-btn"        onclick="showMain(1,this);openSheet('downtown')">④ Start travel</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ============================================================
+       SCREEN 0 — RADAR
+       ============================================================ -->
+  <div class="screen active" id="screen-0">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-right"><span>▲▲▲</span><span>⬛</span></div>
+    </div>
+
+    <div class="map-toggle">
+      <div class="toggle-btn active">📡 Radar</div>
+      <div class="toggle-btn" onclick="showMain(1, document.querySelectorAll('.nav-btn')[1])">🗺 World Map</div>
+    </div>
+
+    <!-- Radar map -->
+    <div class="radar-wrap">
+      <svg viewBox="0 0 390 680" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <rect width="390" height="680" fill="#1a1a1a"/>
+        <!-- City blocks -->
+        <rect x="0"   y="0"   width="52"  height="68"  fill="#1e1e1e" rx="1"/>
+        <rect x="67"  y="0"   width="92"  height="68"  fill="#1e1e1e" rx="1"/>
+        <rect x="174" y="0"   width="108" height="68"  fill="#1e1e1e" rx="1"/>
+        <rect x="297" y="0"   width="93"  height="68"  fill="#1e1e1e" rx="1"/>
+        <rect x="0"   y="83"  width="52"  height="98"  fill="#1e1e1e" rx="1"/>
+        <rect x="67"  y="83"  width="92"  height="98"  fill="#1e1e1e" rx="1"/>
+        <rect x="174" y="83"  width="108" height="98"  fill="#1e1e1e" rx="1"/>
+        <rect x="297" y="83"  width="93"  height="98"  fill="#1e1e1e" rx="1"/>
+        <rect x="0"   y="196" width="52"  height="108" fill="#1e1e1e" rx="1"/>
+        <rect x="67"  y="196" width="92"  height="108" fill="#1e1e1e" rx="1"/>
+        <rect x="174" y="196" width="108" height="108" fill="#1e1e1e" rx="1"/>
+        <rect x="297" y="196" width="93"  height="108" fill="#1e1e1e" rx="1"/>
+        <rect x="0"   y="319" width="52"  height="361" fill="#1e1e1e" rx="1"/>
+        <rect x="67"  y="319" width="92"  height="361" fill="#1e1e1e" rx="1"/>
+        <rect x="174" y="319" width="108" height="361" fill="#1e1e1e" rx="1"/>
+        <rect x="297" y="319" width="93"  height="361" fill="#1e1e1e" rx="1"/>
+        <!-- Streets -->
+        <rect x="0" y="68"  width="390" height="15" fill="#252525"/>
+        <rect x="0" y="181" width="390" height="15" fill="#252525"/>
+        <rect x="0" y="304" width="390" height="15" fill="#252525"/>
+        <rect x="52"  y="0" width="15" height="680" fill="#252525"/>
+        <rect x="159" y="0" width="15" height="680" fill="#252525"/>
+        <rect x="282" y="0" width="15" height="680" fill="#252525"/>
+
+        <!-- Scouted route glow -->
+        <path d="M 166 680 L 166 312 L 59 312 L 59 189"
+              stroke="rgba(0,229,255,0.12)" stroke-width="14" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Pickups -->
+        <circle cx="166" cy="189" r="24" fill="rgba(0,229,255,0.12)"/>
+        <circle cx="166" cy="189" r="10" fill="#00e5ff"/>
+        <circle cx="166" cy="189" r="4"  fill="white"/>
+        <circle cx="59"  cy="312" r="24" fill="rgba(0,229,255,0.12)"/>
+        <circle cx="59"  cy="312" r="10" fill="#00e5ff"/>
+        <circle cx="59"  cy="312" r="4"  fill="white"/>
+        <circle cx="289" cy="189" r="18" fill="rgba(0,229,255,0.07)"/>
+        <circle cx="289" cy="189" r="7"  fill="#00e5ff" opacity="0.5"/>
+
+        <!-- Arboreal item -->
+        <circle cx="289" cy="75" r="12" fill="rgba(0,180,80,0.1)" stroke="rgba(0,180,80,0.4)" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <text x="289" y="79" text-anchor="middle" font-size="12">🌳</text>
+
+        <!-- Unscouted -->
+        <circle cx="59"  cy="75" r="8" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <circle cx="289" cy="312" r="8" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+        <!-- Friend activity -->
+        <circle cx="289" cy="75" r="18" fill="rgba(176,96,255,0.12)"/>
+        <circle cx="289" cy="75" r="6"  fill="#b060ff" opacity="0.9"/>
+
+        <!-- Companion radius -->
+        <circle cx="166" cy="312" r="50" fill="rgba(0,229,255,0.04)"
+                stroke="rgba(0,229,255,0.2)" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <!-- Player -->
+        <circle cx="166" cy="312" r="18" fill="rgba(255,255,255,0.05)"/>
+        <circle cx="166" cy="312" r="9"  fill="rgba(255,255,255,0.13)"/>
+        <circle cx="166" cy="312" r="6"  fill="white"/>
+        <circle cx="166" cy="312" r="2"  fill="#1a1a1a"/>
+      </svg>
+
+      <div class="radar-legend">
+        <div class="legend-row"><div class="legend-dot" style="background:#00e5ff;"></div><span>Ready to collect</span></div>
+        <div class="legend-row"><div class="legend-dot" style="background:transparent;border:1.5px dashed #555;"></div><span>Unscouted</span></div>
+        <div class="legend-row"><div class="legend-dot" style="background:#b060ff;"></div><span>Friend activity</span></div>
+        <div class="legend-row"><div class="legend-dot" style="background:rgba(0,180,80,0.7);"></div><span>Arboreal item</span></div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">Feed</div></div>
+      <div class="nav-item active"><div class="nav-icon">🗺</div><div class="nav-label">Map</div></div>
+      <div class="nav-item"><div class="nav-icon">📻</div><div class="nav-label">Story</div></div>
+      <div class="nav-item"><div class="nav-icon">🏃</div><div class="nav-label">Run</div></div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SCREEN 1 — WORLD MAP
+       ============================================================ -->
+  <div class="screen" id="screen-1">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-right"><span>▲▲▲</span><span>⬛</span></div>
+    </div>
+
+    <div class="map-toggle">
+      <div class="toggle-btn" onclick="showMain(0, document.querySelectorAll('.nav-btn')[0])">📡 Radar</div>
+      <div class="toggle-btn active">🗺 World Map</div>
+    </div>
+
+    <!-- Scrollable world map -->
+    <div class="world-wrap" id="world-wrap">
+      <div class="world-map-canvas">
+        <svg width="780" height="960" viewBox="0 0 780 960" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Pixel grid pattern for terrain texture -->
+            <pattern id="grid" width="8" height="8" patternUnits="userSpaceOnUse">
+              <rect width="8" height="8" fill="transparent"/>
+              <rect width="1" height="1" fill="rgba(255,255,255,0.02)"/>
+            </pattern>
+            <!-- Fog noise pattern -->
+            <pattern id="fog-dots" width="20" height="20" patternUnits="userSpaceOnUse">
+              <rect width="20" height="20" fill="transparent"/>
+              <circle cx="4"  cy="4"  r="0.8" fill="rgba(255,255,255,0.04)"/>
+              <circle cx="14" cy="12" r="0.8" fill="rgba(255,255,255,0.03)"/>
+              <circle cx="8"  cy="17" r="0.6" fill="rgba(255,255,255,0.02)"/>
+            </pattern>
+          </defs>
+
+          <!-- ── TERRAIN BASE ── -->
+          <!-- Residential zone (bottom-left, where player lives) -->
+          <rect x="0"   y="520" width="420" height="440" fill="#191928"/>
+          <!-- Mix zone / transition (middle) -->
+          <rect x="200" y="340" width="350" height="280" fill="#1c1c26"/>
+          <!-- Park / green zone -->
+          <rect x="380" y="300" width="260" height="200" fill="#182018"/>
+          <!-- Industrial zone (right) -->
+          <rect x="530" y="380" width="250" height="300" fill="#201818"/>
+          <!-- Downtown / commercial (upper center) -->
+          <rect x="200" y="120" width="300" height="240" fill="#1a1a20"/>
+          <!-- Far north (partially known) -->
+          <rect x="100" y="0"   width="300" height="160" fill="#141420"/>
+          <!-- Far east (partially known) -->
+          <rect x="620" y="100" width="160" height="320" fill="#181420"/>
+
+          <!-- Pixel grid overlay (gives terrain texture) -->
+          <rect width="780" height="960" fill="url(#grid)"/>
+
+          <!-- River / water feature -->
+          <path d="M 0 680 Q 100 660 180 700 Q 260 740 340 710 Q 420 680 480 700"
+                stroke="#1a1a38" stroke-width="24" fill="none" stroke-linecap="round"/>
+          <path d="M 0 680 Q 100 660 180 700 Q 260 740 340 710 Q 420 680 480 700"
+                stroke="#20204a" stroke-width="14" fill="none" stroke-linecap="round"/>
+
+          <!-- ── PATHS / ROADS between locations ── -->
+          <!-- Traveled path (solid, glowing): HOME → APT A → APT B -->
+          <path d="M 130 800 L 180 680 L 250 560"
+                stroke="rgba(0,229,255,0.15)" stroke-width="8" fill="none"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 130 800 L 180 680 L 250 560"
+                stroke="rgba(0,229,255,0.5)" stroke-width="2.5" fill="none"
+                stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="none"/>
+
+          <!-- Known path: APT B → PARK (dotted) -->
+          <path d="M 250 560 L 420 460"
+                stroke="rgba(0,229,255,0.25)" stroke-width="2" fill="none"
+                stroke-linecap="round" stroke-dasharray="6,5"/>
+          <!-- Known path: APT B → DOWNTOWN (dotted) -->
+          <path d="M 250 560 L 340 300"
+                stroke="rgba(0,229,255,0.25)" stroke-width="2" fill="none"
+                stroke-linecap="round" stroke-dasharray="6,5"/>
+          <!-- Traveling path: APT B → WAREHOUSE (orange dotted with progress) -->
+          <!-- Background path -->
+          <path d="M 250 560 Q 380 520 580 520"
+                stroke="rgba(255,140,0,0.15)" stroke-width="8" fill="none"
+                stroke-linecap="round"/>
+          <!-- Progress so far (35%) -->
+          <path d="M 250 560 Q 310 540 380 534"
+                stroke="rgba(255,140,0,0.7)" stroke-width="3" fill="none"
+                stroke-linecap="round"/>
+          <!-- Remaining (dashed) -->
+          <path d="M 380 534 Q 480 527 580 520"
+                stroke="rgba(255,140,0,0.3)" stroke-width="2" fill="none"
+                stroke-linecap="round" stroke-dasharray="5,5"/>
+          <!-- PARK → WAREHOUSE (dotted) -->
+          <path d="M 420 460 L 580 520"
+                stroke="rgba(0,229,255,0.15)" stroke-width="1.5" fill="none"
+                stroke-dasharray="5,6"/>
+          <!-- DOWNTOWN → ??? north (fades to fog) -->
+          <path d="M 340 300 L 280 180"
+                stroke="rgba(0,229,255,0.15)" stroke-width="1.5" fill="none"
+                stroke-dasharray="4,6" opacity="0.5"/>
+          <!-- WAREHOUSE → ??? east (fades to fog) -->
+          <path d="M 580 520 L 680 420"
+                stroke="rgba(255,140,0,0.12)" stroke-width="1.5" fill="none"
+                stroke-dasharray="4,7" opacity="0.4"/>
+
+          <!-- ── FOG OF WAR ZONES ── -->
+          <!-- Far north fog -->
+          <rect x="0" y="0" width="780" height="120" fill="#07070f" class="fog-shimmer"/>
+          <rect x="0" y="100" width="780" height="80" fill="url(#fog-dots)"/>
+          <rect x="0" y="100" width="780" height="60"
+                fill="url(#linear-fade-down)" opacity="0.9"/>
+          <!-- Gradient from fog to visible for north edge -->
+          <defs>
+            <linearGradient id="fog-fade-n" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#07070f" stop-opacity="1"/>
+              <stop offset="100%" stop-color="#07070f" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="fog-fade-e" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#07070f" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#07070f" stop-opacity="1"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="80" width="780" height="80" fill="url(#fog-fade-n)"/>
+
+          <!-- Far east fog -->
+          <rect x="660" y="0" width="120" height="960" fill="#07070f" class="fog-shimmer"/>
+          <rect x="640" y="0" width="60"  height="960" fill="url(#fog-dots)" opacity="0.6"/>
+          <rect x="600" y="0" width="80"  height="960" fill="url(#fog-fade-e)"/>
+
+          <!-- South fog (below the river / home) -->
+          <rect x="0" y="880" width="780" height="80" fill="#07070f" class="fog-shimmer"/>
+          <defs>
+            <linearGradient id="fog-fade-s" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#07070f" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#07070f" stop-opacity="1"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="860" width="780" height="40" fill="url(#fog-fade-s)"/>
+
+          <!-- Partial fog: northeast corner (visible hint, no name) -->
+          <rect x="600" y="120" width="120" height="200" fill="rgba(7,7,15,0.7)"/>
+          <rect x="600" y="200" width="120" height="80" fill="url(#fog-dots)" opacity="0.5"/>
+
+          <!-- ── HINT LOCATION (silhouette only, no name) ── -->
+          <!-- Something in the north-center, visible as a shape but mysterious -->
+          <g opacity="0.25">
+            <rect x="272" y="148" width="36" height="28" fill="#aaaacc"/>
+            <rect x="260" y="160" width="12" height="16" fill="#9999bb"/>
+            <rect x="308" y="155" width="14" height="21" fill="#9999bb"/>
+            <rect x="276" y="140" width="8" height="8" fill="#aaaacc"/>
+          </g>
+          <text x="288" y="195" text-anchor="middle"
+                font-family="'Press Start 2P', monospace" font-size="7"
+                fill="rgba(150,150,200,0.3)" letter-spacing="2">? ? ?</text>
+
+          <!-- ── LOCATION NODES ── -->
+
+          <!-- HOME / YOUR APARTMENT (visited, south) -->
+          <g id="loc-home" onclick="openSheet('home')" style="cursor:pointer;">
+            <circle cx="130" cy="800" r="22" fill="rgba(0,229,255,0.06)"/>
+            <!-- Pixel house icon -->
+            <rect x="120" y="794" width="20" height="14" fill="#2a2a4a" rx="1"/>
+            <polygon points="130,786 120,796 140,796" fill="#3a3a5a"/>
+            <rect x="126" y="800" width="8" height="8" fill="#00e5ff" opacity="0.4"/>
+            <text x="130" y="826"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="6" fill="rgba(0,229,255,0.6)"
+                  text-anchor="middle" letter-spacing="0.5">HOME</text>
+          </g>
+
+          <!-- APARTMENT A (visited, mid-south) -->
+          <g id="loc-apt-a" onclick="openSheet('apt-a')" style="cursor:pointer;">
+            <circle cx="180" cy="680" r="20" fill="rgba(0,229,255,0.06)"/>
+            <rect x="171" y="673" width="18" height="13" fill="#2a2a4a" rx="1"/>
+            <polygon points="180,666 171,675 189,675" fill="#3a3a5a"/>
+            <rect x="176" y="678" width="6" height="8" fill="#00e5ff" opacity="0.3"/>
+            <text x="180" y="703"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="6" fill="rgba(0,229,255,0.55)"
+                  text-anchor="middle" letter-spacing="0.5">APT A</text>
+          </g>
+
+          <!-- APARTMENT B — CURRENT LOCATION (bright, pulsing) -->
+          <g id="loc-apt-b" onclick="openSheet('apt-b')" style="cursor:pointer;">
+            <!-- Pulse rings -->
+            <circle cx="250" cy="560" r="30" fill="rgba(0,229,255,0.08)">
+              <animate attributeName="r" values="20;34;20" dur="2.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="250" cy="560" r="24" fill="rgba(0,229,255,0.08)"/>
+            <rect x="240" y="552" width="20" height="15" fill="#003a44" stroke="#00e5ff" stroke-width="1.5" rx="1"/>
+            <polygon points="250,544 238,554 262,554" fill="#00e5ff" opacity="0.8"/>
+            <rect x="246" y="558" width="8" height="9" fill="#00e5ff" opacity="0.6"/>
+            <!-- YOU ARE HERE label -->
+            <rect x="214" y="530" width="72" height="11" rx="2" fill="rgba(0,229,255,0.15)" stroke="rgba(0,229,255,0.4)" stroke-width="1"/>
+            <text x="250" y="538"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="5" fill="#00e5ff"
+                  text-anchor="middle" letter-spacing="0.3">YOU ARE HERE</text>
+            <text x="250" y="583"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="6.5" fill="#00e5ff"
+                  text-anchor="middle" letter-spacing="0.5">APT B</text>
+          </g>
+
+          <!-- THE PARK (visible, no quest, reachable) -->
+          <g id="loc-park" onclick="openSheet('park')" style="cursor:pointer;">
+            <circle cx="420" cy="460" r="20" fill="rgba(0,200,80,0.07)"/>
+            <!-- Pixel tree cluster -->
+            <circle cx="415" cy="455" r="8" fill="#1a3a1a"/>
+            <circle cx="425" cy="452" r="7" fill="#1a3a1a"/>
+            <circle cx="420" cy="447" r="6" fill="#223a22"/>
+            <rect x="418" y="460" width="4" height="6" fill="#2a1a0a"/>
+            <text x="420" y="483"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="6" fill="rgba(0,200,80,0.7)"
+                  text-anchor="middle" letter-spacing="0.5">THE PARK</text>
+          </g>
+
+          <!-- DOWNTOWN (visible, quest active, need to travel) -->
+          <g id="loc-downtown" onclick="openSheet('downtown')" style="cursor:pointer;">
+            <circle cx="340" cy="300" r="22" fill="rgba(255,45,107,0.08)"/>
+            <!-- Pixel city buildings -->
+            <rect x="326" y="290" width="9"  height="18" fill="#2a1a28" stroke="#ff2d6b" stroke-width="1"/>
+            <rect x="338" y="284" width="10" height="24" fill="#2a1a28" stroke="#ff2d6b" stroke-width="1"/>
+            <rect x="351" y="292" width="8"  height="16" fill="#2a1a28" stroke="#ff2d6b" stroke-width="0.5"/>
+            <!-- Windows -->
+            <rect x="329" y="293" width="3" height="2" fill="#ff2d6b" opacity="0.5"/>
+            <rect x="329" y="298" width="3" height="2" fill="#ff2d6b" opacity="0.5"/>
+            <rect x="341" y="287" width="3" height="2" fill="#ff2d6b" opacity="0.8"/>
+            <rect x="341" y="292" width="3" height="2" fill="#ff2d6b" opacity="0.6"/>
+            <rect x="346" y="289" width="3" height="2" fill="#ff2d6b" opacity="0.4"/>
+            <!-- Quest indicator -->
+            <circle cx="355" cy="286" r="5" fill="#ff2d6b"/>
+            <text x="355" y="289" text-anchor="middle" font-size="6" fill="white" font-weight="bold">!</text>
+            <text x="340" y="325"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="6" fill="rgba(255,45,107,0.85)"
+                  text-anchor="middle" letter-spacing="0.5">DOWNTOWN</text>
+          </g>
+
+          <!-- WAREHOUSE DISTRICT (traveling to, orange) -->
+          <g id="loc-warehouse" onclick="openSheet('warehouse')" style="cursor:pointer;">
+            <circle cx="580" cy="520" r="22" fill="rgba(255,140,0,0.08)"/>
+            <!-- Progress ring (35% complete) -->
+            <circle cx="580" cy="520" r="19" fill="none" stroke="rgba(255,140,0,0.15)" stroke-width="3"/>
+            <circle cx="580" cy="520" r="19" fill="none" stroke="#ff8c00" stroke-width="3"
+                    stroke-dasharray="42 120" stroke-dashoffset="-2"
+                    stroke-linecap="round"
+                    transform="rotate(-90 580 520)"/>
+            <!-- Pixel warehouse -->
+            <rect x="566" y="512" width="28" height="16" fill="#2a1a10" stroke="#ff8c00" stroke-width="1" rx="1"/>
+            <rect x="566" y="505" width="28" height="10" fill="#221510" stroke="#ff8c00" stroke-width="0.5" rx="1"/>
+            <!-- Doors -->
+            <rect x="572" y="518" width="7" height="10" fill="#ff8c00" opacity="0.3"/>
+            <rect x="582" y="518" width="7" height="10" fill="#ff8c00" opacity="0.3"/>
+            <!-- Traveling badge -->
+            <rect x="558" y="494" width="44" height="10" rx="2" fill="rgba(255,140,0,0.2)" stroke="rgba(255,140,0,0.5)" stroke-width="1"/>
+            <text x="580" y="501"
+                  text-anchor="middle"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="4.5" fill="#ff8c00" letter-spacing="0.3">TRAVELING</text>
+            <text x="580" y="546"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="5.5" fill="rgba(255,140,0,0.85)"
+                  text-anchor="middle" letter-spacing="0.3">WAREHOUSE</text>
+          </g>
+
+          <!-- DISTANCE SCALE -->
+          <g transform="translate(20, 920)">
+            <line x1="0" y1="0" x2="50" y2="0" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+            <line x1="0" y1="-4" x2="0" y2="4" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+            <line x1="50" y1="-4" x2="50" y2="4" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+            <text x="25" y="-6" text-anchor="middle"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="5" fill="rgba(255,255,255,0.3)">5 MI</text>
+          </g>
+
+          <!-- COMPASS -->
+          <g transform="translate(730, 150)">
+            <text x="0" y="0" text-anchor="middle"
+                  font-family="'Press Start 2P', monospace"
+                  font-size="9" fill="rgba(255,255,255,0.25)">N</text>
+            <line x1="0" y1="4" x2="0" y2="18" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          </g>
+
+        </svg>
+      </div>
+    </div>
+
+    <!-- Location bottom sheet -->
+    <div class="loc-sheet" id="loc-sheet">
+      <div class="sheet-handle" onclick="closeSheet()"></div>
+      <div id="sheet-content"></div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">Feed</div></div>
+      <div class="nav-item active"><div class="nav-icon">🗺</div><div class="nav-label">Map</div></div>
+      <div class="nav-item"><div class="nav-icon">📻</div><div class="nav-label">Story</div></div>
+      <div class="nav-item"><div class="nav-icon">🏃</div><div class="nav-label">Run</div></div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<!-- Design notes -->
+<div style="max-width:390px;width:100%;display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+  <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Design notes</div>
+
+  <div class="note-card visible" id="note-0">
+    <div class="note-title">① Radar</div>
+    <div class="note-body">The radar is the real-world view — your neighborhood, pickups, scouted routes. The RADAR | WORLD MAP toggle at the top of the tab is the boundary between the two map realities. Switching maps is an intentional act, not accidental.</div>
+  </div>
+  <div class="note-card" id="note-1">
+    <div class="note-title">② World map</div>
+    <div class="note-body">Pixel-art terrain using flat color zones. Scrollable in both directions — the world is bigger than the screen. Fog of war on north, east, and south edges — you can sense there's more out there. A ???-labeled silhouette in the north is visible but unnamed, creating pull. Paths between locations are dotted (not yet traveled) or lit (traveled). Tap any location node to reveal its info sheet.</div>
+  </div>
+  <div class="note-card" id="note-2">
+    <div class="note-title">③ Traveling (Warehouse)</div>
+    <div class="note-body">The orange arc around the location icon shows travel progress (35% complete). The path from Apt B shows a solid orange segment (distance traveled) fading to a dashed remainder. The TRAVELING badge above the icon keeps the state legible at a glance without opening the sheet.</div>
+  </div>
+  <div class="note-card" id="note-3">
+    <div class="note-title">④ Start travel (Downtown)</div>
+    <div class="note-body">Downtown has a pink quest indicator (!) on its icon — there's something there, you can see it from here. Tapping reveals the quest and the travel CTA. This is where the story reveals the shape of the world before you commit to going anywhere.</div>
+  </div>
+</div>
+
+<script>
+  // Location data
+  const locationData = {
+    home: {
+      eyebrow: 'Visited · Your neighborhood',
+      eyebrowColor: 'var(--cyan)',
+      name: 'YOUR APARTMENT',
+      sub: 'Where you started.',
+      statusColor: 'var(--muted)',
+      statusLabel: 'No active quests here',
+      content: `<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;">Home base. You've been spending more time away lately.</div>`,
+      cta: null
+    },
+    'apt-a': {
+      eyebrow: 'Visited',
+      eyebrowColor: 'var(--cyan)',
+      name: 'APARTMENT A',
+      sub: 'Your ex\'s old place.',
+      statusColor: 'var(--green)',
+      statusLabel: 'Fully explored',
+      content: `<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;">You picked up the box. Nothing left here.</div>`,
+      cta: null
+    },
+    'apt-b': {
+      eyebrow: 'Current location',
+      eyebrowColor: 'var(--cyan)',
+      name: 'APARTMENT B',
+      sub: 'Alex\'s apartment.',
+      statusColor: 'var(--orange)',
+      statusLabel: 'Quest active · Check on Alex',
+      content: `
+        <div class="quest-pill">📻 Check on Alex · Active</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;">You're here. Time to look around.</div>`,
+      ctaLabel: 'Explore Apartment B',
+      ctaClass: 'cta-cyan'
+    },
+    park: {
+      eyebrow: 'Reachable · 3.0 mi',
+      eyebrowColor: 'rgba(0,200,80,0.8)',
+      name: 'THE PARK',
+      sub: 'Green space, east of the river.',
+      statusColor: 'var(--muted)',
+      statusLabel: 'No active quests',
+      content: `<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;">Quiet for now. Might be worth a visit later.</div>`,
+      ctaLabel: 'Travel Here · 3.0 mi',
+      ctaClass: 'cta-ghost'
+    },
+    downtown: {
+      eyebrow: 'Quest available · 8.0 mi',
+      eyebrowColor: 'var(--pink)',
+      name: 'DOWNTOWN',
+      sub: 'The old commercial district.',
+      statusColor: 'var(--pink)',
+      statusLabel: 'New transmission from this area',
+      content: `
+        <div class="quest-pill">📻 HQ-? Signal Source · New</div>
+        <div style="font-size:12px;color:#a0a0c0;line-height:1.6;margin-bottom:14px;">"The signal is coming from somewhere on the east side of downtown. Get here and we can triangulate."</div>`,
+      ctaLabel: 'Begin Journey · 8.0 mi',
+      ctaClass: 'cta-orange'
+    },
+    warehouse: {
+      eyebrow: 'Traveling · Side Quest',
+      eyebrowColor: 'var(--orange)',
+      name: 'WAREHOUSE DISTRICT',
+      sub: 'Industrial zone, east of the river.',
+      statusColor: 'var(--orange)',
+      statusLabel: 'In progress',
+      content: `
+        <div class="quest-pill">📦 The Missing Package · Active</div>
+        <div class="travel-bar-wrap">
+          <div class="travel-bar-labels"><span>4.2 mi traveled</span><span>12.0 mi total</span></div>
+          <div class="travel-bar-track"><div class="travel-bar-fill" style="width:35%;"></div></div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;">Est. 2–3 more runs</div>
+        </div>`,
+      ctaLabel: null,
+      note: 'You\'re committed to this journey. Keep running.'
+    }
+  };
+
+  function openSheet(id) {
+    const d = locationData[id];
+    if (!d) return;
+    const content = document.getElementById('sheet-content');
+    content.innerHTML = `
+      <div class="loc-eyebrow" style="color:${d.eyebrowColor}">${d.eyebrow}</div>
+      <div class="loc-name">${d.name}</div>
+      <div class="loc-sub">${d.sub}</div>
+      <div class="loc-status-row">
+        <div class="status-pip" style="background:${d.statusColor};"></div>
+        <div style="font-size:11px;color:${d.statusColor};">${d.statusLabel}</div>
+      </div>
+      ${d.content || ''}
+      ${d.ctaLabel ? `<div class="loc-cta ${d.ctaClass}">${d.ctaLabel}</div>` : ''}
+      ${d.note ? `<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:10px;font-family:var(--mono);">${d.note}</div>` : ''}
+      <div class="loc-dismiss" onclick="closeSheet()">Dismiss</div>
+    `;
+    document.getElementById('loc-sheet').classList.add('open');
+  }
+
+  function closeSheet() {
+    document.getElementById('loc-sheet').classList.remove('open');
+  }
+
+  function showMain(i, btn) {
+    document.querySelectorAll('.screen').forEach((s,j) => s.classList.toggle('active', j===i));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.note-card').forEach((n,j) => {
+      n.classList.toggle('visible', j===i || (i===1 && j===1));
+    });
+    // Update note visibility for world map sub-states
+    if (i === 1) {
+      document.querySelectorAll('.note-card').forEach((n,j) => n.classList.toggle('visible', j===1));
+    }
+    closeSheet();
+  }
+
+  // Update notes for the sub-screens (③ and ④)
+  document.querySelectorAll('.nav-btn')[2].addEventListener('click', () => {
+    document.querySelectorAll('.note-card').forEach((n,j) => n.classList.toggle('visible', j===2));
+  });
+  document.querySelectorAll('.nav-btn')[3].addEventListener('click', () => {
+    document.querySelectorAll('.note-card').forEach((n,j) => n.classList.toggle('visible', j===3));
+  });
+</script>
+</body>
+</html>

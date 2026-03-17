@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Runstrike — World Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --pink:   #ff2d6b;
+  --cyan:   #00e5ff;
+  --orange: #ff8c00;
+  --green:  #00ff88;
+  --purple: #b060ff;
+  --yellow: #ffe066;
+  --bg:     #06060e;
+  --card:   #0c0c1a;
+  --text:   #e0e0f0;
+  --muted:  #444460;
+  --mono:   'Share Tech Mono', 'Courier New', monospace;
+  --pixel:  'Press Start 2P', monospace;
+}
+body {
+  background: #04040c;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; padding: 40px 20px 60px;
+  font-family: var(--mono); gap: 22px;
+}
+.header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.header-title { color: var(--cyan); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; }
+.header-sub { color: var(--muted); font-size: 11px; }
+
+.screen-nav {
+  display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;
+  background: rgba(255,255,255,0.03); padding: 4px;
+  border-radius: 20px; border: 1px solid #181828;
+}
+.nav-btn {
+  background: transparent; border: none; color: var(--muted);
+  padding: 7px 14px; border-radius: 16px; cursor: pointer;
+  font-size: 11px; font-family: var(--mono); letter-spacing: 0.05em; transition: all 0.15s;
+}
+.nav-btn:hover { color: #aaa; }
+.nav-btn.active { background: var(--pink); color: #000; font-weight: 700; }
+
+/* Phone */
+.phone {
+  width: 390px; height: 844px; background: var(--bg);
+  border-radius: 50px; overflow: hidden; position: relative;
+  box-shadow: 0 0 0 2px #181828, 0 0 0 4px #0c0c1a, 0 40px 100px rgba(0,0,0,0.9);
+  flex-shrink: 0;
+}
+.notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 130px; height: 34px; background: var(--bg);
+  border-radius: 0 0 22px 22px; z-index: 200;
+}
+.screen {
+  position: absolute; inset: 0; display: none;
+  flex-direction: column; background: var(--bg); z-index: 1;
+}
+.screen.active { display: flex; }
+
+.status-bar {
+  height: 44px; padding: 12px 22px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; z-index: 20; position: relative;
+}
+.status-time { color: #fff; font-size: 15px; font-weight: 600; }
+.status-right { display: flex; gap: 5px; align-items: center; font-size: 12px; color: #fff; }
+
+/* Map toggle */
+.map-toggle {
+  display: flex; background: #0c0c1a;
+  border-bottom: 1px solid #181828;
+  flex-shrink: 0; padding: 8px 16px; gap: 8px;
+}
+.toggle-btn {
+  flex: 1; padding: 9px 8px; text-align: center;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+  border-radius: 4px; transition: all 0.15s; color: var(--muted);
+  background: transparent; border: 1px solid #1a1a2a;
+}
+.toggle-btn.active { background: var(--cyan); color: #000; border-color: var(--cyan); }
+
+/* Scrollable world map */
+.world-scroll {
+  flex: 1; overflow: auto; position: relative; cursor: grab;
+  background: var(--bg);
+}
+.world-scroll:active { cursor: grabbing; }
+.world-scroll::-webkit-scrollbar { display: none; }
+
+/* Location sheet */
+.loc-sheet {
+  position: absolute; bottom: 80px; left: 0; right: 0;
+  background: #0c0c1a; border-radius: 16px 16px 0 0;
+  border-top: 2px solid #1e1e2e;
+  padding: 10px 18px 16px;
+  z-index: 150; transform: translateY(100%);
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+  max-height: 70%;
+}
+.loc-sheet.open { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px; background: #2a2a3a;
+  border-radius: 2px; margin: 0 auto 12px; cursor: pointer;
+}
+.loc-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 5px; }
+.loc-name { font-family: var(--pixel); font-size: 12px; color: var(--text); margin-bottom: 3px; line-height: 1.5; }
+.loc-sub { font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+.line-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px; border-radius: 2px; font-size: 9px;
+  font-weight: 700; letter-spacing: 0.08em; margin-right: 5px; margin-bottom: 10px;
+}
+.travel-bar-wrap { margin: 10px 0; }
+.travel-bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 5px; }
+.travel-bar-track { height: 5px; background: #1a1a2a; border-radius: 2px; overflow: hidden; }
+.travel-bar-fill { height: 100%; border-radius: 2px; }
+.travel-est { font-size: 10px; color: var(--muted); margin-top: 5px; }
+.loc-body { font-size: 12px; color: #9090b0; line-height: 1.6; margin-bottom: 12px; }
+.loc-cta {
+  width: 100%; padding: 12px; text-align: center;
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border-radius: 3px; cursor: pointer; margin-top: 4px;
+}
+.cta-cyan   { background: var(--cyan); color: #000; }
+.cta-orange { background: var(--orange); color: #000; }
+.cta-ghost  { background: transparent; color: var(--muted); border: 1px solid #2a2a3a; }
+.cta-disabled { background: #1a1a2a; color: var(--muted); cursor: default; }
+.loc-dismiss { text-align: center; font-size: 10px; color: var(--muted); cursor: pointer; padding: 8px 0; letter-spacing: 0.08em; }
+
+/* Bottom nav */
+.bottom-nav {
+  height: 80px; background: rgba(6,6,14,0.97);
+  border-top: 1px solid #181828;
+  display: flex; align-items: flex-start;
+  padding-top: 10px; flex-shrink: 0; z-index: 20;
+}
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 2px 0; }
+.nav-icon { font-size: 20px; color: var(--muted); }
+.nav-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.nav-item.active .nav-icon { color: var(--pink); }
+.nav-item.active .nav-label { color: var(--pink); }
+
+/* Animations */
+@keyframes pulse-here {
+  0%,100% { r: 26; opacity: 0.25; }
+  50%      { r: 38; opacity: 0; }
+}
+@keyframes fog-breathe { 0%,100% { opacity:1; } 50% { opacity:0.88; } }
+.fog-breathe { animation: fog-breathe 5s ease-in-out infinite; }
+
+/* Design notes */
+.note-card { background: #0c0c1a; border: 1px solid #1e1e2e; border-radius: 8px; padding: 14px 16px; display: none; }
+.note-card.visible { display: block; }
+.note-title { color: var(--cyan); font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+.note-body { color: #888; font-size: 11px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Runstrike · World Map</div>
+  <div class="header-sub">Post-apocalyptic dome network · subway diagram</div>
+</div>
+
+<div class="screen-nav">
+  <button class="nav-btn active" onclick="activateNav(0,this)">① Overview</button>
+  <button class="nav-btn"        onclick="activateNav(0,this);openSheet('meridian')">② Home dome</button>
+  <button class="nav-btn"        onclick="activateNav(0,this);openSheet('hollows')">③ Traveling to</button>
+  <button class="nav-btn"        onclick="activateNav(0,this);openSheet('caldwell')">④ Start travel</button>
+  <button class="nav-btn"        onclick="activateNav(0,this);openSheet('ruins')">⑤ Offline dome</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ============================================================
+       MAIN SCREEN — WORLD MAP
+       ============================================================ -->
+  <div class="screen active" id="screen-0">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-right"><span>▲▲▲</span><span>⬛</span></div>
+    </div>
+
+    <div class="map-toggle">
+      <div class="toggle-btn">📡 Radar</div>
+      <div class="toggle-btn active">🌐 World Map</div>
+    </div>
+
+    <div class="world-scroll" id="world-scroll">
+      <svg id="world-svg" width="800" height="900" viewBox="0 0 800 900"
+           xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0;">
+        <defs>
+          <!-- Subtle scan-line texture -->
+          <pattern id="scanlines" width="1" height="3" patternUnits="userSpaceOnUse">
+            <rect width="1" height="3" fill="transparent"/>
+            <rect y="2" width="1" height="1" fill="rgba(255,255,255,0.015)"/>
+          </pattern>
+          <!-- Fog gradients -->
+          <radialGradient id="fog-n" cx="50%" cy="0%" r="60%">
+            <stop offset="0%" stop-color="#06060e" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#06060e" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="fog-e" cx="100%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#06060e" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#06060e" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="fog-s" cx="50%" cy="100%" r="60%">
+            <stop offset="0%" stop-color="#06060e" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#06060e" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="fog-w" cx="0%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#06060e" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#06060e" stop-opacity="0"/>
+          </radialGradient>
+          <!-- Line A glow filter -->
+          <filter id="glow-cyan" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-orange" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-pink" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Background -->
+        <rect width="800" height="900" fill="#06060e"/>
+        <!-- Scanlines texture -->
+        <rect width="800" height="900" fill="url(#scanlines)" opacity="1"/>
+        <!-- Subtle grid (like graph paper, very faint) -->
+        <path d="M 0 0 L 800 0 M 0 100 L 800 100 M 0 200 L 800 200 M 0 300 L 800 300 M 0 400 L 800 400 M 0 500 L 800 500 M 0 600 L 800 600 M 0 700 L 800 700 M 0 800 L 800 800 M 0 900 L 800 900"
+              stroke="rgba(255,255,255,0.018)" stroke-width="1"/>
+        <path d="M 0 0 L 0 900 M 100 0 L 100 900 M 200 0 L 200 900 M 300 0 L 300 900 M 400 0 L 400 900 M 500 0 L 500 900 M 600 0 L 600 900 M 700 0 L 700 900 M 800 0 L 800 900"
+              stroke="rgba(255,255,255,0.018)" stroke-width="1"/>
+
+        <!-- ═══════════════════════════════════════════════════════
+             PIXEL ART TERRAIN LAYER
+             Post-apocalyptic wasteland viewed from above.
+             Rendered beneath the subway diagram.
+             ═══════════════════════════════════════════════════════ -->
+        <g id="pixel-terrain">
+
+          <!-- ══════════════════════════════════════════════════
+               TERRAIN BASE ZONES
+               Background is #06060e. Zone fills are 3-4x brighter
+               so regions are clearly distinguishable.
+               ══════════════════════════════════════════════════ -->
+
+          <!-- Central Wastes — purple-grey ash, main expanse -->
+          <polygon points="0,280 800,200 800,740 0,740" fill="#1a1828"/>
+          <!-- Industrial Southeast — warm rust-brown near The Hollows -->
+          <polygon points="360,470 800,430 800,740 360,740" fill="#211608"/>
+          <!-- Ruins West — cold stone grey near Eastern Ruins -->
+          <polygon points="0,340 300,330 300,640 0,640" fill="#1c1a2c"/>
+          <!-- Northern reaches — deep blue-black near New Caldwell -->
+          <rect x="330" y="40" width="260" height="320" fill="#10142a"/>
+          <!-- Known void NE — just darker -->
+          <polygon points="540,180 800,160 800,460 540,460" fill="#0e1020"/>
+
+          <!-- ══════════════════════════════════════════════════
+               TUNNEL SUBSTRATE CORRIDORS
+               The tunnels show as lighter bands on the surface —
+               the ground above them is disturbed / reinforced.
+               ══════════════════════════════════════════════════ -->
+
+          <!-- Line A: west → Eastern Ruins → The Meridian (horizontal) -->
+          <rect x="0" y="472" width="296" height="36" fill="#2c2840" opacity="0.7"/>
+          <!-- Line A: The Meridian → Station Cross (diagonal NE) -->
+          <polygon points="282,475 305,475 476,310 455,306" fill="#2c2840" opacity="0.65"/>
+          <!-- Line B: north → south through Station Cross -->
+          <rect x="442" y="40" width="36" height="640" fill="#28263e" opacity="0.6"/>
+          <!-- Line C: The Meridian → The Hollows (diagonal SE) -->
+          <polygon points="270,482 310,482 558,582 518,604" fill="#2a2030" opacity="0.65"/>
+
+          <!-- ══════════════════════════════════════════════════
+               DOME STRUCTURE FOOTPRINTS
+               Each dome is a large physical structure — visible
+               from above as concentric walls with tunnel maws.
+               ══════════════════════════════════════════════════ -->
+
+          <!-- ─── THE MERIDIAN ─── cyan-tinted home dome -->
+          <!-- Dead zone / cleared perimeter around dome -->
+          <circle cx="290" cy="490" r="56" fill="#141228" stroke="#2a263e" stroke-width="1.5"/>
+          <!-- Outer dome wall hexagon -->
+          <polygon points="242,464 338,464 356,490 338,516 242,516 224,490"
+                   fill="#181630" stroke="rgba(0,229,255,0.55)" stroke-width="1.5"/>
+          <!-- Inner dome shell -->
+          <rect x="260" y="474" width="60" height="32" rx="2"
+                fill="rgba(0,229,255,0.09)" stroke="rgba(0,229,255,0.35)" stroke-width="1"/>
+          <!-- Tunnel maws — dark rectangular mouths where lines enter -->
+          <rect x="210" y="483" width="18" height="14" fill="#060810" rx="1"/>
+          <rect x="357" y="483" width="18" height="14" fill="#060810" rx="1"/>
+          <rect x="316" y="515" width="14" height="18" fill="#060810" rx="1"/>
+          <!-- Surrounding city ruins (dome rose from a dead city) -->
+          <rect x="238" y="424" width="24" height="16" fill="#26203e"/>
+          <rect x="242" y="432" width="8" height="8"  fill="#2e2848"/>
+          <rect x="316" y="420" width="32" height="20" fill="#24203c"/>
+          <rect x="324" y="428" width="8" height="8"  fill="#2c2646"/>
+          <rect x="192" y="446" width="18" height="18" fill="#221e38"/>
+          <rect x="356" y="452" width="22" height="12" fill="#221e38"/>
+          <rect x="232" y="534" width="16" height="10" fill="#221e38"/>
+          <rect x="316" y="530" width="24" height="10" fill="#221e38"/>
+
+          <!-- ─── EASTERN RUINS ─── cold grey, shattered dome -->
+          <circle cx="140" cy="490" r="50" fill="#18162a" stroke="#2e2c40" stroke-width="1.5"/>
+          <!-- Cracked dome shell — irregular polygon -->
+          <polygon points="98,466 182,466 200,490 182,514 98,514 80,490"
+                   fill="#1e1a2e" stroke="rgba(90,80,130,0.5)" stroke-width="1.5"/>
+          <!-- Rubble interior (it's collapsed) -->
+          <rect x="108" y="474" width="16" height="10" fill="#2a2440"/>
+          <rect x="152" y="478" width="10" height="14" fill="#282040"/>
+          <rect x="124" y="490" width="28" height="10" fill="#261e3c"/>
+          <rect x="106" y="494" width="10" height="10" fill="#2c2442"/>
+          <!-- Craters — darker sunken circles -->
+          <circle cx="112" cy="510" r="9"  fill="#050508" stroke="#201e32" stroke-width="1.5"/>
+          <circle cx="160" cy="474" r="6"  fill="#050508" stroke="#1e1c30" stroke-width="1.5"/>
+          <circle cx="84"  cy="506" r="5"  fill="#06060a" stroke="#1c1a2c" stroke-width="1"/>
+          <!-- Collapse debris scattered outward -->
+          <rect x="58"  y="460" width="10" height="10" fill="#2a2440"/>
+          <rect x="70"  y="470" width="18" height="10" fill="#261e3e"/>
+          <rect x="76"  y="452" width="10" height="18" fill="#2a2440"/>
+          <rect x="192" y="446" width="18" height="10" fill="#2a2440"/>
+          <rect x="202" y="454" width="10" height="10" fill="#261e3e"/>
+
+          <!-- ─── STATION CROSS ─── grey-violet, transit hub -->
+          <circle cx="460" cy="320" r="52" fill="#161428" stroke="#2c2a42" stroke-width="1.5"/>
+          <!-- Cruciform platform (it literally is a cross shape) -->
+          <rect x="426" y="304" width="68" height="32"
+                fill="rgba(110,100,180,0.12)" stroke="rgba(130,120,200,0.45)" stroke-width="1.5"/>
+          <rect x="444" y="286" width="32" height="68"
+                fill="rgba(110,100,180,0.10)" stroke="rgba(130,120,200,0.35)" stroke-width="1.5"/>
+          <!-- Central hub -->
+          <rect x="452" y="312" width="16" height="16" rx="1"
+                fill="rgba(140,130,210,0.18)" stroke="rgba(150,140,220,0.55)" stroke-width="1"/>
+          <!-- Platform edge blocks -->
+          <rect x="412" y="312" width="14" height="16" fill="#100e22"/>
+          <rect x="494" y="312" width="14" height="16" fill="#100e22"/>
+          <rect x="452" y="272" width="16" height="14" fill="#100e22"/>
+          <rect x="452" y="354" width="16" height="14" fill="#100e22"/>
+          <!-- Nearby structures -->
+          <rect x="398" y="286" width="18" height="10" fill="#20183a"/>
+          <rect x="402" y="296" width="10" height="18" fill="#1e163a"/>
+          <rect x="494" y="286" width="18" height="10" fill="#20183a"/>
+          <rect x="494" y="330" width="10" height="18" fill="#1e163a"/>
+
+          <!-- ─── NEW CALDWELL ─── pink-tinted northern dome -->
+          <circle cx="460" cy="160" r="48" fill="#141228" stroke="#2a2244" stroke-width="1.5"/>
+          <polygon points="416,136 504,136 520,160 504,184 416,184 400,160"
+                   fill="rgba(255,45,107,0.1)" stroke="rgba(255,60,120,0.5)" stroke-width="1.5"/>
+          <rect x="434" y="148" width="52" height="24" rx="2"
+                fill="rgba(255,45,107,0.07)" stroke="rgba(255,60,120,0.3)" stroke-width="1"/>
+          <!-- Tunnel mouth south (Line B) -->
+          <rect x="450" y="183" width="20" height="14" fill="#060408" rx="1"/>
+          <!-- Northern outpost buildings -->
+          <rect x="422" y="116" width="28" height="10" fill="#1e1636"/>
+          <rect x="458" y="108" width="10" height="10" fill="#1c1438"/>
+          <rect x="492" y="112" width="20" height="10" fill="#1e1636"/>
+
+          <!-- ─── THE HOLLOWS ─── orange-rust industrial zone -->
+          <!-- Industrial clearing (rectangular, not organic) -->
+          <rect x="480" y="544" width="120" height="90" rx="2"
+                fill="#201206" stroke="#3a2008" stroke-width="1.5"/>
+          <!-- Industrial dome grid (factory layout, very boxy) -->
+          <rect x="498" y="556" width="84" height="70" rx="1"
+                fill="rgba(255,140,0,0.09)" stroke="rgba(255,140,0,0.4)" stroke-width="1.5"/>
+          <!-- Factory block subdivisions -->
+          <rect x="506" y="564" width="22" height="22" fill="rgba(255,140,0,0.07)" stroke="rgba(255,140,0,0.25)" stroke-width="1"/>
+          <rect x="530" y="564" width="22" height="22" fill="rgba(255,140,0,0.07)" stroke="rgba(255,140,0,0.20)" stroke-width="1"/>
+          <rect x="554" y="564" width="22" height="22" fill="rgba(255,140,0,0.07)" stroke="rgba(255,140,0,0.25)" stroke-width="1"/>
+          <rect x="506" y="588" width="22" height="22" fill="rgba(255,140,0,0.05)" stroke="rgba(255,140,0,0.18)" stroke-width="1"/>
+          <rect x="530" y="588" width="22" height="22" fill="rgba(255,140,0,0.09)" stroke="rgba(255,140,0,0.28)" stroke-width="1"/>
+          <rect x="554" y="588" width="22" height="22" fill="rgba(255,140,0,0.05)" stroke="rgba(255,140,0,0.18)" stroke-width="1"/>
+          <!-- Tunnel mouth NW (Line C) -->
+          <rect x="516" y="544" width="24" height="14" fill="#060402" rx="1"/>
+          <!-- Loading docks / industrial appendages -->
+          <rect x="582" y="560" width="26" height="18" fill="#2a1606"/>
+          <rect x="586" y="578" width="18" height="10" fill="#261408"/>
+          <!-- Industrial scatter outside dome -->
+          <rect x="472" y="538" width="18" height="10" fill="#2a1808"/>
+          <rect x="476" y="548" width="10" height="18" fill="#261408"/>
+          <rect x="594" y="538" width="18" height="10" fill="#2a1808"/>
+          <rect x="608" y="546" width="18" height="18" fill="#281806"/>
+          <rect x="614" y="564" width="10" height="10" fill="#2a1a08"/>
+
+          <!-- ══════════════════════════════════════════════════
+               SCATTERED WASTELAND DETAIL
+               Ruins, rubble, and abandoned structures across
+               the open zones between domes.
+               ══════════════════════════════════════════════════ -->
+
+          <!-- Mid-corridor Line A (ruins between the two western domes) -->
+          <rect x="192" y="474" width="18" height="10" fill="#282040"/>
+          <rect x="202" y="482" width="10" height="10" fill="#261e3e"/>
+          <rect x="218" y="470" width="10" height="10" fill="#28203e"/>
+          <rect x="228" y="458" width="18" height="10" fill="#26203c"/>
+
+          <!-- Along Line B (scattered structures between New Caldwell and Station Cross) -->
+          <rect x="446" y="206" width="18" height="18" fill="#1e1c36"/>
+          <rect x="448" y="222" width="10" height="10" fill="#1c1a34"/>
+          <rect x="462" y="210" width="10" height="14" fill="#1e1c36"/>
+          <rect x="446" y="368" width="26" height="10" fill="#1e1a34"/>
+          <rect x="450" y="378" width="18" height="10" fill="#1c1832"/>
+          <rect x="450" y="428" width="10" height="10" fill="#1c1a36"/>
+
+          <!-- Along Line C (tunnel debris, wasteland between domes) -->
+          <rect x="326" y="502" width="18" height="10" fill="#281e10"/>
+          <rect x="336" y="510" width="10" height="10" fill="#261c10"/>
+          <rect x="356" y="510" width="10" height="10" fill="#281e10"/>
+          <rect x="418" y="538" width="18" height="10" fill="#2a200e"/>
+          <rect x="428" y="546" width="10" height="10" fill="#281e0e"/>
+          <rect x="458" y="554" width="18" height="10" fill="#2a200e"/>
+
+          <!-- Random wasteland scatter (open central areas) -->
+          <rect x="160" y="358" width="10" height="10" fill="#221e36"/>
+          <rect x="198" y="350" width="18" height="10" fill="#201c34"/>
+          <rect x="354" y="366" width="10" height="10" fill="#201e34"/>
+          <rect x="370" y="374" width="18" height="10" fill="#1e1c32"/>
+          <rect x="562" y="358" width="10" height="10" fill="#281e10"/>
+          <rect x="578" y="366" width="18" height="10" fill="#261c0e"/>
+          <rect x="604" y="398" width="10" height="18" fill="#2a1e0e"/>
+          <rect x="618" y="390" width="10" height="10" fill="#281c0e"/>
+          <rect x="650" y="406" width="18" height="10" fill="#261a0c"/>
+          <!-- NW deep wastes -->
+          <rect x="32"  y="406" width="10" height="10" fill="#20203a"/>
+          <rect x="48"  y="414" width="18" height="10" fill="#1e1e38"/>
+          <rect x="34"  y="430" width="10" height="18" fill="#201e3a"/>
+          <rect x="58"  y="398" width="10" height="10" fill="#20203c"/>
+        </g>
+        <!-- ── END PIXEL ART TERRAIN LAYER ── -->
+
+        <!-- ─────────────────────────────────────────────────
+             SUBWAY LINES
+             ───────────────────────────────────────────────── -->
+
+        <!-- LINE A ─ "THE MERIDIAN LINE" ─ CYAN
+             Route: [fog W] → EASTERN RUINS → THE MERIDIAN → STATION CROSS → [fog NE]
+             Path: horizontal then 45° NE -->
+
+        <!-- Glow underlayer -->
+        <path d="M 30 490 L 140 490 L 290 490 L 460 320" filter="url(#glow-cyan)"
+              stroke="rgba(0,229,255,0.25)" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Line itself -->
+        <path d="M 30 490 L 140 490 L 290 490 L 460 320"
+              stroke="#00e5ff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Line fades at west edge into fog -->
+        <path d="M 30 490 L 80 490" stroke="url(#fade-w)" stroke-width="4" fill="none"/>
+
+        <!-- LINE A label badge (left side) -->
+        <rect x="34" y="472" width="22" height="14" rx="2" fill="#00e5ff"/>
+        <text x="45" y="482" text-anchor="middle" font-family="var(--pixel)" font-size="6" fill="#000" font-weight="700">A</text>
+
+        <!-- Continuation NE past STATION CROSS into fog -->
+        <path d="M 460 320 L 530 250"
+              stroke="#00e5ff" stroke-width="4" fill="none" opacity="0.3" stroke-dasharray="6,5"/>
+
+
+        <!-- LINE B ─ "THE SPINE" ─ PINK (vertical, N-S through STATION CROSS)
+             Route: [fog N] → NEW CALDWELL → STATION CROSS → ??? (fog S) -->
+
+        <!-- Glow -->
+        <path d="M 460 80 L 460 320 L 460 640" filter="url(#glow-pink)"
+              stroke="rgba(255,45,107,0.2)" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <!-- Line -->
+        <path d="M 460 80 L 460 320 L 460 640"
+              stroke="#ff2d6b" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- Fade to fog north and south -->
+        <path d="M 460 80 L 460 60"   stroke="#ff2d6b" stroke-width="4" opacity="0.2"/>
+        <path d="M 460 640 L 460 680" stroke="#ff2d6b" stroke-width="4" opacity="0.2"/>
+
+        <!-- LINE B label badge -->
+        <rect x="449" y="408" width="22" height="14" rx="2" fill="#ff2d6b"/>
+        <text x="460" y="418" text-anchor="middle" font-family="var(--pixel)" font-size="6" fill="#000" font-weight="700">B</text>
+
+
+        <!-- LINE C ─ "INDUSTRIAL SPUR" ─ ORANGE (diagonal SE from THE MERIDIAN)
+             Route: THE MERIDIAN → THE HOLLOWS → [fog SE, broken] -->
+
+        <!-- Glow -->
+        <path d="M 290 490 L 540 590" filter="url(#glow-orange)"
+              stroke="rgba(255,140,0,0.25)" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <!-- Line solid segment (already partially traveled) -->
+        <path d="M 290 490 L 380 532"
+              stroke="#ff8c00" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- Remaining (not yet traveled) -->
+        <path d="M 380 532 L 540 590"
+              stroke="#ff8c00" stroke-width="4" fill="none" stroke-dasharray="6,5" opacity="0.6" stroke-linecap="round"/>
+        <!-- Beyond Hollows — broken/unknown -->
+        <path d="M 540 590 L 600 622" stroke="#ff8c00" stroke-width="3" fill="none" opacity="0.18" stroke-dasharray="4,7"/>
+
+        <!-- LINE C label badge -->
+        <rect x="392" y="524" width="22" height="14" rx="2" fill="#ff8c00"/>
+        <text x="403" y="534" text-anchor="middle" font-family="var(--pixel)" font-size="6" fill="#000" font-weight="700">C</text>
+
+
+        <!-- BROKEN LINE segment: STATION CROSS → ??? (east spur, damaged)
+             Shows there was once a connection east -->
+        <path d="M 460 320 L 580 320"
+              stroke="#444466" stroke-width="3" fill="none" stroke-dasharray="5,8" opacity="0.5"/>
+        <!-- Break symbol (X) at the break point -->
+        <line x1="574" y1="314" x2="586" y2="326" stroke="#444466" stroke-width="2" opacity="0.6"/>
+        <line x1="586" y1="314" x2="574" y2="326" stroke="#444466" stroke-width="2" opacity="0.6"/>
+        <text x="600" y="325" font-family="var(--pixel)" font-size="6" fill="rgba(100,100,140,0.5)">COLLAPSE</text>
+
+
+        <!-- ─────────────────────────────────────────────────
+             DOME NODES
+             ───────────────────────────────────────────────── -->
+
+        <!-- ── EASTERN RUINS ── offline dome, on Line A -->
+        <g id="dome-ruins" onclick="openSheet('ruins')" style="cursor:pointer;">
+          <!-- Outer ring (degraded) -->
+          <circle cx="140" cy="490" r="28" fill="none" stroke="#333344" stroke-width="2" stroke-dasharray="4,3" opacity="0.6"/>
+          <!-- Dome fill -->
+          <circle cx="140" cy="490" r="20" fill="#0e0e1a" stroke="#333344" stroke-width="2"/>
+          <!-- X marks the offline dome -->
+          <line x1="128" y1="478" x2="152" y2="502" stroke="#444466" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="152" y1="478" x2="128" y2="502" stroke="#444466" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Name -->
+          <text x="140" y="524" text-anchor="middle" font-family="var(--pixel)" font-size="6" fill="rgba(80,80,120,0.7)" letter-spacing="0.5">EASTERN</text>
+          <text x="140" y="534" text-anchor="middle" font-family="var(--pixel)" font-size="6" fill="rgba(80,80,120,0.7)" letter-spacing="0.5">RUINS</text>
+          <!-- OFFLINE badge -->
+          <rect x="112" y="456" width="56" height="12" rx="2" fill="rgba(60,60,80,0.6)" stroke="#333344" stroke-width="1"/>
+          <text x="140" y="465" text-anchor="middle" font-family="var(--pixel)" font-size="5" fill="rgba(120,120,160,0.7)" letter-spacing="1">OFFLINE</text>
+        </g>
+
+
+        <!-- ── THE MERIDIAN ── player's current dome, on Lines A + C -->
+        <g id="dome-meridian" onclick="openSheet('meridian')" style="cursor:pointer;">
+          <!-- Pulse rings -->
+          <circle cx="290" cy="490" r="28" fill="rgba(0,229,255,0.08)">
+            <animate attributeName="r" values="28;44;28" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.2;0;0.2" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="290" cy="490" r="28" fill="rgba(0,229,255,0.06)" stroke="rgba(0,229,255,0.15)" stroke-width="1.5"/>
+          <!-- Dome fill -->
+          <circle cx="290" cy="490" r="20" fill="#0a1a1e" stroke="#00e5ff" stroke-width="2.5"/>
+          <!-- Inner highlight -->
+          <circle cx="290" cy="490" r="10" fill="rgba(0,229,255,0.12)"/>
+          <circle cx="290" cy="490" r="4"  fill="rgba(0,229,255,0.5)"/>
+          <!-- Line dots (multi-line station) -->
+          <circle cx="276" cy="490" r="4" fill="#00e5ff"/>
+          <circle cx="290" cy="490" r="4" fill="#00e5ff"/>
+          <circle cx="304" cy="490" r="4" fill="#ff8c00"/>
+          <!-- HOME BASE marker (origin dome during travel) -->
+          <rect x="258" y="462" width="64" height="12" rx="2"
+                fill="rgba(0,229,255,0.09)" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+          <text x="290" y="471" text-anchor="middle" font-family="var(--pixel)" font-size="5"
+                fill="rgba(0,229,255,0.7)" letter-spacing="0.5">HOME BASE</text>
+          <!-- Name -->
+          <text x="290" y="522" text-anchor="middle" font-family="var(--pixel)" font-size="7" fill="#00e5ff" letter-spacing="0.5">THE</text>
+          <text x="290" y="532" text-anchor="middle" font-family="var(--pixel)" font-size="7" fill="#00e5ff" letter-spacing="0.5">MERIDIAN</text>
+        </g>
+
+
+        <!-- ── STATION CROSS ── transfer station, Lines A + B -->
+        <g id="dome-cross" onclick="openSheet('cross')" style="cursor:pointer;">
+          <!-- Transfer station has a diamond/square outer ring -->
+          <rect x="438" y="298" width="44" height="44" rx="4" fill="none" stroke="#555577" stroke-width="1.5" stroke-dasharray="3,2" transform="rotate(45 460 320)"/>
+          <circle cx="460" cy="320" r="22" fill="#101020" stroke="#8888aa" stroke-width="2"/>
+          <circle cx="460" cy="320" r="11" fill="rgba(120,120,180,0.1)"/>
+          <!-- Line indicator dots -->
+          <circle cx="450" cy="320" r="4" fill="#00e5ff"/>
+          <circle cx="460" cy="320" r="4" fill="#ff2d6b"/>
+          <text x="460" y="353" text-anchor="middle" font-family="var(--pixel)" font-size="6" fill="#8888aa" letter-spacing="0.5">STATION</text>
+          <text x="460" y="363" text-anchor="middle" font-family="var(--pixel)" font-size="6" fill="#8888aa" letter-spacing="0.5">CROSS</text>
+          <!-- Transfer badge -->
+          <rect x="432" y="294" width="56" height="12" rx="2" fill="rgba(40,40,60,0.8)" stroke="#555577" stroke-width="1"/>
+          <text x="460" y="303" text-anchor="middle" font-family="var(--pixel)" font-size="5" fill="rgba(160,160,200,0.7)" letter-spacing="0.5">TRANSFER</text>
+        </g>
+
+
+        <!-- ── NEW CALDWELL ── far north, Line B, travel available -->
+        <g id="dome-caldwell" onclick="openSheet('caldwell')" style="cursor:pointer;">
+          <circle cx="460" cy="160" r="26" fill="rgba(255,45,107,0.05)" stroke="rgba(255,45,107,0.2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <circle cx="460" cy="160" r="18" fill="#140a10" stroke="#ff2d6b" stroke-width="2"/>
+          <circle cx="460" cy="160" r="8"  fill="rgba(255,45,107,0.1)"/>
+          <circle cx="460" cy="160" r="3"  fill="rgba(255,45,107,0.4)"/>
+          <!-- Quest indicator -->
+          <circle cx="476" cy="145" r="7"  fill="#ff2d6b"/>
+          <text x="476" y="148" text-anchor="middle" font-size="8" fill="white" font-weight="bold">!</text>
+          <!-- Distance label -->
+          <rect x="432" y="132" width="56" height="12" rx="2" fill="rgba(30,10,20,0.9)" stroke="rgba(255,45,107,0.3)" stroke-width="1"/>
+          <text x="460" y="141" text-anchor="middle" font-family="var(--pixel)" font-size="5" fill="rgba(255,45,107,0.8)">18.0 MI</text>
+          <text x="460" y="190" text-anchor="middle" font-family="var(--pixel)" font-size="7" fill="rgba(255,45,107,0.8)" letter-spacing="0.5">NEW</text>
+          <text x="460" y="200" text-anchor="middle" font-family="var(--pixel)" font-size="7" fill="rgba(255,45,107,0.8)" letter-spacing="0.5">CALDWELL</text>
+        </g>
+
+
+        <!-- ── THE HOLLOWS ── traveling to, Line C (orange) -->
+        <g id="dome-hollows" onclick="openSheet('hollows')" style="cursor:pointer;">
+          <!-- Travel progress arc (35% = ~126° of 360°) -->
+          <circle cx="540" cy="590" r="28" fill="none" stroke="rgba(255,140,0,0.12)" stroke-width="4"/>
+          <!-- Progress arc -->
+          <circle cx="540" cy="590" r="28" fill="none" stroke="#ff8c00" stroke-width="4"
+                  stroke-dasharray="61 174" stroke-dashoffset="-2"
+                  stroke-linecap="round" transform="rotate(-90 540 590)"/>
+          <circle cx="540" cy="590" r="20" fill="#1a0e06" stroke="#ff8c00" stroke-width="2"/>
+          <circle cx="540" cy="590" r="9"  fill="rgba(255,140,0,0.1)"/>
+          <circle cx="540" cy="590" r="3"  fill="rgba(255,140,0,0.5)"/>
+          <!-- TRAVELING badge -->
+          <rect x="512" y="562" width="56" height="12" rx="2" fill="rgba(40,20,6,0.9)" stroke="rgba(255,140,0,0.5)" stroke-width="1"/>
+          <text x="540" y="571" text-anchor="middle" font-family="var(--pixel)" font-size="4.5" fill="#ff8c00" letter-spacing="0.3">TRAVELING</text>
+          <!-- Progress text -->
+          <rect x="516" y="576" width="48" height="12" rx="2" fill="rgba(30,14,4,0.9)"/>
+          <text x="540" y="585" text-anchor="middle" font-family="var(--pixel)" font-size="5" fill="rgba(255,140,0,0.7)">4.2/12 MI</text>
+          <text x="540" y="622" text-anchor="middle" font-family="var(--pixel)" font-size="7" fill="rgba(255,140,0,0.85)" letter-spacing="0.5">THE</text>
+          <text x="540" y="632" text-anchor="middle" font-family="var(--pixel)" font-size="7" fill="rgba(255,140,0,0.85)" letter-spacing="0.5">HOLLOWS</text>
+        </g>
+
+
+        <!-- ── UNKNOWN DOME SOUTH (hint — on Line B, south terminus) ── -->
+        <g opacity="0.35">
+          <circle cx="460" cy="660" r="18" fill="#0a0a14" stroke="#333350" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <circle cx="460" cy="660" r="8"  fill="rgba(80,80,120,0.15)"/>
+          <text x="460" y="687" text-anchor="middle" font-family="var(--pixel)" font-size="6" fill="rgba(80,80,120,0.5)" letter-spacing="1">? ? ?</text>
+        </g>
+
+        <!-- ── UNKNOWN DOME NE (beyond Station Cross, hint) ── -->
+        <g opacity="0.28">
+          <circle cx="556" cy="214" r="16" fill="#0a0a14" stroke="#333350" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <circle cx="556" cy="214" r="7"  fill="rgba(80,80,120,0.12)"/>
+          <text x="556" y="238" text-anchor="middle" font-family="var(--pixel)" font-size="5" fill="rgba(80,80,120,0.4)" letter-spacing="1">? ? ?</text>
+        </g>
+
+
+        <!-- ─────────────────────────────────────────────────
+             PLAYER POSITION MARKER — on Line C tunnel
+             35% of the way from The Meridian to The Hollows
+             Coords: 35% along path (290,490)→(540,590) ≈ (378,525)
+             ───────────────────────────────────────────────── -->
+        <g id="player-pos-marker">
+          <!-- Outer pulse ring (orange, breathing) -->
+          <circle cx="378" cy="525" r="8" fill="rgba(255,140,0,0.18)">
+            <animate attributeName="r" values="6;14;6" dur="2.4s" repeatCount="indefinite"/>
+            <animate attributeName="fill-opacity" values="0.25;0;0.25" dur="2.4s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Inner dot — glowing orange with white border -->
+          <circle cx="378" cy="525" r="5" fill="#ff8c00" stroke="#ffffff" stroke-width="1.5" filter="url(#glow-orange)"/>
+          <!-- YOU ARE HERE label — pill above the dot -->
+          <rect x="338" y="506" width="80" height="13" rx="2"
+                fill="rgba(36,18,0,0.95)" stroke="rgba(255,140,0,0.7)" stroke-width="1"/>
+          <text x="378" y="515.5" text-anchor="middle"
+                font-family="var(--pixel)" font-size="4.8"
+                fill="#ff8c00" letter-spacing="0.3">YOU ARE HERE</text>
+          <!-- Mileage tag — below the dot -->
+          <rect x="346" y="534" width="64" height="12" rx="2"
+                fill="rgba(26,12,2,0.9)" stroke="rgba(255,140,0,0.25)" stroke-width="1"/>
+          <text x="378" y="543" text-anchor="middle"
+                font-family="var(--pixel)" font-size="4"
+                fill="rgba(255,140,0,0.65)">7.8 MI TO HOLLOWS</text>
+        </g>
+
+        <!-- ─────────────────────────────────────────────────
+             FOG OF WAR EDGES
+             ───────────────────────────────────────────────── -->
+
+        <!-- Fog west -->
+        <rect x="0" y="0" width="100" height="900" fill="url(#fog-w)" class="fog-breathe"/>
+        <!-- Fog north -->
+        <rect x="0" y="0" width="800" height="100" fill="url(#fog-n)" class="fog-breathe"/>
+        <!-- Fog east -->
+        <rect x="700" y="0" width="100" height="900" fill="url(#fog-e)" class="fog-breathe"/>
+        <!-- Fog south -->
+        <rect x="0" y="800" width="800" height="100" fill="url(#fog-s)" class="fog-breathe"/>
+
+        <!-- Heavy fog patches (unknown regions, mid-map) -->
+        <!-- Northeast patch (past broken line) -->
+        <ellipse cx="650" cy="280" rx="120" ry="90" fill="rgba(6,6,14,0.72)" class="fog-breathe"/>
+        <ellipse cx="650" cy="280" rx="80"  ry="60" fill="rgba(6,6,14,0.5)"/>
+
+        <!-- Deep south (below unknown dome) -->
+        <rect x="0" y="720" width="800" height="180" fill="rgba(6,6,14,0.88)"/>
+
+        <!-- Deep northwest (past Eastern Ruins) -->
+        <ellipse cx="60" cy="420" rx="90" ry="80" fill="rgba(6,6,14,0.8)" class="fog-breathe"/>
+
+
+        <!-- ─────────────────────────────────────────────────
+             MAP LEGEND + SCALE
+             ───────────────────────────────────────────────── -->
+        <g transform="translate(18, 30)">
+          <!-- Legend box -->
+          <rect x="0" y="0" width="158" height="96" rx="4"
+                fill="rgba(8,8,20,0.88)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          <!-- Line A -->
+          <line x1="10" y1="18" x2="28" y2="18" stroke="#00e5ff" stroke-width="3" stroke-linecap="round"/>
+          <text x="34" y="22" font-family="var(--pixel)" font-size="5.5" fill="rgba(0,229,255,0.8)">LINE A · MERIDIAN</text>
+          <!-- Line B -->
+          <line x1="10" y1="36" x2="28" y2="36" stroke="#ff2d6b" stroke-width="3" stroke-linecap="round"/>
+          <text x="34" y="40" font-family="var(--pixel)" font-size="5.5" fill="rgba(255,45,107,0.8)">LINE B · THE SPINE</text>
+          <!-- Line C -->
+          <line x1="10" y1="54" x2="28" y2="54" stroke="#ff8c00" stroke-width="3" stroke-linecap="round"/>
+          <text x="34" y="58" font-family="var(--pixel)" font-size="5.5" fill="rgba(255,140,0,0.8)">LINE C · INDUSTRIAL</text>
+          <!-- Broken -->
+          <line x1="10" y1="72" x2="28" y2="72" stroke="#555577" stroke-width="2.5" stroke-dasharray="4,3" stroke-linecap="round"/>
+          <text x="34" y="76" font-family="var(--pixel)" font-size="5.5" fill="rgba(100,100,140,0.6)">DAMAGED / UNKNOWN</text>
+          <!-- Scale -->
+          <line x1="10" y1="90" x2="40" y2="90" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <line x1="10" y1="86" x2="10" y2="94" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <line x1="40" y1="86" x2="40" y2="94" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <text x="46" y="93" font-family="var(--pixel)" font-size="5" fill="rgba(255,255,255,0.3)">10 MI</text>
+        </g>
+
+        <!-- Compass -->
+        <g transform="translate(752, 38)">
+          <text x="0" y="0" text-anchor="middle" font-family="var(--pixel)" font-size="10" fill="rgba(255,255,255,0.2)">N</text>
+          <line x1="0" y1="4" x2="0" y2="20" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- Location bottom sheet -->
+    <div class="loc-sheet" id="loc-sheet">
+      <div class="sheet-handle" onclick="closeSheet()"></div>
+      <div id="sheet-content"></div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">Feed</div></div>
+      <div class="nav-item active"><div class="nav-icon">🗺</div><div class="nav-label">Map</div></div>
+      <div class="nav-item"><div class="nav-icon">📻</div><div class="nav-label">Story</div></div>
+      <div class="nav-item"><div class="nav-icon">🏃</div><div class="nav-label">Run</div></div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<!-- Design notes -->
+<div style="max-width:390px;width:100%;display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+  <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Design notes</div>
+  <div class="note-card visible" id="note-0">
+    <div class="note-title">World Map · Subway diagram</div>
+    <div class="note-body">Three named lines (A/B/C) with distinct colors. Transfer stations use a diamond ring to signal they're on multiple lines. Fog of war is heaviest at the edges — you can see the network has branches that disappear into unknown territory. The broken Line A spur east of Station Cross shows the world has history and damage. Unknown domes render as dim silhouettes with "? ? ?" — visible but unnamed. Pan the map to explore. Tap any dome to see its info sheet.</div>
+  </div>
+  <div class="note-card" id="note-1">
+    <div class="note-title">② Home dome (The Meridian)</div>
+    <div class="note-body">Pulsing ring + YOU ARE HERE banner. Shows as a multi-line station (Line A dot + Line C dot). The player can see they're at the junction of two lines — one going to Station Cross, one going to The Hollows (where they're traveling).</div>
+  </div>
+  <div class="note-card" id="note-2">
+    <div class="note-title">③ Traveling to (The Hollows)</div>
+    <div class="note-body">Progress arc around the dome icon (35% complete). The Line C path shows a solid traveled segment fading to dashed for the remaining distance. The sheet shows the progress bar and a "keep running" message — no CTA since you're already committed.</div>
+  </div>
+  <div class="note-card" id="note-3">
+    <div class="note-title">④ Start travel (New Caldwell)</div>
+    <div class="note-body">Quest indicator (!) on the dome icon signals something is there. Sheet shows the distance, the active quest, and a Begin Journey CTA — but notes you'd need to travel via Station Cross first (18 mi total, two hops).</div>
+  </div>
+  <div class="note-card" id="note-4">
+    <div class="note-title">⑤ Offline dome (Eastern Ruins)</div>
+    <div class="note-body">X through the dome icon, OFFLINE badge, greyed palette. The sheet explains it's unreachable for now — no CTA. Creates mystery: what happened here? Will it come back online?</div>
+  </div>
+</div>
+
+<script>
+const locations = {
+  meridian: {
+    eyebrow: 'Current location · Lines A + C',
+    eyebrowColor: '#00e5ff',
+    name: 'THE MERIDIAN',
+    sub: 'Your home dome. Where every run starts.',
+    lines: [
+      { label: 'A · MERIDIAN LINE', color: '#00e5ff', bg: 'rgba(0,229,255,0.15)' },
+      { label: 'C · INDUSTRIAL SPUR', color: '#ff8c00', bg: 'rgba(255,140,0,0.15)' }
+    ],
+    body: 'You live here. The streets above are your running ground. Below — two lines out.',
+    cta: null,
+    ctaNote: 'You are here. Use the Run tab to go outside.'
+  },
+  hollows: {
+    eyebrow: 'Traveling here · Line C',
+    eyebrowColor: '#ff8c00',
+    name: 'THE HOLLOWS',
+    sub: 'Industrial zone. End of Line C.',
+    lines: [{ label: 'C · INDUSTRIAL SPUR', color: '#ff8c00', bg: 'rgba(255,140,0,0.15)' }],
+    body: 'The package was rerouted here. Someone at the loading docks knows what\'s inside.',
+    progress: { current: 4.2, total: 12.0, est: 'Est. 2–3 more runs', color: '#ff8c00' },
+    cta: null,
+    ctaNote: 'You\'re committed. Keep running.'
+  },
+  caldwell: {
+    eyebrow: 'Quest available · Line B · 18.0 mi',
+    eyebrowColor: '#ff2d6b',
+    name: 'NEW CALDWELL',
+    sub: 'Northern dome. End of Line B.',
+    lines: [{ label: 'B · THE SPINE', color: '#ff2d6b', bg: 'rgba(255,45,107,0.15)' }],
+    body: '"The signal is coming from somewhere in New Caldwell. Get here." — HQ-?',
+    via: 'Route: via Station Cross · 2 stops · 18.0 mi total',
+    ctaLabel: 'Begin Journey · 18.0 mi',
+    ctaClass: 'cta-orange'
+  },
+  cross: {
+    eyebrow: 'Transfer station · Lines A + B',
+    eyebrowColor: '#8888aa',
+    name: 'STATION CROSS',
+    sub: 'Transfer point between Line A and Line B.',
+    lines: [
+      { label: 'A · MERIDIAN LINE', color: '#00e5ff', bg: 'rgba(0,229,255,0.15)' },
+      { label: 'B · THE SPINE', color: '#ff2d6b', bg: 'rgba(255,45,107,0.15)' }
+    ],
+    body: 'You haven\'t been here yet. Passing through on the way to New Caldwell.',
+    ctaLabel: 'Travel Here · 8.0 mi',
+    ctaClass: 'cta-ghost'
+  },
+  ruins: {
+    eyebrow: 'OFFLINE · Line A',
+    eyebrowColor: '#555577',
+    name: 'EASTERN RUINS',
+    sub: 'Last known status: population unknown.',
+    lines: [{ label: 'A · MERIDIAN LINE', color: '#555577', bg: 'rgba(60,60,80,0.2)' }],
+    body: 'No signal from this dome. The Line A platform at Eastern Ruins went dark fourteen months ago. Nobody\'s reported back.',
+    cta: null,
+    ctaNote: 'Unreachable for now.'
+  }
+};
+
+function openSheet(id) {
+  const d = locations[id];
+  if (!d) return;
+  let html = `
+    <div class="loc-eyebrow" style="color:${d.eyebrowColor}">${d.eyebrow}</div>
+    <div class="loc-name">${d.name}</div>
+    <div class="loc-sub">${d.sub}</div>
+  `;
+  if (d.lines) {
+    d.lines.forEach(l => {
+      html += `<span class="line-badge" style="background:${l.bg};color:${l.color};border:1px solid ${l.color}40;">${l.label}</span>`;
+    });
+    html += '<br style="margin-bottom:8px;">';
+  }
+  html += `<div class="loc-body">${d.body}</div>`;
+  if (d.progress) {
+    const pct = (d.progress.current / d.progress.total * 100).toFixed(0);
+    html += `
+      <div class="travel-bar-wrap">
+        <div class="travel-bar-labels"><span>${d.progress.current} mi traveled</span><span>${d.progress.total} mi total</span></div>
+        <div class="travel-bar-track"><div class="travel-bar-fill" style="width:${pct}%;background:${d.progress.color};"></div></div>
+        <div class="travel-est">${d.progress.est}</div>
+      </div>`;
+  }
+  if (d.via) {
+    html += `<div style="font-size:10px;color:var(--muted);background:rgba(255,255,255,0.04);border-radius:4px;padding:6px 10px;margin-bottom:10px;line-height:1.5;">${d.via}</div>`;
+  }
+  if (d.ctaLabel) {
+    html += `<div class="loc-cta ${d.ctaClass}">${d.ctaLabel}</div>`;
+  }
+  if (d.ctaNote) {
+    html += `<div style="text-align:center;font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5;">${d.ctaNote}</div>`;
+  }
+  html += `<div class="loc-dismiss" onclick="closeSheet()">Dismiss</div>`;
+
+  document.getElementById('sheet-content').innerHTML = html;
+  document.getElementById('loc-sheet').classList.add('open');
+}
+
+function closeSheet() {
+  document.getElementById('loc-sheet').classList.remove('open');
+}
+
+function activateNav(i, btn) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // Show correct note
+  const noteIdx = [0,1,2,3,4];
+  document.querySelectorAll('.note-card').forEach((n,j) => n.classList.toggle('visible', j===0));
+}
+
+// Update notes for sub-states
+document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.note-card').forEach((n,j) => n.classList.toggle('visible', j===i));
+  });
+});
+
+// Center map on The Meridian on load
+window.addEventListener('load', () => {
+  const scroll = document.getElementById('world-scroll');
+  // The Meridian is at (290, 490) on the 800x900 canvas
+  // Viewport is ~390x(844-44-42-80) = 390x678
+  scroll.scrollLeft = Math.max(0, 290 - 195);
+  scroll.scrollTop  = Math.max(0, 490 - 340);
+});
+</script>
+</body>
+</html>

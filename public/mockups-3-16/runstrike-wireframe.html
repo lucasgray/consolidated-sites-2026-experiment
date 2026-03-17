@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Runstrike — UX Wireframe</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0d0d1a;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 60px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+  gap: 24px;
+}
+
+.header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.header-title { color: #00d4b8; font-size: 12px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
+.header-sub { color: #555; font-size: 12px; }
+
+.screen-nav {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  padding: 4px;
+  border-radius: 20px;
+  border: 1px solid #222;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 420px;
+}
+
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: #666;
+  padding: 7px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.nav-btn:hover { color: #aaa; }
+.nav-btn.active { background: #00d4b8; color: #000; font-weight: 600; }
+
+/* Phone */
+.phone {
+  width: 375px;
+  height: 812px;
+  background: #111;
+  border-radius: 50px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 2px #2a2a2a, 0 0 0 4px #1a1a1a, 0 40px 100px rgba(0,0,0,0.7);
+  flex-shrink: 0;
+}
+.notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 130px; height: 34px; background: #111;
+  border-radius: 0 0 22px 22px; z-index: 100;
+}
+
+.screen { position: absolute; inset: 0; display: none; flex-direction: column; background: #111; }
+.screen.active { display: flex; }
+
+.status-bar {
+  height: 44px; padding: 12px 22px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; position: relative; z-index: 20;
+}
+.status-time { color: #fff; font-size: 15px; font-weight: 600; }
+.status-icons { display: flex; gap: 5px; align-items: center; font-size: 12px; color: #fff; }
+
+/* Shared map area */
+.map-area { flex: 1; position: relative; overflow: hidden; }
+.map-area svg { width: 100%; height: 100%; display: block; }
+
+/* ==============================
+   SCREEN 0 — PLACE YOUR DESTINATION
+   ============================== */
+
+/* Objective card — slides in from top */
+.objective-card {
+  position: absolute;
+  top: 52px;
+  left: 14px;
+  right: 14px;
+  background: rgba(6,6,6,0.88);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 13px 16px;
+  z-index: 20;
+}
+.obj-eyebrow { color: #9364ff; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 5px; }
+.obj-title { color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.obj-desc { color: #888; font-size: 12px; line-height: 1.4; }
+.obj-note { display: inline-block; margin-top: 6px; color: #666; font-size: 11px; background: rgba(255,255,255,0.04); border-radius: 6px; padding: 3px 8px; }
+
+/* Crosshair overlay */
+.crosshair-wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.crosshair {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+/* Horizontal line */
+.crosshair::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: rgba(255,255,255,0.5);
+  transform: translateY(-50%);
+}
+/* Vertical line */
+.crosshair::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: rgba(255,255,255,0.5);
+  transform: translateX(-50%);
+}
+
+.crosshair-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border: 2px solid white;
+  border-radius: 50%;
+  opacity: 0.9;
+}
+
+.crosshair-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  background: #00d4b8;
+  border-radius: 50%;
+}
+
+/* Ghost pin (drops below crosshair) */
+.ghost-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%) translateY(-14px);
+  z-index: 20;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pin-head {
+  width: 28px;
+  height: 28px;
+  background: #00d4b8;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(0,212,184,0.5);
+}
+
+.pin-inner {
+  width: 10px;
+  height: 10px;
+  background: #111;
+  border-radius: 50%;
+  transform: rotate(45deg);
+}
+
+.pin-shadow {
+  width: 10px;
+  height: 4px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+  margin-top: 2px;
+}
+
+/* Pan hint */
+.pan-hint {
+  position: absolute;
+  bottom: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.6);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 11px;
+  color: #888;
+  white-space: nowrap;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Confirm destination sheet */
+.confirm-sheet {
+  background: #1c1c1e;
+  border-radius: 24px 24px 0 0;
+  padding: 10px 20px 44px;
+  border-top: 1px solid #2c2c2e;
+  flex-shrink: 0;
+  z-index: 20;
+}
+.sheet-handle { width: 36px; height: 4px; background: #3a3a3a; border-radius: 2px; margin: 0 auto 14px; }
+
+.dest-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: #2a2a2c;
+  border-radius: 14px;
+  padding: 13px 14px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(0,212,184,0.2);
+}
+.dest-pin-icon {
+  width: 36px; height: 36px;
+  background: rgba(0,212,184,0.12);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.dest-label { color: #888; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+.dest-name { color: #fff; font-size: 14px; font-weight: 600; }
+
+.roundtrip-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 2px;
+  margin-bottom: 16px;
+}
+.rt-icon { font-size: 16px; }
+.rt-text { color: #888; font-size: 12px; }
+.rt-text strong { color: #aaa; }
+
+.confirm-btn {
+  width: 100%;
+  padding: 17px;
+  background: #00d4b8;
+  border-radius: 16px;
+  color: #000;
+  font-weight: 700;
+  font-size: 17px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* ==============================
+   SCREEN 1 — LOADOUT (Story Run)
+   ============================== */
+
+.bottom-sheet {
+  background: #1c1c1e;
+  border-radius: 24px 24px 0 0;
+  padding: 10px 20px 44px;
+  border-top: 1px solid #2c2c2e;
+  flex-shrink: 0;
+}
+.sheet-title { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 13px; }
+
+/* Story run banner (replaces scout/collect toggle) */
+.story-run-banner {
+  background: linear-gradient(135deg, rgba(147,100,255,0.1) 0%, rgba(0,212,184,0.08) 100%);
+  border: 1px solid rgba(147,100,255,0.3);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.srb-icon { font-size: 22px; flex-shrink: 0; }
+.srb-label { color: #9364ff; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 3px; }
+.srb-title { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.srb-sub { color: #888; font-size: 11px; }
+.srb-change { margin-left: auto; color: #666; font-size: 11px; text-decoration: underline; cursor: pointer; flex-shrink: 0; }
+
+.section-label { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+
+.companion-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.companion-card {
+  flex: 1; background: #2a2a2c; border-radius: 14px; padding: 12px 6px 10px;
+  text-align: center; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; position: relative;
+}
+.companion-card:hover { border-color: #3a3a3a; }
+.companion-card.selected { border-color: #00d4b8; background: rgba(0,212,184,0.07); }
+.companion-check { position: absolute; top: 7px; right: 9px; color: #00d4b8; font-size: 10px; font-weight: 700; display: none; }
+.companion-card.selected .companion-check { display: block; }
+.companion-emoji { font-size: 28px; display: block; margin-bottom: 6px; }
+.companion-name { color: #fff; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.companion-ability { color: #666; font-size: 10px; line-height: 1.35; }
+.companion-card.selected .companion-ability { color: #888; }
+
+.start-btn {
+  width: 100%; padding: 17px; background: #00d4b8; border-radius: 16px;
+  color: #000; font-weight: 700; font-size: 17px; text-align: center; cursor: pointer;
+}
+
+/* Map legend */
+.map-legend {
+  position: absolute; top: 14px; right: 14px;
+  background: rgba(10,10,10,0.82); backdrop-filter: blur(12px);
+  border-radius: 12px; padding: 10px 13px;
+  display: flex; flex-direction: column; gap: 7px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 10px; color: #999; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* ==============================
+   SCREEN 2 — DURING RUN
+   ============================== */
+
+.run-map-wrap { position: absolute; inset: 0; }
+.run-map-wrap svg { width: 100%; height: 100%; display: block; }
+
+.run-topbar {
+  position: absolute; top: 52px; left: 12px; right: 12px;
+  display: flex; gap: 8px; z-index: 10;
+}
+.run-stat-pill {
+  background: rgba(0,0,0,0.78); backdrop-filter: blur(12px);
+  border-radius: 12px; padding: 10px; text-align: center; flex: 1;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.run-stat-value { color: #fff; font-size: 20px; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+.run-stat-label { color: #666; font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; }
+
+/* Objective progress pill */
+.obj-progress {
+  position: absolute;
+  top: 132px;
+  left: 14px;
+  right: 14px;
+  background: rgba(6,6,6,0.88);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(147,100,255,0.3);
+  border-radius: 16px;
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+.obj-prog-icon { font-size: 18px; flex-shrink: 0; }
+.obj-prog-label { color: #9364ff; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+.obj-prog-main { color: #fff; font-size: 13px; font-weight: 600; }
+.obj-prog-dist { margin-left: auto; text-align: right; flex-shrink: 0; }
+.obj-prog-dist-val { color: #00d4b8; font-size: 16px; font-weight: 700; }
+.obj-prog-dist-label { color: #666; font-size: 9px; display: block; }
+
+/* Out-and-back indicator */
+.oab-indicator {
+  position: absolute;
+  bottom: 170px;
+  left: 14px;
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 8px 14px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.oab-track {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.oab-dot { width: 8px; height: 8px; border-radius: 50%; }
+.oab-line { width: 24px; height: 2px; background: #333; }
+.oab-line.done { background: rgba(0,212,184,0.6); }
+.oab-text { color: #888; font-size: 10px; }
+
+.companion-badge {
+  position: absolute; bottom: 120px; right: 14px;
+  background: rgba(0,0,0,0.78); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.04); border-radius: 14px;
+  padding: 10px 14px; display: flex; align-items: center; gap: 9px; z-index: 10;
+}
+
+.run-bottom-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 104px;
+  background: rgba(0,0,0,0.88); backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  padding-bottom: 24px; z-index: 10;
+}
+.pause-btn {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: #2a2a2c; border: 2px solid #3a3a3a;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 20px;
+}
+
+/* ==============================
+   SCREEN 3 — POST-RUN
+   ============================== */
+
+.post-run { flex: 1; overflow-y: auto; padding: 56px 20px 40px; }
+.pr-eyebrow { color: #00d4b8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; margin-bottom: 6px; }
+.pr-title { color: #fff; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+.pr-subtitle { color: #666; font-size: 14px; margin-bottom: 26px; }
+.pr-stats-row { display: flex; gap: 8px; margin-bottom: 28px; }
+.pr-stat-box {
+  flex: 1; background: #1c1c1e; border-radius: 14px; padding: 14px 10px;
+  text-align: center; border: 1px solid #2a2a2a;
+}
+.pr-stat-value { color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 3px; }
+.pr-stat-label { color: #666; font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; }
+.pr-section-label { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 11px; }
+
+.loot-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.loot-item {
+  background: #1c1c1e; border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px; border: 1px solid #2a2a2a;
+}
+.loot-icon {
+  width: 44px; height: 44px; background: #2a2a2a; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.loot-info { flex: 1; }
+.loot-name { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.loot-desc { color: #666; font-size: 11px; }
+.loot-badge {
+  background: rgba(0,212,184,0.12); color: #00d4b8; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; flex-shrink: 0;
+}
+
+.intel-item {
+  background: #1c1c1e; border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px; border: 1px solid #2a2a2a; margin-bottom: 24px;
+}
+.intel-icon {
+  width: 44px; height: 44px; background: rgba(147,100,255,0.12); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+
+.story-card {
+  background: linear-gradient(135deg, rgba(0,212,184,0.05) 0%, rgba(147,100,255,0.05) 100%);
+  border: 1px solid rgba(0,212,184,0.22); border-radius: 16px; padding: 18px; margin-bottom: 24px;
+}
+.story-eyebrow { color: #00d4b8; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
+.story-title { color: #fff; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.story-desc { color: #888; font-size: 13px; line-height: 1.5; }
+
+.pr-continue {
+  width: 100%; padding: 18px; background: #00d4b8; border-radius: 16px;
+  color: #000; font-weight: 700; font-size: 17px; text-align: center; cursor: pointer;
+}
+
+/* Design note cards below phone */
+.note-card {
+  background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 14px 16px;
+  display: none;
+}
+.note-card.visible { display: block; }
+.note-title { color: #00d4b8; font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+.note-body { color: #888; font-size: 12px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Runstrike · UX Wireframe</div>
+  <div class="header-sub">Episode 1 · Part 2 run flow</div>
+</div>
+
+<div class="screen-nav">
+  <button class="nav-btn active" onclick="showScreen(0, this)">① Place destination</button>
+  <button class="nav-btn" onclick="showScreen(1, this)">② Loadout</button>
+  <button class="nav-btn" onclick="showScreen(2, this)">③ During run</button>
+  <button class="nav-btn" onclick="showScreen(3, this)">④ Post-run</button>
+  <button class="nav-btn" onclick="showScreen(4, this)">⑤ Post-run · Travel</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ============================================================
+       SCREEN 0 — PLACE YOUR DESTINATION
+       ============================================================ -->
+  <div class="screen active" id="screen-0">
+
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:30;">
+      <span class="status-time">9:41</span>
+      <div class="status-icons"><span>▲▲▲</span><span>⬛</span></div>
+    </div>
+
+    <!-- Map (background, "panning" is implied) -->
+    <div class="map-area">
+      <svg viewBox="0 0 375 530" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <rect width="375" height="530" fill="#1a1a1a"/>
+        <!-- Blocks -->
+        <rect x="0"   y="0"   width="55"  height="70"  fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="0"   width="95"  height="70"  fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="0"   width="110" height="70"  fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="0"   width="70"  height="70"  fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="85"  width="55"  height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="85"  width="95"  height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="85"  width="110" height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="85"  width="70"  height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="205" width="55"  height="115" fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="205" width="95"  height="115" fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="205" width="110" height="115" fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="205" width="70"  height="115" fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="335" width="55"  height="195" fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="335" width="95"  height="195" fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="335" width="110" height="195" fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="335" width="70"  height="195" fill="#1e1e1e" rx="2"/>
+        <!-- Streets horizontal -->
+        <rect x="0" y="70"  width="375" height="15" fill="#252525"/>
+        <rect x="0" y="190" width="375" height="15" fill="#252525"/>
+        <rect x="0" y="320" width="375" height="15" fill="#252525"/>
+        <!-- Streets vertical -->
+        <rect x="55"  y="0" width="15" height="530" fill="#252525"/>
+        <rect x="165" y="0" width="15" height="530" fill="#252525"/>
+        <rect x="290" y="0" width="15" height="530" fill="#252525"/>
+
+        <!-- Dim overlay to focus on crosshair -->
+        <rect width="375" height="530" fill="rgba(0,0,0,0.25)"/>
+
+        <!-- Highlight the block the crosshair hovers over -->
+        <rect x="180" y="85" width="110" height="105" fill="rgba(0,212,184,0.06)" rx="2"/>
+        <rect x="180" y="85" width="110" height="105" fill="none" stroke="rgba(0,212,184,0.25)" stroke-width="1.5" rx="2"/>
+
+        <!-- Player dot (far south, implied start) -->
+        <circle cx="172" cy="440" r="16" fill="rgba(255,255,255,0.06)"/>
+        <circle cx="172" cy="440" r="8"  fill="rgba(255,255,255,0.14)"/>
+        <circle cx="172" cy="440" r="5"  fill="white"/>
+        <circle cx="172" cy="440" r="2"  fill="#1a1a1a"/>
+
+        <!-- Dashed line from player to crosshair center (suggested route) -->
+        <line x1="172" y1="440" x2="235" y2="265"
+              stroke="rgba(0,212,184,0.2)" stroke-width="2" stroke-dasharray="6,5"/>
+        <!-- And the return leg -->
+        <line x1="235" y1="265" x2="172" y2="440"
+              stroke="rgba(0,212,184,0.12)" stroke-width="2" stroke-dasharray="6,5"
+              stroke-dashoffset="8"/>
+      </svg>
+
+      <!-- Crosshair overlay (fixed, centered on screen) -->
+      <div class="crosshair-wrap">
+        <!-- Ghost pin above crosshair -->
+        <div class="ghost-pin">
+          <div class="pin-head"><div class="pin-inner"></div></div>
+          <div class="pin-shadow"></div>
+        </div>
+        <div class="crosshair">
+          <div class="crosshair-ring"></div>
+          <div class="crosshair-dot"></div>
+        </div>
+      </div>
+
+      <!-- Pan hint -->
+      <div class="pan-hint">Pan map · crosshairs lock to destination</div>
+    </div>
+
+    <!-- Objective card overlay on map -->
+    <div class="objective-card" style="position:relative;top:auto;left:auto;right:auto;margin:0;border-radius:0;background:#111;border:none;border-bottom:1px solid #2a2a2a;padding:12px 20px 14px;">
+      <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:transparent;"></div>
+      <div class="obj-eyebrow">Episode 1 · Part 2</div>
+      <div class="obj-title">Where is your friend's apartment?</div>
+      <div class="obj-desc">Pan the map to place the destination. Pick any spot that makes sense as an apartment — somewhere you can actually run to.</div>
+      <span class="obj-note">↩ Out-and-back · any route you like</span>
+    </div>
+
+    <!-- Confirm sheet -->
+    <div class="confirm-sheet">
+      <div class="sheet-handle"></div>
+
+      <div class="dest-row">
+        <div class="dest-pin-icon">📍</div>
+        <div>
+          <div class="dest-label">Destination</div>
+          <div class="dest-name">Apartment B · Maple &amp; 4th</div>
+        </div>
+      </div>
+
+      <div class="roundtrip-row">
+        <span class="rt-icon">🔁</span>
+        <div class="rt-text">
+          <strong>Out-and-back run</strong> — reach this spot and return to your start. <strong>Collect or scout anything</strong> you pass along the way.
+        </div>
+      </div>
+
+      <div class="confirm-btn" onclick="showScreen(1, document.querySelectorAll('.nav-btn')[1])">Confirm destination →</div>
+    </div>
+
+  </div>
+
+
+  <!-- ============================================================
+       SCREEN 1 — LOADOUT (Story Run variant)
+       ============================================================ -->
+  <div class="screen" id="screen-1">
+
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:20;">
+      <span class="status-time">9:41</span>
+      <div class="status-icons"><span>▲▲▲</span><span>⬛</span></div>
+    </div>
+
+    <div class="map-area">
+      <svg viewBox="0 0 375 490" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <rect width="375" height="490" fill="#1a1a1a"/>
+        <rect x="0"   y="0"   width="55"  height="65"  fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="0"   width="95"  height="65"  fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="0"   width="110" height="65"  fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="0"   width="70"  height="65"  fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="80"  width="55"  height="95"  fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="80"  width="95"  height="95"  fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="80"  width="110" height="95"  fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="80"  width="70"  height="95"  fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="190" width="55"  height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="190" width="95"  height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="190" width="110" height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="190" width="70"  height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="310" width="55"  height="180" fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="310" width="95"  height="180" fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="310" width="110" height="180" fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="310" width="70"  height="180" fill="#1e1e1e" rx="2"/>
+        <rect x="0" y="65"  width="375" height="15" fill="#252525"/>
+        <rect x="0" y="175" width="375" height="15" fill="#252525"/>
+        <rect x="0" y="295" width="375" height="15" fill="#252525"/>
+        <rect x="55"  y="0" width="15" height="490" fill="#252525"/>
+        <rect x="165" y="0" width="15" height="490" fill="#252525"/>
+        <rect x="290" y="0" width="15" height="490" fill="#252525"/>
+
+        <!-- Route suggestions (faint) -->
+        <path d="M 172 310 L 172 183 L 235 183" stroke="rgba(0,212,184,0.1)" stroke-width="12"
+              fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Pickups along route -->
+        <circle cx="172" cy="183" r="22" fill="rgba(0,212,184,0.12)"/>
+        <circle cx="172" cy="183" r="9" fill="#00d4b8"/>
+        <circle cx="172" cy="183" r="4" fill="white"/>
+
+        <circle cx="62" cy="295" r="18" fill="rgba(0,212,184,0.08)"/>
+        <circle cx="62" cy="295" r="7" fill="#00d4b8" opacity="0.55"/>
+        <circle cx="62" cy="295" r="3" fill="white" opacity="0.55"/>
+
+        <!-- Destination pin -->
+        <!-- Pin head -->
+        <circle cx="235" cy="130" r="18" fill="rgba(0,212,184,0.18)"/>
+        <circle cx="235" cy="130" r="9" fill="#00d4b8"/>
+        <circle cx="235" cy="130" r="4" fill="#111"/>
+        <!-- Pin tail -->
+        <polygon points="235,148 230,138 240,138" fill="#00d4b8"/>
+
+        <!-- Destination label -->
+        <rect x="248" y="118" width="96" height="26" rx="8" fill="rgba(0,0,0,0.75)"/>
+        <text x="296" y="135" text-anchor="middle" fill="#fff" font-size="11" font-family="-apple-system,sans-serif" font-weight="600">Apartment B</text>
+
+        <!-- Dashed round-trip line -->
+        <path d="M 172 310 L 172 183 L 235 148"
+              stroke="rgba(0,212,184,0.25)" stroke-width="2" stroke-dasharray="5,4"
+              fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 235 148 L 172 310"
+              stroke="rgba(0,212,184,0.12)" stroke-width="2" stroke-dasharray="5,4"
+              fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Player dot -->
+        <circle cx="172" cy="310" r="18" fill="rgba(255,255,255,0.06)"/>
+        <circle cx="172" cy="310" r="9"  fill="rgba(255,255,255,0.13)"/>
+        <circle cx="172" cy="310" r="6"  fill="white"/>
+        <circle cx="172" cy="310" r="2"  fill="#1a1a1a"/>
+
+        <!-- Companion radius ring -->
+        <circle cx="172" cy="310" r="48" fill="rgba(0,212,184,0.03)"
+                stroke="rgba(0,212,184,0.2)" stroke-width="1.5" stroke-dasharray="5,4"/>
+      </svg>
+
+      <div class="map-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#00d4b8;"></div>
+          <span>Ready to collect</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:transparent;border:1.5px dashed #555;"></div>
+          <span>Unscouted area</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Loadout</div>
+
+      <!-- Story run objective (replaces scout/collect toggle) -->
+      <div class="story-run-banner">
+        <div class="srb-icon">🏃</div>
+        <div>
+          <div class="srb-label">Story Run · Out &amp; back</div>
+          <div class="srb-title">Reach Apartment B</div>
+          <div class="srb-sub">Maple &amp; 4th · ~0.8mi each way</div>
+        </div>
+        <div class="srb-change" onclick="showScreen(0, document.querySelectorAll('.nav-btn')[0])">change</div>
+      </div>
+
+      <div class="section-label">Companion</div>
+      <div class="companion-row">
+        <div class="companion-card selected" id="comp-dog" onclick="selectCompanion('dog')">
+          <span class="companion-check">✓</span>
+          <span class="companion-emoji">🐕</span>
+          <div class="companion-name">Dog</div>
+          <div class="companion-ability">+20ft radius · unlocks guarded items</div>
+        </div>
+        <div class="companion-card" id="comp-cat" onclick="selectCompanion('cat')">
+          <span class="companion-check">✓</span>
+          <span class="companion-emoji">🐈</span>
+          <div class="companion-name">Cat</div>
+          <div class="companion-ability">+15ft radius · silent approach</div>
+        </div>
+        <div class="companion-card" id="comp-bird" onclick="selectCompanion('bird')">
+          <span class="companion-check">✓</span>
+          <span class="companion-emoji">🦜</span>
+          <div class="companion-name">Parakeet</div>
+          <div class="companion-ability">Collects arboreal items (trees)</div>
+        </div>
+      </div>
+
+      <div class="start-btn">Start Run →</div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SCREEN 2 — DURING RUN
+       ============================================================ -->
+  <div class="screen" id="screen-2">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:20;">
+      <span class="status-time">10:14</span>
+      <div class="status-icons"><span style="color:#00d4b8;">🐕</span><span>⬛</span></div>
+    </div>
+
+    <div class="run-map-wrap">
+      <svg viewBox="0 0 375 812" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <rect width="375" height="812" fill="#1a1a1a"/>
+        <rect x="0"   y="0"   width="55"  height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="0"   width="95"  height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="0"   width="110" height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="0"   width="70"  height="105" fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="120" width="55"  height="145" fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="120" width="95"  height="145" fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="120" width="110" height="145" fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="120" width="70"  height="145" fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="280" width="55"  height="145" fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="280" width="95"  height="145" fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="280" width="110" height="145" fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="280" width="70"  height="145" fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="440" width="55"  height="372" fill="#1e1e1e" rx="2"/>
+        <rect x="70"  y="440" width="95"  height="372" fill="#1e1e1e" rx="2"/>
+        <rect x="180" y="440" width="110" height="372" fill="#1e1e1e" rx="2"/>
+        <rect x="305" y="440" width="70"  height="372" fill="#1e1e1e" rx="2"/>
+        <rect x="0" y="105" width="375" height="15" fill="#252525"/>
+        <rect x="0" y="265" width="375" height="15" fill="#252525"/>
+        <rect x="0" y="425" width="375" height="15" fill="#252525"/>
+        <rect x="55"  y="0" width="15" height="812" fill="#252525"/>
+        <rect x="165" y="0" width="15" height="812" fill="#252525"/>
+        <rect x="290" y="0" width="15" height="812" fill="#252525"/>
+
+        <!-- Breadcrumb trail (where you've been) -->
+        <path d="M 172 812 L 172 433 L 62 433 L 62 273"
+              stroke="rgba(0,212,184,0.28)" stroke-width="5" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Collected pickup (greyed) -->
+        <circle cx="172" cy="433" r="9" fill="#2a2a2a"/>
+        <text x="172" y="437" text-anchor="middle" fill="#555" font-size="11" font-weight="700">✓</text>
+
+        <!-- Next pickup -->
+        <circle cx="62" cy="273" r="26" fill="rgba(0,212,184,0.13)"/>
+        <circle cx="62" cy="273" r="11" fill="#00d4b8"/>
+        <circle cx="62" cy="273" r="5"  fill="white"/>
+
+        <!-- Destination pin (the apartment) -->
+        <circle cx="235" cy="130" r="22" fill="rgba(0,212,184,0.2)"/>
+        <circle cx="235" cy="130" r="11" fill="#00d4b8"/>
+        <circle cx="235" cy="130" r="5"  fill="#111"/>
+        <polygon points="235,152 229,140 241,140" fill="#00d4b8"/>
+        <rect x="248" y="118" width="96" height="26" rx="8" fill="rgba(0,0,0,0.75)"/>
+        <text x="296" y="135" text-anchor="middle" fill="#fff" font-size="11" font-family="-apple-system,sans-serif" font-weight="600">Apartment B</text>
+
+        <!-- Movement arrow -->
+        <polygon points="62,342 56,358 62,352 68,358" fill="rgba(0,212,184,0.75)"/>
+
+        <!-- Companion radius -->
+        <circle cx="62" cy="368" r="52" fill="rgba(0,212,184,0.03)"
+                stroke="rgba(0,212,184,0.18)" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <circle cx="62" cy="368" r="20" fill="rgba(255,255,255,0.05)"/>
+        <circle cx="62" cy="368" r="10" fill="rgba(255,255,255,0.12)"/>
+        <circle cx="62" cy="368" r="7" fill="white"/>
+        <circle cx="62" cy="368" r="3" fill="#1a1a1a"/>
+      </svg>
+    </div>
+
+    <div class="run-topbar">
+      <div class="run-stat-pill">
+        <div class="run-stat-value">1.4</div>
+        <div class="run-stat-label">mi</div>
+      </div>
+      <div class="run-stat-pill">
+        <div class="run-stat-value">14:22</div>
+        <div class="run-stat-label">time</div>
+      </div>
+      <div class="run-stat-pill">
+        <div class="run-stat-value">9'52"</div>
+        <div class="run-stat-label">pace</div>
+      </div>
+    </div>
+
+    <!-- Objective progress -->
+    <div class="obj-progress">
+      <div class="obj-prog-icon">📍</div>
+      <div style="flex:1;">
+        <div class="obj-prog-label">Objective</div>
+        <div class="obj-prog-main">Reach Apartment B</div>
+      </div>
+      <div class="obj-prog-dist">
+        <div class="obj-prog-dist-val">0.6</div>
+        <span class="obj-prog-dist-label">mi away</span>
+      </div>
+    </div>
+
+    <!-- Out-and-back progress indicator -->
+    <div class="oab-indicator">
+      <div class="oab-track">
+        <div class="oab-dot" style="background:white;"></div>
+        <div class="oab-line done"></div>
+        <div class="oab-dot" style="background:#333;border:2px solid #00d4b8;"></div>
+        <div class="oab-line"></div>
+        <div class="oab-dot" style="background:#333;"></div>
+      </div>
+      <div class="oab-text">Start → <span style="color:#aaa;">Apt B</span> → Return</div>
+    </div>
+
+    <div class="companion-badge">
+      <span style="font-size:22px;">🐕</span>
+      <div>
+        <div style="color:#fff;font-size:12px;font-weight:600;margin-bottom:2px;">Dog</div>
+        <div style="color:#666;font-size:10px;">+20ft radius</div>
+      </div>
+    </div>
+
+    <div class="run-bottom-bar">
+      <div class="pause-btn">⏸</div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SCREEN 3 — POST-RUN
+       ============================================================ -->
+  <div class="screen" id="screen-3">
+    <div class="status-bar" style="background:#111;">
+      <span class="status-time">10:48</span>
+      <div class="status-icons"><span>⬛</span></div>
+    </div>
+    <div class="post-run">
+      <div class="pr-eyebrow">Run complete</div>
+      <div class="pr-title">Nice work.</div>
+      <div class="pr-subtitle">You found 2 items and collected 1 intel drop</div>
+      <div class="pr-stats-row">
+        <div class="pr-stat-box"><div class="pr-stat-value">3.1</div><div class="pr-stat-label">Miles</div></div>
+        <div class="pr-stat-box"><div class="pr-stat-value">33:10</div><div class="pr-stat-label">Time</div></div>
+        <div class="pr-stat-box"><div class="pr-stat-value">10'41"</div><div class="pr-stat-label">Pace</div></div>
+      </div>
+      <div class="pr-section-label">Items collected</div>
+      <div class="loot-list">
+        <div class="loot-item">
+          <div class="loot-icon">🐦</div>
+          <div class="loot-info"><div class="loot-name">Stuffed Bird</div><div class="loot-desc">From Apartment A</div></div>
+          <div class="loot-badge">New</div>
+        </div>
+        <div class="loot-item">
+          <div class="loot-icon">🧥</div>
+          <div class="loot-info"><div class="loot-name">Hoodie</div><div class="loot-desc">From Apartment A</div></div>
+          <div class="loot-badge">New</div>
+        </div>
+      </div>
+      <div class="pr-section-label">Intel collected</div>
+      <div class="intel-item">
+        <div class="intel-icon">🗺️</div>
+        <div class="loot-info">
+          <div class="loot-name">Route: Oak → 5th → Main</div>
+          <div class="loot-desc">3 item drops seeded for future runs</div>
+        </div>
+      </div>
+      <div class="story-card">
+        <div class="story-eyebrow">Story unlocked</div>
+        <div class="story-title">Episode 1, Part 3 available</div>
+        <div class="story-desc">You made it to the apartment. Something was left behind that wasn't on the list.</div>
+      </div>
+      <div class="pr-continue">Continue →</div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SCREEN 4 — POST-RUN · TRAVEL VARIANT
+       ============================================================ -->
+  <div class="screen" id="screen-4">
+    <div class="status-bar" style="background:#111;">
+      <span class="status-time">10:48</span>
+      <div class="status-icons"><span>⬛</span></div>
+    </div>
+
+    <div class="post-run">
+
+      <!-- Header — travel run tone is different, more expedition than workout -->
+      <div class="pr-eyebrow">Run complete · Line C</div>
+      <div class="pr-title">4.2 mi covered.</div>
+      <div class="pr-subtitle">12.0 mi to The Hollows · 7.8 mi remaining</div>
+
+      <!-- Run stats -->
+      <div class="pr-stats-row">
+        <div class="pr-stat-box"><div class="pr-stat-value">4.2</div><div class="pr-stat-label">Miles</div></div>
+        <div class="pr-stat-box"><div class="pr-stat-value">42:10</div><div class="pr-stat-label">Time</div></div>
+        <div class="pr-stat-box"><div class="pr-stat-value">10'02"</div><div class="pr-stat-label">Pace</div></div>
+      </div>
+
+      <!-- Travel progress (replaces story unlock in position) -->
+      <div class="pr-section-label">Journey progress</div>
+      <div style="background:#1c1c1e;border-radius:14px;padding:16px;margin-bottom:24px;border:1px solid #2a2a2a;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+          <div style="color:#fff;font-size:15px;font-weight:700;">The Hollows</div>
+          <div style="color:#ff8c00;font-size:13px;font-weight:700;">35%</div>
+        </div>
+        <!-- Progress bar -->
+        <div style="height:6px;background:#2a2a2a;border-radius:3px;overflow:hidden;margin-bottom:8px;">
+          <div style="height:100%;width:35%;background:linear-gradient(90deg,#ff8c00,rgba(255,140,0,0.6));border-radius:3px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <div style="color:#888;font-size:11px;">4.2 mi traveled</div>
+          <div style="color:#888;font-size:11px;">7.8 mi to go</div>
+        </div>
+        <div style="color:#666;font-size:11px;margin-top:6px;">Est. 2 more runs at this pace</div>
+      </div>
+
+      <!-- Encounter log — the main new element for travel runs -->
+      <div class="pr-section-label">Encounter log</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+
+        <!-- Encounter 1: subway car -->
+        <div style="background:#1c1c1e;border-radius:14px;padding:14px 16px;border:1px solid #2a2a2a;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="width:36px;height:36px;background:rgba(255,140,0,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚇</div>
+            <div style="flex:1;">
+              <div style="color:#ff8c00;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;">Mile 2.1 · Line C</div>
+              <div style="color:#fff;font-size:13px;font-weight:600;">Subway car — avoided</div>
+            </div>
+          </div>
+          <div style="color:#888;font-size:12px;line-height:1.6;">You heard it before you saw it. Pressed into a maintenance alcove off the eastbound tunnel. The car passed within a foot.</div>
+          <!-- Discovery from the alcove -->
+          <div style="margin-top:10px;padding:10px 12px;background:#242424;border-radius:8px;border-left:2px solid #00d4b8;display:flex;align-items:center;gap:10px;">
+            <div style="font-size:16px;">🗝</div>
+            <div>
+              <div style="color:#00d4b8;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;">Found in the alcove</div>
+              <div style="color:#ddd;font-size:12px;font-weight:600;">Maintenance key — Bay 7</div>
+            </div>
+            <div style="margin-left:auto;background:rgba(0,212,184,0.12);color:#00d4b8;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase;flex-shrink:0;">New</div>
+          </div>
+        </div>
+
+        <!-- Encounter 2: something quieter, environmental -->
+        <div style="background:#1c1c1e;border-radius:14px;padding:14px 16px;border:1px solid #2a2a2a;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="width:36px;height:36px;background:rgba(176,96,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🕯</div>
+            <div>
+              <div style="color:#b060ff;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;">Mile 3.8 · Line C</div>
+              <div style="color:#fff;font-size:13px;font-weight:600;">Signs of habitation</div>
+            </div>
+          </div>
+          <div style="color:#888;font-size:12px;line-height:1.6;">Someone's been living in the tunnel. Bedroll, cans, a handmade light. Whoever it is, they weren't home.</div>
+        </div>
+
+      </div>
+
+      <!-- Items collected during travel run (pickups still work) -->
+      <div class="pr-section-label">Collected en route</div>
+      <div class="loot-list" style="margin-bottom:24px;">
+        <div class="loot-item">
+          <div class="loot-icon">🔦</div>
+          <div class="loot-info">
+            <div class="loot-name">Tunnel flashlight</div>
+            <div class="loot-desc">Found near the Line C junction</div>
+          </div>
+          <div class="loot-badge">New</div>
+        </div>
+      </div>
+
+      <div class="pr-continue">Continue →</div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<!-- Design notes -->
+<div style="max-width:375px;width:100%;display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+  <div style="color:#555;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Design notes</div>
+
+  <div class="note-card visible" id="note-0">
+    <div class="note-title">① Place destination</div>
+    <div class="note-body">Fixed crosshairs, pannable map — same gesture pattern as any map app so there's no learning curve. The objective card is embedded above the sheet (not a floating overlay) so it doesn't compete with the crosshairs. "Apartment B · Maple & 4th" is a <em>generated</em> label from the player's real map data — it gives the story a local, personal address. The dashed out-and-back line from player → destination → player communicates the run shape without any text explanation. Open question: does the game suggest a place type ("look for an apartment building") or is it fully freeform?</div>
+  </div>
+  <div class="note-card" id="note-1">
+    <div class="note-title">② Loadout</div>
+    <div class="note-body">The Scout/Collect toggle is replaced by a "Story Run" banner — the run type is dictated by the narrative, not the player's choice. A "change" link lets them re-place the destination without losing their companion choice. The destination pin is visible on the map here so the player can see where they're going before they commit. The dashed round-trip line from player to pin and back sets spatial expectations for the run.</div>
+  </div>
+  <div class="note-card" id="note-2">
+    <div class="note-title">③ During run</div>
+    <div class="note-body">Two persistent run-state elements are added vs. a free run: the objective progress card (purple, shows distance remaining to Apartment B) and the out-and-back progress track (Start → Apt B → Return). These stay quiet and small so they don't crowd the map. Once the player reaches the destination and turns around, the middle node fills in and the return leg activates. Pickup collection still works exactly the same as a free run.</div>
+  </div>
+  <div class="note-card" id="note-3">
+    <div class="note-title">④ Post-run</div>
+    <div class="note-body">Same structure as a free run. The story unlock card at the bottom is the emotional hook into the next session — it teases what was found at the apartment without spoiling it. Intel is shown separately (purple icon) to reinforce it's a different category from loot.</div>
+  </div>
+  <div class="note-card" id="note-4">
+    <div class="note-title">⑤ Post-run · Travel variant</div>
+    <div class="note-body">Three structural changes from the standard post-run: (1) The header reflects the journey, not a workout — "4.2 mi covered" not "Nice work." (2) Journey progress replaces the story unlock position — the progress bar is the emotional payoff here, watching The Hollows get closer. (3) The encounter log is the new centrepiece — each encounter has a location stamp (mile marker + line), an outcome, and optionally a discovery. The subway car encounter shows the find-in-the-alcove pattern: the threat becomes a reward. The tunnel habitation encounter is purely narrative, no item, building the world. Pickups collected en route still appear below, same as always.</div>
+  </div>
+</div>
+
+<script>
+  function showScreen(index, btn) {
+    document.querySelectorAll('.screen').forEach((s, i) => {
+      s.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.note-card').forEach((n, i) => {
+      n.classList.toggle('visible', i === index);
+    });
+  }
+
+  function selectCompanion(type) {
+    ['dog','cat','bird'].forEach(c => {
+      document.getElementById('comp-' + c).classList.toggle('selected', c === type);
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Runstrike — Story Tab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --pink:   #ff2d6b;
+  --cyan:   #00e5ff;
+  --orange: #ff8c00;
+  --green:  #00ff88;
+  --purple: #b060ff;
+  --bg:     #080810;
+  --card:   #0d0d18;
+  --border: #1e1e2e;
+  --text:   #e0e0f0;
+  --muted:  #555570;
+  --mono: 'Share Tech Mono', 'Courier New', monospace;
+}
+
+body {
+  background: #060610;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 60px;
+  font-family: var(--mono);
+  gap: 22px;
+}
+
+.header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.header-title { color: var(--cyan); font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; }
+.header-sub { color: var(--muted); font-size: 11px; font-family: var(--mono); }
+
+/* Nav */
+.screen-nav {
+  display: flex; gap: 4px;
+  background: rgba(255,255,255,0.03);
+  padding: 4px; border-radius: 20px;
+  border: 1px solid #1a1a2a;
+  flex-wrap: wrap; justify-content: center;
+}
+.nav-btn {
+  background: transparent; border: none;
+  color: var(--muted);
+  padding: 7px 14px; border-radius: 16px;
+  cursor: pointer; font-size: 11px;
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+  transition: all 0.15s; white-space: nowrap;
+}
+.nav-btn:hover { color: #aaa; }
+.nav-btn.active { background: var(--pink); color: #000; font-weight: 700; }
+
+/* Phone */
+.phone {
+  width: 390px; height: 844px;
+  background: var(--bg);
+  border-radius: 50px; overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 2px #1a1a2e, 0 0 0 4px #0d0d18, 0 40px 100px rgba(0,0,0,0.8);
+  flex-shrink: 0;
+}
+.notch {
+  position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 130px; height: 34px;
+  background: var(--bg);
+  border-radius: 0 0 22px 22px; z-index: 100;
+}
+
+/* Starfield texture */
+.phone::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 70%, rgba(255,255,255,0.12) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.08) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 50%, rgba(255,255,255,0.07) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.09) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.11) 0%, transparent 100%);
+  pointer-events: none; z-index: 0;
+}
+
+.screen {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  background: transparent; z-index: 1;
+}
+.screen.active { display: flex; }
+
+/* Status bar */
+.status-bar {
+  height: 44px; padding: 12px 22px 0;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0; position: relative; z-index: 20;
+}
+.status-time { color: #fff; font-size: 15px; font-weight: 600; font-family: var(--mono); }
+.status-right { display: flex; gap: 5px; align-items: center; font-size: 12px; color: #fff; }
+
+/* App header */
+.app-header {
+  padding: 6px 20px 10px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.app-title {
+  font-family: var(--mono);
+  font-size: 22px; font-weight: 700;
+  color: var(--pink);
+  letter-spacing: 0.05em;
+}
+.app-gear { color: var(--muted); font-size: 18px; cursor: pointer; }
+
+/* Scrollable content */
+.tab-content {
+  flex: 1; overflow-y: auto;
+  padding: 4px 16px 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.tab-content::-webkit-scrollbar { display: none; }
+
+/* Cards */
+.card {
+  border-radius: 4px;
+  padding: 14px 16px;
+  position: relative;
+  background: var(--card);
+}
+
+.card-cyan   { border: 1.5px solid var(--cyan);   background: rgba(0,229,255,0.04); }
+.card-orange { border: 1.5px solid var(--orange); background: rgba(255,140,0,0.04); }
+.card-pink   { border: 1.5px solid var(--pink);   background: rgba(255,45,107,0.04); }
+.card-green  { border: 1.5px solid var(--green);  background: rgba(0,255,136,0.04); }
+.card-purple { border: 1.5px solid var(--purple); background: rgba(176,96,255,0.04); }
+.card-muted  { border: 1.5px solid #2a2a3a; background: rgba(255,255,255,0.02); }
+
+.card-label {
+  font-family: var(--mono); font-size: 10px;
+  font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.label-cyan   { color: var(--cyan); }
+.label-orange { color: var(--orange); }
+.label-pink   { color: var(--pink); }
+.label-green  { color: var(--green); }
+.label-purple { color: var(--purple); }
+.label-muted  { color: var(--muted); }
+
+.card-title {
+  font-family: var(--mono); color: var(--text);
+  font-size: 17px; font-weight: 700;
+  letter-spacing: 0.02em; margin-bottom: 5px;
+}
+.card-title-sm {
+  font-family: var(--mono); color: var(--text);
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 0.02em; margin-bottom: 4px;
+}
+.card-body {
+  font-family: var(--mono); color: #a0a0c0;
+  font-size: 12px; line-height: 1.6;
+}
+.card-meta {
+  font-family: var(--mono);
+  font-size: 10px; color: var(--muted);
+  letter-spacing: 0.08em; margin-top: 8px;
+}
+
+/* YOU ARE HERE card specifics */
+.here-location {
+  font-family: var(--mono);
+  font-size: 20px; font-weight: 700;
+  color: var(--text); letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+.here-sublabel {
+  font-family: var(--mono);
+  color: var(--muted); font-size: 11px;
+  margin-bottom: 12px;
+}
+.here-btn {
+  display: inline-block;
+  background: var(--cyan);
+  color: #000; font-family: var(--mono);
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 8px 18px; border-radius: 3px;
+  cursor: pointer;
+}
+
+/* Travel progress bar */
+.travel-progress-wrap {
+  margin: 10px 0 4px;
+}
+.travel-progress-labels {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--muted); margin-bottom: 5px;
+}
+.travel-progress-track {
+  height: 6px; background: #1a1a2a;
+  border-radius: 3px; overflow: hidden;
+}
+.travel-progress-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--cyan), rgba(0,229,255,0.7));
+  transition: width 0.3s ease;
+}
+.travel-est {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--muted); margin-top: 5px;
+}
+
+/* Mission objective row */
+.obj-row {
+  display: flex; align-items: center;
+  gap: 10px; margin-top: 10px;
+}
+.obj-tag {
+  font-family: var(--mono); font-size: 9px;
+  font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 3px 8px;
+  border-radius: 2px; flex-shrink: 0;
+}
+.obj-tag-done { background: rgba(0,255,136,0.15); color: var(--green); }
+.obj-tag-active { background: rgba(255,140,0,0.15); color: var(--orange); }
+.obj-tag-locked { background: rgba(255,255,255,0.05); color: var(--muted); }
+.obj-text {
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.4;
+}
+.obj-text.done { color: var(--muted); text-decoration: line-through; }
+.obj-text.active { color: var(--text); }
+.obj-text.locked { color: var(--muted); }
+
+/* Action button */
+.action-btn {
+  width: 100%; margin-top: 12px;
+  padding: 12px 16px;
+  font-family: var(--mono); font-size: 13px;
+  font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; text-align: center;
+  border-radius: 3px; cursor: pointer;
+  display: flex; align-items: center;
+  justify-content: center; gap: 8px;
+}
+.btn-orange { background: var(--orange); color: #000; }
+.btn-pink   { background: var(--pink);   color: #000; }
+.btn-cyan   { background: var(--cyan);   color: #000; }
+.btn-ghost  {
+  background: transparent; color: var(--muted);
+  border: 1px solid #2a2a3a;
+}
+.btn-ghost:hover { color: #888; border-color: #444; }
+
+/* Side quest row layout */
+.quest-header {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 10px;
+}
+.quest-dist {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--muted); text-align: right;
+}
+.quest-dist strong { color: var(--orange); }
+
+/* Locked card */
+.locked-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.lock-icon { font-size: 14px; color: var(--muted); flex-shrink: 0; }
+.lock-text { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+/* Section divider */
+.section-divider {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--muted); letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0;
+}
+.section-divider::after {
+  content: ''; flex: 1; height: 1px; background: #1a1a2a;
+}
+
+/* Cancel button (destructive, subtle) */
+.cancel-travel {
+  font-family: var(--mono); font-size: 10px;
+  color: #ff4444; letter-spacing: 0.08em;
+  text-decoration: underline; cursor: pointer;
+  text-align: center; padding: 6px 0;
+  opacity: 0.6;
+}
+.cancel-travel:hover { opacity: 1; }
+
+/* ── TRAVEL CONFIRM SCREEN ── */
+.confirm-screen {
+  flex: 1; display: flex; flex-direction: column;
+  padding: 20px 20px 40px;
+}
+.confirm-back {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--muted); letter-spacing: 0.08em;
+  cursor: pointer; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 6px;
+}
+.confirm-back:hover { color: var(--text); }
+.confirm-eyebrow {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--cyan); letter-spacing: 0.2em;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.confirm-title {
+  font-family: var(--mono); font-size: 26px;
+  font-weight: 700; color: var(--text);
+  letter-spacing: 0.02em; margin-bottom: 4px;
+}
+.confirm-sub {
+  font-family: var(--mono); font-size: 13px;
+  color: var(--muted); margin-bottom: 28px;
+}
+.confirm-dist-box {
+  border: 1.5px solid var(--cyan);
+  background: rgba(0,229,255,0.04);
+  border-radius: 4px; padding: 20px;
+  text-align: center; margin-bottom: 20px;
+}
+.confirm-dist-value {
+  font-family: var(--mono); font-size: 48px;
+  font-weight: 700; color: var(--cyan);
+  letter-spacing: -0.02em; line-height: 1;
+  margin-bottom: 4px;
+}
+.confirm-dist-unit {
+  font-family: var(--mono); font-size: 13px;
+  color: var(--muted); letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.confirm-dist-sub {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--muted); margin-top: 8px;
+}
+
+.warning-box {
+  background: rgba(255,140,0,0.06);
+  border: 1px solid rgba(255,140,0,0.3);
+  border-radius: 4px; padding: 12px 14px;
+  margin-bottom: 24px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.warning-icon { color: var(--orange); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.warning-text {
+  font-family: var(--mono); font-size: 11px;
+  color: #c0a060; line-height: 1.6;
+}
+
+.confirm-what {
+  margin-bottom: 20px;
+}
+.confirm-what-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  margin-bottom: 8px;
+}
+.cwt-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--cyan); flex-shrink: 0; margin-top: 5px;
+}
+.cwt-text {
+  font-family: var(--mono); font-size: 12px;
+  color: #a0a0c0; line-height: 1.5;
+}
+
+.spacer { flex: 1; }
+
+/* Bottom nav */
+.bottom-nav {
+  height: 80px; background: rgba(8,8,16,0.95);
+  border-top: 1px solid #1a1a2a;
+  display: flex; align-items: flex-start;
+  padding-top: 10px;
+  flex-shrink: 0; z-index: 20;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; cursor: pointer;
+  padding: 2px 0;
+}
+.nav-icon { font-size: 20px; color: var(--muted); }
+.nav-label {
+  font-family: var(--mono); font-size: 9px;
+  color: var(--muted); letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.nav-item.active .nav-icon { color: var(--pink); }
+.nav-item.active .nav-label { color: var(--pink); }
+
+/* NEW badge */
+.new-badge {
+  position: absolute; top: 12px; right: 12px;
+  background: var(--pink); color: #000;
+  font-family: var(--mono); font-size: 9px;
+  font-weight: 700; letter-spacing: 0.1em;
+  padding: 2px 7px; border-radius: 2px;
+}
+
+/* Pulsing dot for active travel */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+.pulse-dot {
+  display: inline-block; width: 7px; height: 7px;
+  border-radius: 50%; background: var(--cyan);
+  animation: pulse 2s infinite; margin-right: 4px;
+  vertical-align: middle;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Runstrike · Story Tab</div>
+  <div class="header-sub">Three states + travel confirmation</div>
+</div>
+
+<div class="screen-nav">
+  <button class="nav-btn active" onclick="showScreen(0,this)">① At location</button>
+  <button class="nav-btn"        onclick="showScreen(1,this)">② Start travel</button>
+  <button class="nav-btn"        onclick="showScreen(2,this)">③ Traveling</button>
+  <button class="nav-btn"        onclick="showScreen(3,this)">④ Just arrived</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ============================================================
+       SCREEN 0 — STORY TAB: AT CURRENT LOCATION
+       ============================================================ -->
+  <div class="screen active" id="screen-0">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-right"><span>▲▲▲</span><span>⬛</span></div>
+    </div>
+    <div class="app-header">
+      <div class="app-title">Runstrike_</div>
+      <div class="app-gear">⚙</div>
+    </div>
+
+    <div class="tab-content">
+
+      <!-- YOU ARE HERE -->
+      <div class="card card-cyan">
+        <div class="card-label label-cyan">You are here</div>
+        <div class="here-location">Apartment B</div>
+        <div class="here-sublabel">Story world · current location</div>
+        <div class="here-btn">Explore →</div>
+      </div>
+
+      <!-- ACTIVE MISSION -->
+      <div class="card card-orange">
+        <div class="card-label label-orange">Active Mission</div>
+        <div class="card-title">Check on Alex</div>
+
+        <div class="obj-row">
+          <div class="obj-tag obj-tag-done">Done</div>
+          <div class="obj-text done">Run to Apartment B</div>
+        </div>
+        <div class="obj-row">
+          <div class="obj-tag obj-tag-active">Now</div>
+          <div class="obj-text active">Search Apartment B for clues</div>
+        </div>
+        <div class="obj-row">
+          <div class="obj-tag obj-tag-locked">Next</div>
+          <div class="obj-text locked">???</div>
+        </div>
+
+        <div class="action-btn btn-orange" style="margin-top:14px;">
+          ▶ Enter Apartment B
+        </div>
+      </div>
+
+      <!-- SIDE QUESTS divider -->
+      <div class="section-divider">Side Quests</div>
+
+      <!-- Side quest 1 — travel required -->
+      <div class="card card-purple">
+        <div class="quest-header">
+          <div class="card-label label-purple">Side Quest</div>
+          <div class="quest-dist">Travel required<br><strong>12.0 mi</strong></div>
+        </div>
+        <div class="card-title-sm">The Missing Package</div>
+        <div class="card-body">Word is the package was rerouted to the Warehouse District. Someone there knows what's inside.</div>
+        <div class="action-btn btn-ghost" onclick="showScreen(1, document.querySelectorAll('.nav-btn')[1])">
+          Begin Journey →
+        </div>
+      </div>
+
+      <!-- Side quest 2 — locked -->
+      <div class="card card-muted">
+        <div class="locked-row">
+          <div class="lock-icon">🔒</div>
+          <div>
+            <div class="card-title-sm" style="color:var(--muted);">???</div>
+            <div class="lock-text">Unlocks after completing "Check on Alex"</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="showScreen(0,document.querySelectorAll('.nav-btn')[0])">
+        <div class="nav-icon">📋</div><div class="nav-label">Feed</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">🗺</div><div class="nav-label">Map</div>
+      </div>
+      <div class="nav-item active">
+        <div class="nav-icon">📻</div><div class="nav-label">Story</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">🏃</div><div class="nav-label">Run</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SCREEN 1 — TRAVEL CONFIRMATION
+       ============================================================ -->
+  <div class="screen" id="screen-1">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-right"><span>▲▲▲</span><span>⬛</span></div>
+    </div>
+
+    <div class="confirm-screen">
+      <div class="confirm-back" onclick="showScreen(0, document.querySelectorAll('.nav-btn')[0])">
+        ← Back
+      </div>
+
+      <div class="confirm-eyebrow">New Journey</div>
+      <div class="confirm-title">Warehouse District</div>
+      <div class="confirm-sub">Side Quest · The Missing Package</div>
+
+      <div class="confirm-dist-box">
+        <div class="confirm-dist-value">12.0</div>
+        <div class="confirm-dist-unit">Miles to travel</div>
+        <div class="confirm-dist-sub">Accumulate across any number of runs</div>
+      </div>
+
+      <div class="warning-box">
+        <div class="warning-icon">⚠</div>
+        <div class="warning-text">
+          Once you begin this journey you are committed until you arrive. You may cancel at any time, but <strong style="color:var(--orange);">all progress will be lost.</strong>
+        </div>
+      </div>
+
+      <div class="confirm-what">
+        <div class="card-label label-muted" style="margin-bottom:10px;">What this means</div>
+        <div class="confirm-what-row">
+          <div class="cwt-dot"></div>
+          <div class="cwt-text">Every run, walk, or bike counts toward your 12.0 mi total</div>
+        </div>
+        <div class="confirm-what-row">
+          <div class="cwt-dot"></div>
+          <div class="cwt-text">You still collect items and intel on every run while traveling</div>
+        </div>
+        <div class="confirm-what-row">
+          <div class="cwt-dot"></div>
+          <div class="cwt-text">Once you arrive, the Warehouse District unlocks for exploration</div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="action-btn btn-cyan" onclick="showScreen(2, document.querySelectorAll('.nav-btn')[2])" style="font-size:15px;">
+        Begin Journey
+      </div>
+      <div style="margin-top:10px; text-align:center; font-family:var(--mono); font-size:11px; color:var(--muted); cursor:pointer;" onclick="showScreen(0, document.querySelectorAll('.nav-btn')[0])">
+        Not yet
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SCREEN 2 — STORY TAB: TRAVELING
+       ============================================================ -->
+  <div class="screen" id="screen-2">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-right"><span>▲▲▲</span><span>⬛</span></div>
+    </div>
+    <div class="app-header">
+      <div class="app-title">Runstrike_</div>
+      <div class="app-gear">⚙</div>
+    </div>
+
+    <div class="tab-content">
+
+      <!-- TRAVELING card (replaces YOU ARE HERE) -->
+      <div class="card card-cyan">
+        <div class="card-label label-cyan">
+          <span class="pulse-dot"></span>Traveling
+        </div>
+        <div class="here-location" style="font-size:17px;margin-bottom:2px;">→ Warehouse District</div>
+        <div class="here-sublabel" style="margin-bottom:10px;">Side Quest · The Missing Package</div>
+
+        <div class="travel-progress-wrap">
+          <div class="travel-progress-labels">
+            <span>4.2 mi traveled</span>
+            <span>12.0 mi total</span>
+          </div>
+          <div class="travel-progress-track">
+            <div class="travel-progress-fill" style="width:35%;"></div>
+          </div>
+          <div class="travel-est">Est. 2–3 more runs at your current pace</div>
+        </div>
+
+        <div class="cancel-travel">Cancel journey (progress will be lost)</div>
+      </div>
+
+      <!-- ACTIVE MISSION (unchanged, still in progress) -->
+      <div class="card card-orange">
+        <div class="card-label label-orange">Active Mission</div>
+        <div class="card-title">Check on Alex</div>
+        <div class="obj-row">
+          <div class="obj-tag obj-tag-done">Done</div>
+          <div class="obj-text done">Run to Apartment B</div>
+        </div>
+        <div class="obj-row">
+          <div class="obj-tag obj-tag-active">Now</div>
+          <div class="obj-text active">Search Apartment B for clues</div>
+        </div>
+        <div class="obj-row">
+          <div class="obj-tag obj-tag-locked">Next</div>
+          <div class="obj-text locked">???</div>
+        </div>
+        <div class="action-btn btn-orange">▶ Enter Apartment B</div>
+      </div>
+
+      <!-- SIDE QUESTS divider -->
+      <div class="section-divider">Side Quests</div>
+
+      <!-- Quest in progress -->
+      <div class="card card-purple" style="opacity:0.6;">
+        <div class="quest-header">
+          <div class="card-label label-purple">In Progress</div>
+          <div class="quest-dist"><strong style="color:var(--cyan);">4.2</strong> / 12.0 mi</div>
+        </div>
+        <div class="card-title-sm">The Missing Package</div>
+        <div class="card-body" style="color:var(--muted);">Traveling to Warehouse District…</div>
+      </div>
+
+      <!-- Locked -->
+      <div class="card card-muted">
+        <div class="locked-row">
+          <div class="lock-icon">🔒</div>
+          <div>
+            <div class="card-title-sm" style="color:var(--muted);">???</div>
+            <div class="lock-text">Unlocks after completing "Check on Alex"</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">Feed</div></div>
+      <div class="nav-item"><div class="nav-icon">🗺</div><div class="nav-label">Map</div></div>
+      <div class="nav-item active"><div class="nav-icon">📻</div><div class="nav-label">Story</div></div>
+      <div class="nav-item"><div class="nav-icon">🏃</div><div class="nav-label">Run</div></div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SCREEN 3 — STORY TAB: JUST ARRIVED
+       ============================================================ -->
+  <div class="screen" id="screen-3">
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-right"><span>▲▲▲</span><span>⬛</span></div>
+    </div>
+    <div class="app-header">
+      <div class="app-title">Runstrike_</div>
+      <div class="app-gear">⚙</div>
+    </div>
+
+    <div class="tab-content">
+
+      <!-- NEW TRANSMISSION — arrival beat -->
+      <div class="card card-pink" style="position:relative;">
+        <div class="new-badge">NEW</div>
+        <div class="card-label label-pink">T-004 · Transmission</div>
+        <div class="card-title-sm">You've arrived.</div>
+        <div class="card-body">"The Warehouse District. You can smell the river from here. Nobody comes this far east unless they have to."</div>
+        <div class="card-meta">03.16.2026 · 09.41</div>
+      </div>
+
+      <!-- YOU ARE HERE — new location -->
+      <div class="card card-cyan">
+        <div class="card-label label-cyan">You are here</div>
+        <div class="here-location">Warehouse District</div>
+        <div class="here-sublabel">Story world · current location</div>
+        <div class="here-btn">Explore →</div>
+      </div>
+
+      <!-- Side quest — now active -->
+      <div class="card card-purple">
+        <div class="quest-header">
+          <div class="card-label label-purple">Side Quest · Active</div>
+        </div>
+        <div class="card-title-sm">The Missing Package</div>
+        <div class="card-body">You made it. Now find whoever rerouted it.</div>
+        <div class="obj-row" style="margin-top:8px;">
+          <div class="obj-tag obj-tag-active">Now</div>
+          <div class="obj-text active">Search the loading dock</div>
+        </div>
+        <div class="action-btn btn-pink">▶ Enter Warehouse District</div>
+      </div>
+
+      <!-- Main mission unchanged -->
+      <div class="card card-orange" style="opacity:0.7;">
+        <div class="card-label label-orange">Active Mission</div>
+        <div class="card-title" style="font-size:15px;">Check on Alex</div>
+        <div class="card-body" style="font-size:11px;">On hold while you're in the Warehouse District.</div>
+      </div>
+
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">Feed</div></div>
+      <div class="nav-item"><div class="nav-icon">🗺</div><div class="nav-label">Map</div></div>
+      <div class="nav-item active"><div class="nav-icon">📻</div><div class="nav-label">Story</div></div>
+      <div class="nav-item"><div class="nav-icon">🏃</div><div class="nav-label">Run</div></div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<!-- Design notes -->
+<div style="max-width:390px;width:100%;display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+  <div style="color:var(--muted);font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.1em;">Design notes</div>
+
+  <div class="note-card visible" id="note-0"
+       style="background:#0d0d18;border:1px solid #1e1e2e;border-radius:8px;padding:14px 16px;display:block;">
+    <div style="color:var(--cyan);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:6px;">① At location</div>
+    <div style="color:#888;font-family:var(--mono);font-size:11px;line-height:1.7;">YOU ARE HERE card (cyan) anchors the tab — always first, always tells you where you are in the story world. Active mission below it with clear objective checklist. Side quests are visually separate (divider + purple accent). Locked quests show their unlock condition — players always know what's coming without being told what it is.</div>
+  </div>
+
+  <div class="note-card" id="note-1"
+       style="background:#0d0d18;border:1px solid #1e1e2e;border-radius:8px;padding:14px 16px;display:none;">
+    <div style="color:var(--cyan);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:6px;">② Travel confirmation</div>
+    <div style="color:#888;font-family:var(--mono);font-size:11px;line-height:1.7;">The distance is the hero element — large, prominent, unambiguous. The warning box makes the commitment clear without being preachy. "What this means" bullets explain the mechanic without a tutorial. "Not yet" instead of "Cancel" keeps the tone low-pressure. This screen earns the weight of the decision.</div>
+  </div>
+
+  <div class="note-card" id="note-2"
+       style="background:#0d0d18;border:1px solid #1e1e2e;border-radius:8px;padding:14px 16px;display:none;">
+    <div style="color:var(--cyan);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:6px;">③ Traveling</div>
+    <div style="color:#888;font-family:var(--mono);font-size:11px;line-height:1.7;">YOU ARE HERE becomes TRAVELING — same position, same cyan card, pulsing dot. Progress bar uses the same style as the weekly mileage bar on the Feed tab. Cancel is present but de-emphasized (small, red, below the fold). The active mission remains fully accessible — being on a journey doesn't block your main quest.</div>
+  </div>
+
+  <div class="note-card" id="note-3"
+       style="background:#0d0d18;border:1px solid #1e1e2e;border-radius:8px;padding:14px 16px;display:none;">
+    <div style="color:var(--cyan);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:6px;">④ Just arrived</div>
+    <div style="color:#888;font-family:var(--mono);font-size:11px;line-height:1.7;">Arrival fires a new transmission (pink, NEW badge) — this is the "little something" when you complete a journey. It's in the same format as the existing story transmissions, so it fits naturally. YOU ARE HERE updates to the new location. The completed side quest immediately becomes actionable. Main mission de-emphasized while you're away from it — not blocked, just quieted.</div>
+  </div>
+</div>
+
+<script>
+  function showScreen(i, btn) {
+    document.querySelectorAll('.screen').forEach((s,j) => s.classList.toggle('active', j===i));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.note-card').forEach((n,j) => n.style.display = j===i ? 'block' : 'none');
+  }
+</script>
+</body>
+</html>
