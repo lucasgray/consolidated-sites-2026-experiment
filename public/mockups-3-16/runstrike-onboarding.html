@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Runstrike — First Login + First Activity</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --pink:   #ff2d6b;
+  --cyan:   #00e5ff;
+  --orange: #ff8c00;
+  --green:  #00ff88;
+  --yellow: #ffe066;
+  --bg:     #06060e;
+  --card:   #0c0c1a;
+  --text:   #e0e0f0;
+  --muted:  #444460;
+  --mono:   'Share Tech Mono', 'Courier New', monospace;
+  --pixel:  'Press Start 2P', monospace;
+}
+body {
+  background: #04040c; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 40px 20px 60px; font-family: var(--mono); gap: 22px;
+}
+.header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.header-title { color: var(--cyan); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; }
+.header-sub { color: var(--muted); font-size: 11px; }
+
+.screen-nav {
+  display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;
+  background: rgba(255,255,255,0.03); padding: 4px;
+  border-radius: 20px; border: 1px solid #181828; max-width: 540px;
+}
+.nav-btn {
+  background: transparent; border: none; color: var(--muted);
+  padding: 7px 11px; border-radius: 16px; cursor: pointer;
+  font-size: 10px; font-family: var(--mono); letter-spacing: 0.04em; transition: all 0.15s;
+}
+.nav-btn:hover { color: #aaa; }
+.nav-btn.active { background: var(--pink); color: #000; font-weight: 700; }
+
+/* Phone */
+.phone {
+  width: 390px; height: 844px; background: var(--bg);
+  border-radius: 50px; overflow: hidden; position: relative;
+  box-shadow: 0 0 0 2px #181828, 0 0 0 4px #0c0c1a, 0 40px 100px rgba(0,0,0,0.9);
+  flex-shrink: 0;
+}
+.notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 130px; height: 34px; background: var(--bg);
+  border-radius: 0 0 22px 22px; z-index: 200;
+}
+.screen {
+  position: absolute; inset: 0; display: none;
+  flex-direction: column; background: var(--bg); z-index: 1; overflow: hidden;
+}
+.screen.active { display: flex; }
+.status-bar {
+  height: 44px; padding: 12px 22px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; z-index: 20;
+}
+.status-time { color: #fff; font-size: 15px; font-weight: 600; }
+.status-right { display: flex; gap: 5px; align-items: center; font-size: 12px; color: #fff; }
+.scroll-body { flex: 1; overflow-y: auto; padding: 0 20px 24px; }
+.scroll-body::-webkit-scrollbar { display: none; }
+
+/* Bottom nav */
+.bottom-nav {
+  height: 80px; background: rgba(6,6,14,0.97);
+  border-top: 1px solid #181828;
+  display: flex; align-items: flex-start;
+  padding-top: 10px; flex-shrink: 0; z-index: 20;
+}
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+.nav-icon  { font-size: 20px; color: var(--muted); }
+.nav-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.nav-item.active .nav-icon, .nav-item.active .nav-label { color: var(--pink); }
+
+/* Shared components */
+.cta-btn {
+  width: 100%; padding: 16px; text-align: center;
+  font-family: var(--mono); font-size: 13px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  border-radius: 4px; cursor: pointer; border: none; transition: opacity 0.1s;
+}
+.cta-btn:active { opacity: 0.8; }
+.cta-cyan   { background: var(--cyan);   color: #000; }
+.cta-pink   { background: var(--pink);   color: #000; }
+.cta-green  { background: var(--green);  color: #000; }
+.cta-ghost  { background: transparent; color: var(--muted); border: 1px solid #252535; }
+.cta-note   { font-size: 10px; color: var(--muted); text-align: center; margin-top: 10px; line-height: 1.6; }
+.section-label {
+  font-size: 9px; color: var(--muted); letter-spacing: 0.15em;
+  text-transform: uppercase; margin: 20px 0 10px;
+}
+.divider { width: 100%; height: 1px; background: #1a1a2a; margin: 18px 0; }
+
+/* Pixel art placeholder */
+.px-placeholder {
+  width: 100%; background: #0a0a18;
+  border: 1px dashed #2a2a44; border-radius: 6px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; color: #3a3a60; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.px-placeholder .px-icon { font-size: 28px; opacity: 0.4; }
+
+/* ── SCREEN 0: BOOT ── */
+.boot-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 40px 24px;
+  background: var(--bg); position: relative; overflow: hidden; cursor: pointer;
+}
+.boot-scan {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px,
+    rgba(0,229,255,0.012) 2px, rgba(0,229,255,0.012) 4px);
+}
+.boot-logo {
+  font-family: var(--pixel); font-size: 22px; color: var(--cyan);
+  letter-spacing: 0.15em; text-align: center; line-height: 1.6;
+  text-shadow: 0 0 30px rgba(0,229,255,0.5), 0 0 60px rgba(0,229,255,0.2);
+}
+.boot-sub { font-size: 9px; color: rgba(0,229,255,0.4); letter-spacing: 0.2em; text-align: center; margin-top: 10px; }
+.boot-log { margin-top: 44px; width: 100%; font-size: 10px; color: rgba(0,229,255,0.5); line-height: 2.1; }
+.boot-log-line { display: flex; justify-content: space-between; }
+.ok  { color: #00ff88; } .err { color: var(--pink); } .pnd { color: var(--yellow); }
+.boot-bar-track { height: 4px; background: #1a1a2a; border-radius: 2px; margin-top: 8px; }
+.boot-bar-fill  { height: 100%; width: 68%; background: linear-gradient(90deg, var(--cyan), rgba(0,229,255,0.3)); border-radius: 2px; }
+.boot-tap {
+  margin-top: 40px; font-family: var(--pixel); font-size: 7px;
+  color: rgba(0,229,255,0.45); letter-spacing: 0.15em; text-align: center;
+  animation: blink 1.2s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── SCREEN 1: CALLSIGN ── */
+.tx-frame {
+  background: rgba(255,45,107,0.06); border: 1px solid rgba(255,45,107,0.3);
+  border-radius: 10px; padding: 16px; margin-bottom: 20px;
+}
+.tx-urgent { font-family: var(--pixel); font-size: 6px; color: var(--pink); letter-spacing: 0.1em; }
+.tx-id     { font-size: 9px; color: var(--muted); margin: 8px 0 4px; }
+.tx-from   { font-size: 10px; color: var(--muted); margin-bottom: 10px; }
+.tx-from span { color: var(--text); }
+.tx-body   { font-size: 12px; color: #c0c0d8; line-height: 1.7; }
+.callsign-label { font-size: 9px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+.callsign-field {
+  width: 100%; background: #0c0c1c; border: 1px solid rgba(0,229,255,0.35);
+  border-radius: 4px; padding: 14px 16px;
+  font-family: var(--pixel); font-size: 11px; color: var(--cyan); letter-spacing: 0.1em;
+  display: flex; align-items: center;
+}
+.callsign-cursor { animation: blink 0.9s step-end infinite; }
+.callsign-hint { font-size: 10px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+
+/* ── SCREEN 2: ACTIVITY SETUP ── */
+.activity-card {
+  border: 2px solid #1e1e2e; border-radius: 12px; padding: 14px 16px;
+  margin-bottom: 10px; cursor: pointer; transition: all 0.15s; background: #0c0c1a;
+  display: flex; align-items: center; gap: 14px;
+}
+.activity-card.selected { border-color: var(--cyan); background: rgba(0,229,255,0.07); }
+.activity-card.selected .ac-name { color: var(--cyan); }
+.activity-emoji { font-size: 26px; flex-shrink: 0; }
+.ac-name  { font-family: var(--pixel); font-size: 8px; color: var(--text); letter-spacing: 0.08em; margin-bottom: 5px; }
+.ac-desc  { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.ac-check {
+  margin-left: auto; width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid #2a2a3a; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.activity-card.selected .ac-check { background: var(--cyan); border-color: var(--cyan); }
+.activity-card.selected .ac-check::after { content: '✓'; font-size: 11px; color: #000; font-weight: 700; }
+
+.level-row { display: flex; gap: 8px; }
+.level-card {
+  flex: 1; border: 2px solid #1e1e2e; border-radius: 10px; padding: 12px 10px;
+  cursor: pointer; transition: all 0.15s; background: #0c0c1a; text-align: center;
+}
+.level-card.selected { border-color: var(--pink); background: rgba(255,45,107,0.07); }
+.level-card.selected .lv-name { color: var(--pink); }
+.lv-icon { font-size: 18px; margin-bottom: 6px; }
+.lv-name { font-family: var(--pixel); font-size: 7px; color: var(--text); letter-spacing: 0.06em; margin-bottom: 4px; }
+.lv-desc { font-size: 10px; color: var(--muted); line-height: 1.4; }
+
+.mileage-preview {
+  background: #0c0c1a; border: 1px solid #1e1e2e; border-radius: 8px;
+  padding: 12px 14px; margin-top: 14px;
+}
+.mp-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 8px; text-transform: uppercase; }
+.mp-row { display: flex; justify-content: space-between; font-size: 11px; color: #9090b0; padding: 3px 0; }
+.mp-row span { color: var(--text); }
+.mp-note { font-size: 10px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+/* ── SCREEN 3: LOCATION ── */
+@keyframes radar-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.radar-sweep { transform-origin: 80px 80px; animation: radar-spin 3s linear infinite; }
+
+/* ── SCREEN 4: FIRST NARRATIVE BEAT (doomscroll → notification) ── */
+.vn-scene {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--bg); overflow: hidden; cursor: pointer;
+}
+.vn-bg {
+  flex: 1; position: relative; overflow: hidden;
+  display: flex; align-items: flex-end;
+}
+.vn-portrait {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: flex-end; justify-content: center;
+  width: 100%; height: 100%;
+}
+.vn-dialogue {
+  background: rgba(8,8,20,0.97); border-top: 1px solid #1e1e2e;
+  padding: 14px 18px 16px; flex-shrink: 0; min-height: 140px; position: relative;
+}
+.vn-speaker { font-family: var(--pixel); font-size: 7px; letter-spacing: 0.1em; margin-bottom: 8px; }
+.vn-text { font-size: 13px; color: var(--text); line-height: 1.8; }
+.vn-tap { position: absolute; bottom: 14px; right: 18px; font-size: 10px; color: var(--muted); animation: blink 1.2s step-end infinite; }
+
+/* Doomscroll phone-in-phone */
+.doom-feed {
+  flex: 1; overflow: hidden; background: #0a0a16;
+  display: flex; flex-direction: column; padding: 0;
+}
+.doom-post {
+  padding: 12px 14px; border-bottom: 1px solid #121222;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.doom-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: #1a1a2c; display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.doom-name { font-size: 11px; color: var(--text); font-weight: 700; margin-bottom: 2px; }
+.doom-title { font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+.doom-content { font-size: 11px; color: #9090b0; line-height: 1.5; }
+.doom-content.red { color: rgba(255,45,107,0.7); }
+.doom-content.yellow { color: rgba(255,224,102,0.7); }
+.doom-blur { filter: blur(2px); opacity: 0.5; }
+
+.notif-overlay {
+  position: absolute; top: 50px; left: 14px; right: 14px; z-index: 50;
+  background: rgba(12,12,26,0.97); border: 1px solid rgba(0,229,255,0.4);
+  border-radius: 12px; padding: 12px 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+}
+.notif-app  { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 4px; }
+.notif-title { font-size: 12px; color: var(--text); font-weight: 700; margin-bottom: 3px; }
+.notif-body  { font-size: 11px; color: #9090b0; line-height: 1.4; }
+
+/* ── SCREEN 5: STORY TAB ── */
+.tab-header { padding: 16px 20px 8px; font-family: var(--pixel); font-size: 8px; color: var(--text); flex-shrink: 0; border-bottom: 1px solid #0e0e1e; }
+.here-card {
+  background: rgba(0,229,255,0.06); border: 1px solid rgba(0,229,255,0.3);
+  border-radius: 10px; padding: 12px 16px; margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.here-label { font-family: var(--pixel); font-size: 7px; color: var(--cyan); letter-spacing: 0.1em; }
+.here-name  { font-family: var(--pixel); font-size: 9px; color: var(--cyan); margin-top: 4px; line-height: 1.5; }
+.mission-card {
+  background: rgba(255,45,107,0.06); border: 1px solid rgba(255,45,107,0.3);
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; cursor: pointer;
+}
+.mission-eyebrow { font-size: 9px; color: rgba(255,45,107,0.7); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+.mission-title { font-family: var(--pixel); font-size: 9px; color: var(--pink); line-height: 1.6; margin-bottom: 5px; }
+.mission-sub { font-size: 11px; color: #9090b0; line-height: 1.5; }
+.clue-card {
+  background: rgba(255,140,0,0.06); border: 1px solid rgba(255,140,0,0.28);
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 12px;
+}
+.clue-eyebrow { font-size: 9px; color: rgba(255,140,0,0.7); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+.clue-title { font-family: var(--pixel); font-size: 8px; color: var(--orange); line-height: 1.6; margin-bottom: 5px; }
+.clue-body  { font-size: 11px; color: #9090b0; line-height: 1.5; }
+.clue-new {
+  display: inline-block; background: var(--orange); color: #000;
+  font-family: var(--pixel); font-size: 5px; padding: 3px 5px; border-radius: 2px;
+  letter-spacing: 0.05em; margin-bottom: 6px;
+}
+
+/* Tutorial overlay */
+.tutorial-overlay {
+  position: absolute; inset: 0; z-index: 100;
+  background: rgba(4,4,12,0.75);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  padding-bottom: 210px; pointer-events: none;
+}
+.tutorial-bubble {
+  background: var(--yellow); color: #000;
+  border-radius: 8px; padding: 12px 16px;
+  font-size: 11px; font-weight: 700; line-height: 1.5;
+  max-width: 270px; text-align: center; position: relative; pointer-events: auto; cursor: pointer;
+}
+.tutorial-bubble::after {
+  content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+  border: 8px solid transparent; border-top: 8px solid var(--yellow); border-bottom: none;
+}
+
+/* ── SCREEN 6: MAP / PLACE DESTINATION ── */
+.map-toggle {
+  display: flex; background: #0c0c1a; border-bottom: 1px solid #181828;
+  flex-shrink: 0; padding: 8px 16px; gap: 8px;
+}
+.toggle-btn {
+  flex: 1; padding: 9px 8px; text-align: center; font-family: var(--mono);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; border-radius: 4px; color: var(--muted);
+  background: transparent; border: 1px solid #1a1a2a; transition: all 0.15s;
+}
+.toggle-btn.active { background: var(--cyan); color: #000; border-color: var(--cyan); }
+.map-area { flex: 1; position: relative; overflow: hidden; }
+.map-confirm {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 12px 16px; background: rgba(6,6,14,0.96); border-top: 1px solid #181828; z-index: 30;
+}
+.map-confirm-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.dest-pin-preview {
+  width: 36px; height: 36px; background: rgba(255,45,107,0.15);
+  border: 1.5px solid rgba(255,45,107,0.5); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.dest-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.dest-name  { font-family: var(--pixel); font-size: 8px; color: var(--pink); margin-top: 3px; line-height: 1.5; }
+.dest-dist  { font-size: 11px; color: #8080a0; margin-top: 2px; }
+
+/* ── SCREEN 7: LOADOUT ── */
+.run-banner {
+  padding: 10px 20px; text-align: center; flex-shrink: 0;
+  font-family: var(--pixel); font-size: 7px; letter-spacing: 0.15em; text-transform: uppercase;
+}
+.run-banner.story { background: rgba(255,45,107,0.12); color: var(--pink); border-bottom: 1px solid rgba(255,45,107,0.2); }
+.loadout-mission {
+  background: rgba(255,45,107,0.05); border: 1px solid rgba(255,45,107,0.2);
+  border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;
+}
+.loadout-mission-label { font-size: 9px; color: rgba(255,45,107,0.6); letter-spacing: 0.1em; margin-bottom: 4px; }
+.loadout-mission-name  { font-family: var(--pixel); font-size: 8px; color: var(--pink); line-height: 1.5; }
+.companion-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.companion-card {
+  flex: 1; background: #0c0c1a; border: 1px solid #1e1e2e;
+  border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer;
+}
+.companion-card.locked   { opacity: 0.38; cursor: default; }
+.companion-emoji { font-size: 24px; margin-bottom: 6px; }
+.companion-name  { font-family: var(--pixel); font-size: 6px; color: var(--text); }
+.companion-bonus { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+.loadout-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.loadout-item { flex: 1; background: #0c0c1a; border: 1px solid #1e1e2e; border-radius: 8px; padding: 10px 12px; }
+.loadout-item-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 4px; }
+.loadout-item-val   { font-family: var(--pixel); font-size: 7px; color: var(--text); line-height: 1.5; }
+
+/* ── SCREEN 8: DURING RUN ── */
+.run-hud-wrap { flex: 1; position: relative; overflow: hidden; }
+.run-hud-overlay {
+  position: absolute; inset: 0; z-index: 20;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 60px 16px 16px; pointer-events: none;
+}
+.hud-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.hud-badge {
+  background: rgba(6,6,14,0.88); border: 1px solid #1e1e2e;
+  border-radius: 8px; padding: 8px 12px;
+}
+.hud-badge-label { font-size: 8px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 3px; }
+.hud-badge-val   { font-family: var(--pixel); font-size: 9px; color: var(--text); line-height: 1.5; }
+.hud-bottom { pointer-events: auto; }
+.hud-toast {
+  background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.4);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hud-toast-icon  { font-size: 20px; flex-shrink: 0; }
+.hud-toast-label { font-size: 8px; color: var(--cyan); letter-spacing: 0.1em; margin-bottom: 2px; text-transform: uppercase; }
+.hud-toast-val   { font-family: var(--pixel); font-size: 7px; color: var(--text); line-height: 1.5; }
+.hud-toast-sub   { font-size: 10px; color: var(--muted); }
+.hud-end-btn {
+  width: 100%; padding: 14px; text-align: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  border: none; cursor: pointer; border-radius: 4px; pointer-events: auto;
+  background: rgba(6,6,14,0.9); color: var(--muted); border: 1px solid #252535;
+}
+
+/* ── SCREEN 9: POST-RUN ── */
+.postrun-hero {
+  background: rgba(0,255,136,0.06); border-top: 3px solid var(--green);
+  padding: 20px 20px 16px; flex-shrink: 0; text-align: center;
+}
+.postrun-status { font-family: var(--pixel); font-size: 8px; color: var(--green); letter-spacing: 0.15em; margin-bottom: 8px; }
+.postrun-dist   { font-family: var(--pixel); font-size: 28px; color: var(--text); line-height: 1.2; }
+.postrun-unit   { font-family: var(--pixel); font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.1em; }
+.postrun-stats-row { display: flex; border-top: 1px solid #1e1e2e; flex-shrink: 0; }
+.postrun-stat { flex: 1; padding: 12px 10px; text-align: center; border-right: 1px solid #1e1e2e; }
+.postrun-stat:last-child { border-right: none; }
+.ps-val   { font-family: var(--pixel); font-size: 10px; color: var(--text); }
+.ps-label { font-size: 9px; color: var(--muted); margin-top: 4px; }
+.unlock-card {
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; position: relative; overflow: hidden;
+}
+.unlock-card.cat  { background: rgba(0,229,255,0.07); border: 1px solid rgba(0,229,255,0.35); }
+.unlock-card.item { background: rgba(255,224,102,0.07); border: 1px solid rgba(255,224,102,0.3); }
+.unlock-badge {
+  position: absolute; top: 10px; right: 12px;
+  font-family: var(--pixel); font-size: 5px; padding: 3px 6px; border-radius: 2px; letter-spacing: 0.05em;
+}
+.unlock-badge.cyan   { background: var(--cyan);   color: #000; }
+.unlock-badge.yellow { background: var(--yellow); color: #000; }
+.unlock-eyebrow { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+.unlock-title   { font-family: var(--pixel); font-size: 8px; line-height: 1.6; margin-bottom: 5px; }
+.unlock-body    { font-size: 11px; color: #9090b0; line-height: 1.6; }
+
+/* Design notes */
+.note-card { background: #0c0c1a; border: 1px solid #1e1e2e; border-radius: 8px; padding: 14px 16px; }
+.note-title { color: var(--cyan); font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+.note-body  { color: #888; font-size: 11px; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Runstrike — First Login + First Activity</div>
+  <div class="header-sub">Account setup → activity profile → first narrative beat → first run → cat companion unlocked</div>
+</div>
+
+<div class="screen-nav">
+  <button class="nav-btn active" onclick="show(0,this)">① Boot</button>
+  <button class="nav-btn"        onclick="show(1,this)">② Callsign</button>
+  <button class="nav-btn"        onclick="show(2,this)">③ Activity</button>
+  <button class="nav-btn"        onclick="show(3,this)">④ Location</button>
+  <button class="nav-btn"        onclick="show(4,this)">⑤ Story intro</button>
+  <button class="nav-btn"        onclick="show(5,this)">⑥ Story tab</button>
+  <button class="nav-btn"        onclick="show(6,this)">⑦ Place dest.</button>
+  <button class="nav-btn"        onclick="show(7,this)">⑧ Loadout</button>
+  <button class="nav-btn"        onclick="show(8,this)">⑨ During run</button>
+  <button class="nav-btn"        onclick="show(9,this)">⑩ Post-run</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ══ SCREEN 0 · BOOT ══ -->
+  <div class="screen active" id="s0" onclick="show(1,document.querySelectorAll('.nav-btn')[1])">
+    <div class="boot-wrap">
+      <div class="boot-scan"></div>
+      <div class="boot-logo">RUN<br>STRIKE</div>
+      <div class="boot-sub">move. discover. resist.</div>
+      <div class="boot-log" style="margin-top:44px;">
+        <div class="boot-log-line"><span>DOME REGISTRY</span><span class="ok">[ OK ]</span></div>
+        <div class="boot-log-line"><span>ACTIVITY TRACKER</span><span class="ok">[ OK ]</span></div>
+        <div class="boot-log-line"><span>GRID SYNC</span><span class="pnd">[ PENDING ]</span></div>
+        <div class="boot-log-line"><span>RUNNER ID</span><span class="err">[ NOT FOUND ]</span></div>
+      </div>
+      <div style="width:100%;margin-top:16px;">
+        <div style="font-size:9px;color:rgba(0,229,255,0.45);letter-spacing:0.1em;">INITIALIZING...</div>
+        <div class="boot-bar-track"><div class="boot-bar-fill"></div></div>
+      </div>
+      <div class="boot-tap">TAP TO BEGIN</div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 1 · CALLSIGN ══ -->
+  <div class="screen" id="s1">
+    <div class="status-bar">
+      <span class="status-time">3:07</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="scroll-body" style="padding-top:16px;">
+      <div class="tx-frame">
+        <div class="tx-urgent">⚡ INCOMING — UNREGISTERED RUNNER DETECTED</div>
+        <div class="tx-id">SYSTEM · RUNNER REGISTRATION</div>
+        <div class="tx-body" style="margin-top:6px;">Welcome to the network. Before we can sync your grid, we need a name to find you by.<br><br>Choose carefully — it stays with you.</div>
+      </div>
+
+      <div class="callsign-label">Your callsign</div>
+      <div class="callsign-field">JANE_07<span class="callsign-cursor">█</span></div>
+      <div class="callsign-hint">6–12 characters. Letters, numbers, underscores only.</div>
+
+      <div class="divider"></div>
+      <button class="cta-btn cta-pink" onclick="show(2,document.querySelectorAll('.nav-btn')[2])">CONFIRM →</button>
+      <div class="cta-note">By continuing you agree to the runner network terms of service.</div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 2 · ACTIVITY SETUP ══ -->
+  <div class="screen" id="s2">
+    <div class="status-bar">
+      <span class="status-time">3:08</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="scroll-body" style="padding-top:16px;">
+
+      <div style="font-family:var(--pixel);font-size:9px;color:var(--text);letter-spacing:0.08em;line-height:1.8;margin-bottom:4px;">HOW DO YOU MOVE?</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:18px;line-height:1.6;">We'll use this to set mission distances throughout the game. You can override it per run or change it anytime in settings.</div>
+
+      <!-- Activity type -->
+      <div class="activity-card selected" id="ac-run" onclick="selectActivity('run')">
+        <div class="activity-emoji">🏃</div>
+        <div>
+          <div class="ac-name">RUNNING</div>
+          <div class="ac-desc">Default distances tuned for running pace</div>
+        </div>
+        <div class="ac-check"></div>
+      </div>
+      <div class="activity-card" id="ac-bike" onclick="selectActivity('bike')">
+        <div class="activity-emoji">🚴</div>
+        <div>
+          <div class="ac-name">BIKING</div>
+          <div class="ac-desc">Distances scaled up for cycling range</div>
+        </div>
+        <div class="ac-check"></div>
+      </div>
+      <div class="activity-card" id="ac-walk" onclick="selectActivity('walk')">
+        <div class="activity-emoji">🚶</div>
+        <div>
+          <div class="ac-name">WALKING</div>
+          <div class="ac-desc">Shorter, more leisurely mission distances</div>
+        </div>
+        <div class="ac-check"></div>
+      </div>
+
+      <div class="section-label" style="margin-top:22px;">Your level</div>
+      <div class="level-row">
+        <div class="level-card" id="lv-beg" onclick="selectLevel('beg')">
+          <div class="lv-icon">🌱</div>
+          <div class="lv-name">BEGINNER</div>
+          <div class="lv-desc">Just getting started</div>
+        </div>
+        <div class="level-card selected" id="lv-mid" onclick="selectLevel('mid')">
+          <div class="lv-icon">⚡</div>
+          <div class="lv-name">INTERMEDIATE</div>
+          <div class="lv-desc">Regular mover</div>
+        </div>
+        <div class="level-card" id="lv-adv" onclick="selectLevel('adv')">
+          <div class="lv-icon">🔥</div>
+          <div class="lv-name">ADVANCED</div>
+          <div class="lv-desc">Seasoned athlete</div>
+        </div>
+      </div>
+
+      <!-- Live mileage preview -->
+      <div class="mileage-preview" id="mileage-preview">
+        <div class="mp-label">Your mission distances will look like</div>
+        <div class="mp-row"><span>Short run</span> <span id="mp-short">1.5 mi</span></div>
+        <div class="mp-row"><span>Standard mission</span> <span id="mp-mid">3.0 mi</span></div>
+        <div class="mp-row"><span>Travel leg</span> <span id="mp-long">5.0 mi</span></div>
+        <div class="mp-note">These adjust dynamically as you progress. You can override any individual run.</div>
+      </div>
+
+      <div class="divider"></div>
+      <button class="cta-btn cta-cyan" onclick="show(3,document.querySelectorAll('.nav-btn')[3])">SET UP MY PROFILE →</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3 · LOCATION SYNC ══ -->
+  <div class="screen" id="s3">
+    <div class="status-bar">
+      <span class="status-time">3:08</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="scroll-body" style="padding-top:16px;">
+      <div style="text-align:center;margin-bottom:4px;">
+        <div style="font-family:var(--pixel);font-size:9px;color:var(--cyan);letter-spacing:0.1em;line-height:1.8;">GRID SYNC<br>REQUIRED</div>
+      </div>
+      <div style="display:flex;justify-content:center;margin:16px 0;">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="74" fill="none" stroke="rgba(0,229,255,0.12)" stroke-width="1.5"/>
+          <circle cx="80" cy="80" r="52" fill="none" stroke="rgba(0,229,255,0.10)" stroke-width="1"/>
+          <circle cx="80" cy="80" r="30" fill="none" stroke="rgba(0,229,255,0.10)" stroke-width="1"/>
+          <circle cx="80" cy="80" r="6" fill="rgba(0,229,255,0.6)"/>
+          <line x1="80" y1="6"   x2="80" y2="22"  stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+          <line x1="80" y1="138" x2="80" y2="154" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+          <line x1="6"  y1="80"  x2="22"  y2="80" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+          <line x1="138" y1="80" x2="154" y2="80" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+          <g class="radar-sweep">
+            <path d="M 80 80 L 80 6" stroke="rgba(0,229,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M 80 80 L 80 6" stroke="rgba(0,229,255,0.12)" stroke-width="28" stroke-linecap="round" transform="rotate(-30 80 80)"/>
+          </g>
+          <circle cx="112" cy="54" r="3" fill="rgba(0,229,255,0.8)"/>
+          <circle cx="48"  cy="98" r="2" fill="rgba(0,229,255,0.5)"/>
+        </svg>
+      </div>
+      <div style="background:#0c0c1a;border:1px solid #1e1e2e;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">📍</div>
+        <div style="font-family:var(--pixel);font-size:8px;color:var(--text);letter-spacing:0.06em;margin-bottom:6px;line-height:1.6;">LOCATION ACCESS</div>
+        <div style="font-size:11px;color:#8080a0;line-height:1.6;">Runstrike tracks your runs to detect nearby items, calculate mission routes, and log distance. Location is only active while the app is open.</div>
+      </div>
+      <button class="cta-btn cta-cyan" onclick="show(4,document.querySelectorAll('.nav-btn')[4])">SYNC TO GRID</button>
+      <button class="cta-btn cta-ghost" style="margin-top:10px;">Not yet — explain more</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 4 · FIRST NARRATIVE BEAT ══
+       Jane is doomscrolling at 3am. A pet feeder alert interrupts. -->
+  <div class="screen" id="s4" style="cursor:pointer;" onclick="advanceVN()">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:60;background:rgba(6,6,14,0.9);">
+      <span class="status-time">3:14</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+
+    <!-- VN BEAT 0: doomscroll feed -->
+    <div id="vn0" class="vn-scene">
+      <!-- Pixel art BG placeholder -->
+      <div class="px-placeholder" style="height:320px;margin-top:44px;border-radius:0;border-left:none;border-right:none;border-top:none;">
+        <div class="px-icon">🏙️</div>
+        <div>PIXEL ART BG · JANE'S APARTMENT · 3AM</div>
+      </div>
+
+      <!-- Notification overlay -->
+      <div class="notif-overlay">
+        <div class="notif-app">🐾 PETFEEDER · BEN'S APARTMENT</div>
+        <div class="notif-title">⚠️ Feeder running low</div>
+        <div class="notif-body">Last entry detected: 3 days ago. Current food level: 12%.</div>
+      </div>
+
+      <div class="vn-dialogue">
+        <div class="vn-speaker" style="color:var(--cyan);">JANE</div>
+        <div class="vn-text">Ben hasn't been home in three days. He would never leave his cat like this.</div>
+        <div class="vn-tap">TAP ▶</div>
+      </div>
+    </div>
+
+    <!-- VN BEAT 1: tries to call -->
+    <div id="vn1" class="vn-scene" style="display:none;">
+      <div class="px-placeholder" style="height:320px;margin-top:44px;border-radius:0;border-left:none;border-right:none;border-top:none;">
+        <div class="px-icon">📱</div>
+        <div>PIXEL ART · PHONE SCREEN · CALLING BEN...</div>
+      </div>
+      <div style="background:#0c0c1a;border-bottom:1px solid #1e1e2e;padding:12px 18px;flex-shrink:0;">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">CALL LOG</div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#9090b0;">
+          <span>Ben</span><span style="color:var(--pink);">The number you dialed is not in service</span>
+        </div>
+      </div>
+      <div class="vn-dialogue">
+        <div class="vn-speaker" style="color:var(--cyan);">JANE</div>
+        <div class="vn-text">This is Ben's number. He's had it for years. What is going on?</div>
+        <div class="vn-tap">TAP ▶</div>
+      </div>
+    </div>
+
+    <!-- VN BEAT 2: she decides to go -->
+    <div id="vn2" class="vn-scene" style="display:none;">
+      <div class="px-placeholder" style="height:280px;margin-top:44px;border-radius:0;border-left:none;border-right:none;border-top:none;">
+        <div class="px-icon">🧍‍♀️</div>
+        <div>CHARACTER PORTRAIT · JANE · CONCERNED</div>
+      </div>
+      <div class="vn-dialogue" style="min-height:160px;">
+        <div class="vn-speaker" style="color:var(--cyan);">JANE</div>
+        <div class="vn-text">I should go check on his cat. At least until he's back.<br><br>...and figure out what the hell happened.</div>
+        <div class="vn-tap" style="bottom:18px;">TAP TO CONTINUE ▶</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 5 · STORY TAB — FIRST LOOK ══ -->
+  <div class="screen" id="s5">
+    <div class="status-bar">
+      <span class="status-time">3:16</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="tab-header">📻 Story</div>
+    <div class="scroll-body" style="padding-top:16px;position:relative;">
+      <div class="here-card">
+        <div>
+          <div class="here-label">YOU ARE HERE</div>
+          <div class="here-name">HOME · THE MERIDIAN</div>
+        </div>
+        <div style="font-size:22px;">🏠</div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-eyebrow">Active mission · Chapter 1</div>
+        <div class="mission-title">Check on Ben's cat</div>
+        <div class="mission-sub">Ben's been unreachable for 3 days. His apartment is 0.8 mi away. The cat feeder is almost empty.</div>
+        <div style="margin-top:10px;display:flex;justify-content:flex-end;">
+          <div style="font-size:10px;color:var(--pink);letter-spacing:0.08em;">PIN DESTINATION →</div>
+        </div>
+      </div>
+
+      <div class="clue-card">
+        <div class="clue-new">NEW</div>
+        <div class="clue-eyebrow">Clue · Pet feeder alert</div>
+        <div class="clue-title">3 DAYS. NO ENTRY.</div>
+        <div class="clue-body">Ben's apartment pet feeder triggered a low-food alert. He was on your emergency contacts list — you have a key.</div>
+      </div>
+    </div>
+
+    <div class="tutorial-overlay" id="tut5" onclick="document.getElementById('tut5').style.display='none';">
+      <div style="text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">👆</div>
+        <div class="tutorial-bubble">Your active mission is here. Tap <strong>PIN DESTINATION</strong> to put Ben's apartment on the map.</div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">Feed</div></div>
+      <div class="nav-item"><div class="nav-icon">🗺</div><div class="nav-label">Map</div></div>
+      <div class="nav-item active"><div class="nav-icon">📻</div><div class="nav-label">Story</div></div>
+      <div class="nav-item"><div class="nav-icon">🏃</div><div class="nav-label">Run</div></div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 6 · MAP / PLACE DESTINATION ══ -->
+  <div class="screen" id="s6">
+    <div class="status-bar">
+      <span class="status-time">3:17</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="map-toggle">
+      <div class="toggle-btn active">📡 Radar</div>
+      <div class="toggle-btn">🌐 World Map</div>
+    </div>
+    <div style="background:rgba(255,224,102,0.08);border-bottom:1px solid rgba(255,224,102,0.2);padding:9px 16px;flex-shrink:0;">
+      <div style="font-family:var(--pixel);font-size:6.5px;color:var(--yellow);letter-spacing:0.1em;line-height:1.8;">📍 PLACE DESTINATION — tap anywhere on the map</div>
+    </div>
+    <div class="map-area">
+      <svg width="390" height="420" viewBox="0 0 390 420" style="display:block;">
+        <defs>
+          <radialGradient id="rg2" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(0,229,255,0.14)"/>
+            <stop offset="100%" stop-color="rgba(0,229,255,0)"/>
+          </radialGradient>
+        </defs>
+        <rect width="390" height="420" fill="#08081a"/>
+        <!-- Streets -->
+        <rect x="0"   y="120" width="390" height="12" fill="#0e0e22"/>
+        <rect x="0"   y="250" width="390" height="12" fill="#0e0e22"/>
+        <rect x="70"  y="0"   width="12"  height="420" fill="#0e0e22"/>
+        <rect x="200" y="0"   width="12"  height="420" fill="#0e0e22"/>
+        <rect x="310" y="0"   width="12"  height="420" fill="#0e0e22"/>
+        <!-- Blocks -->
+        <rect x="82"  y="0"   width="118" height="120" fill="#0c0c1c" rx="2"/>
+        <rect x="82"  y="132" width="118" height="118" fill="#0c0c1c" rx="2"/>
+        <rect x="212" y="132" width="98"  height="118" fill="#0c0c1c" rx="2"/>
+        <rect x="0"   y="132" width="70"  height="118" fill="#0c0c1c" rx="2"/>
+        <rect x="0"   y="0"   width="70"  height="120" fill="#0c0c1c" rx="2"/>
+        <rect x="322" y="0"   width="68"  height="120" fill="#0c0c1c" rx="2"/>
+        <rect x="212" y="0"   width="98"  height="120" fill="#0c0c1c" rx="2"/>
+        <rect x="0"   y="262" width="390" height="158" fill="#0c0c1c" rx="2"/>
+        <!-- Player -->
+        <circle cx="141" cy="200" r="36" fill="url(#rg2)"/>
+        <circle cx="141" cy="200" r="38" fill="none" stroke="rgba(0,229,255,0.22)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <circle cx="141" cy="200" r="7" fill="#00e5ff"/>
+        <circle cx="141" cy="200" r="3" fill="#06060e"/>
+        <!-- Route line -->
+        <path d="M 141 200 L 141 170 L 200 170 L 256 120"
+              stroke="rgba(255,45,107,0.55)" stroke-width="2" fill="none" stroke-dasharray="6,4" stroke-linecap="round"/>
+        <!-- Destination pin (Ben's apt) -->
+        <g transform="translate(256,108)">
+          <circle cx="0" cy="0" r="20" fill="rgba(255,45,107,0.14)" stroke="rgba(255,45,107,0.55)" stroke-width="1.5"/>
+          <line x1="-12" y1="0" x2="-5" y2="0" stroke="var(--pink)" stroke-width="1.5"/>
+          <line x1="5" y1="0" x2="12" y2="0" stroke="var(--pink)" stroke-width="1.5"/>
+          <line x1="0" y1="-12" x2="0" y2="-5" stroke="var(--pink)" stroke-width="1.5"/>
+          <line x1="0" y1="5" x2="0" y2="12" stroke="var(--pink)" stroke-width="1.5"/>
+          <circle cx="0" cy="0" r="3" fill="var(--pink)"/>
+          <rect x="-32" y="-44" width="64" height="16" rx="3" fill="rgba(255,45,107,0.9)"/>
+          <text x="0" y="-32" text-anchor="middle" font-family="'Share Tech Mono'" font-size="8" fill="#000" font-weight="700">BEN'S APARTMENT</text>
+        </g>
+        <!-- Distance label -->
+        <rect x="160" y="163" width="50" height="13" rx="3" fill="rgba(6,6,14,0.9)" stroke="rgba(255,45,107,0.3)" stroke-width="1"/>
+        <text x="185" y="173" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="rgba(255,45,107,0.8)">0.8 MI</text>
+        <!-- Pickup nearby -->
+        <circle cx="100" cy="170" r="5" fill="rgba(0,255,136,0.35)" stroke="#00ff88" stroke-width="1.5"/>
+      </svg>
+      <div class="map-confirm">
+        <div class="map-confirm-row">
+          <div class="dest-pin-preview">📍</div>
+          <div>
+            <div class="dest-label">Destination pinned</div>
+            <div class="dest-name">BEN'S APARTMENT</div>
+            <div class="dest-dist">0.8 mi · ~10 min run · out-and-back</div>
+          </div>
+        </div>
+        <button class="cta-btn cta-pink" onclick="show(7,document.querySelectorAll('.nav-btn')[7])">CONFIRM DESTINATION →</button>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">Feed</div></div>
+      <div class="nav-item active"><div class="nav-icon">🗺</div><div class="nav-label">Map</div></div>
+      <div class="nav-item"><div class="nav-icon">📻</div><div class="nav-label">Story</div></div>
+      <div class="nav-item"><div class="nav-icon">🏃</div><div class="nav-label">Run</div></div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 7 · LOADOUT ══ -->
+  <div class="screen" id="s7">
+    <div class="status-bar">
+      <span class="status-time">3:18</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="run-banner story">⚡ STORY RUN · CHAPTER 1 · LEG 1</div>
+    <div class="scroll-body" style="padding-top:16px;">
+      <div class="loadout-mission">
+        <div class="loadout-mission-label">Destination</div>
+        <div class="loadout-mission-name">Ben's Apartment · 0.8 mi</div>
+      </div>
+
+      <div class="section-label">Companion</div>
+      <div style="background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+        <div style="font-size:10px;color:rgba(0,229,255,0.6);line-height:1.6;">No companion yet. You'll find one on this run.</div>
+      </div>
+
+      <div class="section-label">Loadout type</div>
+      <div class="loadout-row">
+        <div class="loadout-item" style="border-color:rgba(0,229,255,0.35);background:rgba(0,229,255,0.05);">
+          <div class="loadout-item-label">Mode</div>
+          <div class="loadout-item-val" style="color:var(--cyan);">SEEDING RUN</div>
+        </div>
+        <div class="loadout-item">
+          <div class="loadout-item-label">Destination</div>
+          <div class="loadout-item-val">BEN'S APT · 0.8 MI</div>
+        </div>
+      </div>
+      <div class="loadout-row">
+        <div class="loadout-item">
+          <div class="loadout-item-label">Activity</div>
+          <div class="loadout-item-val">RUNNING</div>
+        </div>
+        <div class="loadout-item">
+          <div class="loadout-item-label">Route</div>
+          <div class="loadout-item-val">OUT + BACK</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <button class="cta-btn cta-pink" onclick="show(8,document.querySelectorAll('.nav-btn')[8])">START RUN →</button>
+      <div class="cta-note">Lock your phone and go. We'll buzz you when something's nearby.</div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 8 · DURING RUN ══
+       Jane has reached Ben's apt. Cat bolts. She chases it. -->
+  <div class="screen" id="s8">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:30;background:rgba(6,6,14,0.88);">
+      <span class="status-time">3:31</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="run-hud-wrap">
+      <!-- Pixel art BG placeholder (the map + runtime scene) -->
+      <div class="px-placeholder" style="position:absolute;inset:0;border:none;border-radius:0;z-index:0;">
+        <div class="px-icon">🗺</div>
+        <div>LIVE MAP · JANE RUNNING</div>
+      </div>
+
+      <div class="run-hud-overlay">
+        <!-- Top badges -->
+        <div class="hud-top">
+          <div class="hud-badge" style="border-color:rgba(255,45,107,0.3);">
+            <div class="hud-badge-label" style="color:rgba(255,45,107,0.7);">DESTINATION</div>
+            <div class="hud-badge-val" style="color:var(--pink);">REACHED ✓</div>
+          </div>
+          <div class="hud-badge">
+            <div class="hud-badge-val">0.8 mi</div>
+            <div style="font-size:9px;color:var(--muted);margin-top:2px;">9:44 min</div>
+          </div>
+        </div>
+
+        <div class="hud-bottom">
+          <!-- Story moment toast: cat escaped -->
+          <div style="background:rgba(255,224,102,0.1);border:1px solid rgba(255,224,102,0.45);border-radius:8px;padding:12px 14px;margin-bottom:10px;">
+            <div style="font-family:var(--pixel);font-size:7px;color:var(--yellow);letter-spacing:0.1em;margin-bottom:5px;">⚡ STORY MOMENT</div>
+            <div style="font-size:12px;color:var(--text);line-height:1.7;">Ben's apartment is a mess. But the cat spotted the open door and bolted. <span style="color:var(--yellow);">Chase it.</span></div>
+          </div>
+
+          <!-- Item in range toast -->
+          <div class="hud-toast" style="border-color:rgba(0,229,255,0.35);">
+            <div class="hud-toast-icon">⬟</div>
+            <div>
+              <div class="hud-toast-label">ITEM SEEDED NEARBY</div>
+              <div class="hud-toast-val">Cassette tape</div>
+              <div class="hud-toast-sub">40 ft · pick up on your next collect run</div>
+            </div>
+          </div>
+
+          <div class="hud-end-btn" onclick="show(9,document.querySelectorAll('.nav-btn')[9])">
+            GOT THE CAT — END RUN
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 9 · POST-RUN ══ -->
+  <div class="screen" id="s9">
+    <div class="status-bar">
+      <span class="status-time">3:47</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="postrun-hero">
+      <div class="postrun-status">✓ RUN COMPLETE</div>
+      <div class="postrun-dist">1.6</div>
+      <div class="postrun-unit">MILES (OUT + BACK)</div>
+    </div>
+    <div class="postrun-stats-row">
+      <div class="postrun-stat"><div class="ps-val">9:44</div><div class="ps-label">PACE/MI</div></div>
+      <div class="postrun-stat"><div class="ps-val">15:32</div><div class="ps-label">DURATION</div></div>
+      <div class="postrun-stat"><div class="ps-val">1</div><div class="ps-label">ITEM SEEDED</div></div>
+    </div>
+    <div class="scroll-body" style="padding-top:16px;">
+
+      <!-- Main story find: the headphones -->
+      <div class="unlock-card item" style="background:rgba(255,224,102,0.08);border:1px solid rgba(255,224,102,0.38);">
+        <div class="unlock-badge yellow">STORY ITEM</div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+          <div style="font-size:36px;">🎧</div>
+          <div>
+            <div class="unlock-eyebrow" style="color:rgba(255,224,102,0.7);">Found at Ben's apartment</div>
+            <div class="unlock-title" style="color:var(--yellow);">BEN'S HEADPHONES</div>
+          </div>
+        </div>
+        <div class="unlock-body">He would never leave these behind. You put them on out of habit, missing him — and something shifts. The fog you've been moving through lifts a little. You feel more like yourself.</div>
+      </div>
+
+      <!-- Hint: something else in the apartment -->
+      <div style="background:rgba(255,45,107,0.07);border:1px solid rgba(255,45,107,0.28);border-radius:10px;padding:14px 16px;margin-bottom:12px;">
+        <div style="font-family:var(--pixel);font-size:7px;color:var(--pink);letter-spacing:0.1em;margin-bottom:6px;">⚡ STORY BEAT AVAILABLE</div>
+        <div style="font-size:12px;color:#c0c0d8;line-height:1.7;">The apartment is a mess. Something happened here. There's more to find — if you want to look.</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:8px;">Available whenever you're ready. Tap below to investigate now, or come back from the Story tab.</div>
+      </div>
+
+      <!-- Seeded item note -->
+      <div style="background:#0c0c1a;border:1px solid #1e1e2e;border-radius:8px;padding:12px 14px;margin-bottom:16px;">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:0.1em;margin-bottom:5px;text-transform:uppercase;">Seeded en route</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:18px;">⬟</div>
+          <div>
+            <div style="font-family:var(--pixel);font-size:7px;color:var(--text);line-height:1.5;">CASSETTE TAPE</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">Seeded nearby. Collect on your next run.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="cta-btn cta-pink" onclick="show(9,document.querySelectorAll('.nav-btn')[9])">INVESTIGATE APARTMENT →</button>
+      <button class="cta-btn cta-ghost" style="margin-top:10px;">Back to Story tab</button>
+      <button class="cta-btn cta-ghost" style="margin-top:8px;">See full run stats</button>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<!-- Design notes -->
+<div style="max-width:390px;width:100%;display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+  <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Design notes</div>
+
+  <div class="note-card">
+    <div class="note-title">③ Activity setup — live mileage preview</div>
+    <div class="note-body">The mileage table updates as the player picks activity type and level, so the choice feels concrete before they commit. The note "you can override any individual run" is important — it defuses anxiety about getting it wrong. Defaults are stored but not precious.</div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-title">⑤ Story intro — VN beats, not a transmission</div>
+    <div class="note-body">Three tapped scenes replace the T-001 military transmission card. This is a personal story — Jane at 3am, doomscrolling, interrupted by a pet feeder alert. The pixel art placeholders mark where BG art and a character portrait (Jane, concerned) will sit. The story beat is domestic and recognizable before it becomes strange.</div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-title">⑥ Story tab — clue cards, not transmissions</div>
+    <div class="note-body">The story feed uses "clue" cards (orange border) rather than transmission cards (pink border). These are things Jane has noticed/collected, not messages from a mystery contact. The transmission format may appear later in the story when other characters start communicating through the network.</div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-title">⑧ During run — story moment toast</div>
+    <div class="note-body">When Jane arrives at Ben's apartment, a yellow "STORY MOMENT" toast surfaces the narrative beat (mess, open door, cat bolts). The run doesn't end — the cat chase extends it. The cassette tape is seeded in the neighborhood and visible in the HUD as something to come back for.</div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-title">⑩ Post-run — companion first, stats second</div>
+    <div class="note-body">The cat companion unlock leads the post-run screen. Ben's Headphones show as a story item with emotional framing (the fog lifting). The seeded cassette tape is noted as something to collect next run — creating immediate pull for Run 2. Mileage stats are there but not the headline.</div>
+  </div>
+</div>
+
+<script>
+// Screen navigation
+function show(n, btn) {
+  document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; s.classList.remove('active'); });
+  const s = document.getElementById('s' + n);
+  s.style.display = 'flex'; s.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // Reset VN state when entering screen 4
+  if (n === 4) { vnBeat = 0; updateVN(); }
+}
+
+// VN beat controller (screen 4)
+let vnBeat = 0;
+const vnBeats = ['vn0','vn1','vn2'];
+function advanceVN() {
+  document.getElementById(vnBeats[vnBeat]).style.display = 'none';
+  vnBeat++;
+  if (vnBeat >= vnBeats.length) {
+    show(5, document.querySelectorAll('.nav-btn')[5]);
+  } else {
+    document.getElementById(vnBeats[vnBeat]).style.display = 'flex';
+  }
+}
+function updateVN() {
+  vnBeats.forEach((id,i) => {
+    document.getElementById(id).style.display = i === vnBeat ? 'flex' : 'none';
+  });
+}
+
+// Activity type selection
+const activityMileage = {
+  run:  { beg: ['1.0','2.0','3.5'], mid: ['1.5','3.0','5.0'], adv: ['2.5','5.0','8.0'] },
+  bike: { beg: ['3.0','6.0','10.0'], mid: ['5.0','10.0','16.0'], adv: ['8.0','15.0','25.0'] },
+  walk: { beg: ['0.5','1.0','2.0'], mid: ['0.8','1.5','3.0'], adv: ['1.2','2.5','4.5'] },
+};
+let selActivity = 'run', selLevel = 'mid';
+function selectActivity(a) {
+  selActivity = a;
+  ['run','bike','walk'].forEach(id => document.getElementById('ac-'+id).classList.toggle('selected', id===a));
+  updateMileage();
+}
+function selectLevel(l) {
+  selLevel = l;
+  ['beg','mid','adv'].forEach(id => document.getElementById('lv-'+id).classList.toggle('selected', id===l));
+  updateMileage();
+}
+function updateMileage() {
+  const m = activityMileage[selActivity][selLevel];
+  document.getElementById('mp-short').textContent = m[0] + ' mi';
+  document.getElementById('mp-mid').textContent   = m[1] + ' mi';
+  document.getElementById('mp-long').textContent  = m[2] + ' mi';
+}
+</script>
+</body>
+</html>

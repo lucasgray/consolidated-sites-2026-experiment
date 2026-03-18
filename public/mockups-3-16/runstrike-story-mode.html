@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Runstrike — Story Mode: Ben's Apartment</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --pink:   #ff2d6b;
+  --cyan:   #00e5ff;
+  --orange: #ff8c00;
+  --green:  #00ff88;
+  --yellow: #ffe066;
+  --bg:     #06060e;
+  --card:   #0c0c1a;
+  --text:   #e0e0f0;
+  --muted:  #444460;
+  --mono:   'Share Tech Mono','Courier New',monospace;
+  --pixel:  'Press Start 2P',monospace;
+}
+body {
+  background:#04040c; min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  padding:40px 20px 60px; font-family:var(--mono); gap:22px;
+}
+.header { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.header-title { color:var(--cyan); font-size:11px; letter-spacing:0.2em; text-transform:uppercase; }
+.header-sub { color:var(--muted); font-size:11px; }
+
+.screen-nav {
+  display:flex; gap:4px; flex-wrap:wrap; justify-content:center;
+  background:rgba(255,255,255,0.03); padding:4px;
+  border-radius:20px; border:1px solid #181828; max-width:560px;
+}
+.nav-btn {
+  background:transparent; border:none; color:var(--muted);
+  padding:7px 11px; border-radius:16px; cursor:pointer;
+  font-size:10px; font-family:var(--mono); letter-spacing:0.04em; transition:all 0.15s;
+}
+.nav-btn:hover { color:#aaa; }
+.nav-btn.active { background:var(--pink); color:#000; font-weight:700; }
+
+/* Phone */
+.phone {
+  width:390px; height:844px; background:var(--bg);
+  border-radius:50px; overflow:hidden; position:relative;
+  box-shadow:0 0 0 2px #181828,0 0 0 4px #0c0c1a,0 40px 100px rgba(0,0,0,0.9);
+  flex-shrink:0;
+}
+.notch {
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:130px; height:34px; background:var(--bg);
+  border-radius:0 0 22px 22px; z-index:200;
+}
+.screen {
+  position:absolute; inset:0; display:none;
+  flex-direction:column; background:var(--bg); z-index:1; overflow:hidden;
+}
+.screen.active { display:flex; }
+.status-bar {
+  height:44px; padding:12px 22px 0;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0; z-index:20;
+}
+.status-time { color:#fff; font-size:15px; font-weight:600; }
+.status-right { display:flex; gap:5px; align-items:center; font-size:12px; color:#fff; }
+.cta-btn {
+  width:100%; padding:15px; text-align:center;
+  font-family:var(--mono); font-size:13px; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase;
+  border-radius:4px; cursor:pointer; border:none; transition:opacity 0.1s;
+}
+.cta-btn:active { opacity:0.8; }
+.cta-pink   { background:var(--pink); color:#000; }
+.cta-cyan   { background:var(--cyan); color:#000; }
+.cta-green  { background:var(--green); color:#000; }
+.cta-ghost  { background:transparent; color:var(--muted); border:1px solid #252535; }
+.divider { width:100%; height:1px; background:#1a1a2a; margin:16px 0; }
+.bottom-nav {
+  height:80px; background:rgba(6,6,14,0.97); border-top:1px solid #181828;
+  display:flex; align-items:flex-start; padding-top:10px; flex-shrink:0; z-index:20;
+}
+.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; }
+.nav-icon  { font-size:20px; color:var(--muted); }
+.nav-label { font-size:9px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; }
+.nav-item.active .nav-icon, .nav-item.active .nav-label { color:var(--pink); }
+
+/* ── MODE BADGE — indicates the current gameplay mode ── */
+.mode-badge {
+  display:flex; align-items:center; gap:8px; padding:7px 14px;
+  flex-shrink:0; border-bottom:1px solid #1a1a2a;
+}
+.mode-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.mode-name { font-family:var(--pixel); font-size:6px; letter-spacing:0.12em; }
+.mode-sub  { font-size:10px; color:var(--muted); margin-left:auto; }
+
+/* ── SCREEN 0: STORY PROMPT ── */
+.story-prompt-wrap {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; padding:28px 24px;
+  background:radial-gradient(ellipse at 50% 60%, rgba(255,45,107,0.08) 0%, transparent 70%);
+}
+.sp-eyebrow { font-family:var(--pixel); font-size:6px; color:var(--pink); letter-spacing:0.15em; margin-bottom:14px; animation: pulse-txt 2s ease-in-out infinite; }
+@keyframes pulse-txt { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.sp-chapter { font-family:var(--pixel); font-size:8px; color:var(--muted); letter-spacing:0.1em; margin-bottom:8px; }
+.sp-title   { font-family:var(--pixel); font-size:14px; color:var(--text); letter-spacing:0.08em; line-height:1.7; text-align:center; margin-bottom:16px; }
+.sp-desc    { font-size:12px; color:#9090b0; line-height:1.8; text-align:center; margin-bottom:24px; max-width:300px; }
+.sp-time    { font-size:10px; color:var(--muted); letter-spacing:0.1em; margin-bottom:28px; }
+.sp-divider { width:60px; height:1px; background:rgba(255,45,107,0.3); margin:0 auto 28px; }
+
+/* ── TOP-DOWN MAP ── */
+.td-wrap { flex:1; position:relative; overflow:hidden; background:#0A0818; }
+.td-hud {
+  position:absolute; bottom:0; left:0; right:0; z-index:30;
+  background:rgba(6,6,14,0.92); border-top:1px solid #181828;
+  padding:10px 14px; display:flex; align-items:center; gap:12px;
+}
+.td-location { flex:1; }
+.td-loc-label { font-size:9px; color:var(--muted); letter-spacing:0.1em; margin-bottom:2px; text-transform:uppercase; }
+.td-loc-name  { font-family:var(--pixel); font-size:8px; color:var(--text); line-height:1.5; }
+.td-dpad {
+  width:64px; height:64px; position:relative; flex-shrink:0;
+}
+.td-dpad-btn {
+  position:absolute; width:20px; height:20px;
+  background:#1a1a2a; border:1px solid #2a2a3a; border-radius:3px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; cursor:pointer; color:var(--muted);
+}
+.td-hint {
+  position:absolute; top:50px; left:50%; transform:translateX(-50%);
+  background:rgba(255,224,102,0.1); border:1px solid rgba(255,224,102,0.3);
+  border-radius:6px; padding:6px 10px; z-index:30; white-space:nowrap;
+}
+.td-hint-txt { font-size:9px; color:var(--yellow); letter-spacing:0.08em; }
+.td-interact {
+  position:absolute; z-index:25; cursor:pointer;
+  animation:td-float 1.5s ease-in-out infinite;
+}
+@keyframes td-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+
+/* ── POINT-AND-CLICK ── */
+.pc-wrap { flex:1; position:relative; overflow:hidden; }
+.pc-scene { width:100%; height:100%; position:relative; }
+.hotspot {
+  position:absolute; border-radius:50%; cursor:pointer;
+  border:2px solid rgba(255,224,102,0.6);
+  background:rgba(255,224,102,0.08);
+  display:flex; align-items:center; justify-content:center;
+  animation:hotspot-pulse 2s ease-in-out infinite;
+}
+@keyframes hotspot-pulse { 0%,100%{transform:scale(1);opacity:0.7} 50%{transform:scale(1.1);opacity:1} }
+.hotspot-label {
+  position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+  font-size:8px; color:var(--yellow); letter-spacing:0.08em; white-space:nowrap;
+  background:rgba(6,6,14,0.85); padding:2px 6px; border-radius:3px;
+}
+.pc-toolbar {
+  position:absolute; bottom:0; left:0; right:0; z-index:30;
+  background:rgba(6,6,14,0.94); border-top:1px solid #181828; padding:10px 14px;
+}
+.pc-actions { display:flex; gap:8px; }
+.pc-action-btn {
+  flex:1; padding:10px 8px; text-align:center;
+  background:#0c0c1a; border:1px solid #1e1e2e; border-radius:4px;
+  font-family:var(--mono); font-size:10px; color:var(--muted); cursor:pointer;
+  letter-spacing:0.08em; text-transform:uppercase;
+}
+.pc-action-btn.active { border-color:var(--yellow); color:var(--yellow); background:rgba(255,224,102,0.08); }
+
+/* Cat sprite CSS */
+.cat-sprite { position:absolute; cursor:pointer; }
+@keyframes cat-sit { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.97)} }
+@keyframes tail-sway { 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(12deg)} }
+.cat-body { animation:cat-sit 3s ease-in-out infinite; }
+.cat-tail-anim { animation:tail-sway 2s ease-in-out infinite; transform-origin:right center; }
+
+/* ── DIALOG BOX ── */
+.dialog-overlay {
+  position:absolute; inset:0; background:rgba(4,4,12,0.72); z-index:50;
+  display:flex; align-items:flex-end; padding:0 0 80px;
+}
+.dialog-box {
+  margin:0 16px; width:calc(100% - 32px);
+  background:#0c0c1a; border:1px solid rgba(0,229,255,0.4);
+  border-radius:12px; padding:16px;
+}
+.dialog-speaker { font-family:var(--pixel); font-size:7px; color:var(--cyan); letter-spacing:0.1em; margin-bottom:8px; }
+.dialog-text    { font-size:13px; color:var(--text); line-height:1.8; margin-bottom:14px; }
+.dialog-choices { display:flex; gap:8px; }
+.dialog-choice  {
+  flex:1; padding:12px; text-align:center; border-radius:4px; cursor:pointer;
+  font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:0.08em; border:none;
+}
+.choice-yes { background:var(--pink); color:#000; }
+.choice-no  { background:#1a1a2a; color:var(--muted); }
+
+/* ── TOP-DOWN CAT CHASE ── */
+@keyframes cat-run { 0%,100%{transform:translateX(0) scaleX(1)} 25%{transform:translateX(30px) scaleX(1)} 50%{transform:translateX(30px) translateY(-20px) scaleX(-1)} 75%{transform:translateX(-10px) translateY(-20px) scaleX(-1)} }
+@keyframes player-chase { 0%,100%{transform:translateX(0)} 25%{transform:translateX(20px)} 50%{transform:translateX(20px) translateY(-15px)} 75%{transform:translateX(-5px) translateY(-15px)} }
+
+/* ── QUEST UNLOCKED ── */
+.quest-wrap {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; padding:28px 24px;
+  background:radial-gradient(ellipse at 50% 40%, rgba(0,229,255,0.07) 0%, transparent 65%);
+}
+
+/* ── STORY TAB UPDATE ── */
+.mission-card { background:rgba(255,45,107,0.06); border:1px solid rgba(255,45,107,0.3); border-radius:10px; padding:14px 16px; margin-bottom:12px; }
+.mission-eyebrow { font-size:9px; color:rgba(255,45,107,0.7); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:5px; }
+.mission-title { font-family:var(--pixel); font-size:9px; color:var(--pink); line-height:1.6; margin-bottom:5px; }
+.mission-sub { font-size:11px; color:#9090b0; line-height:1.5; }
+.here-card { background:rgba(0,229,255,0.06); border:1px solid rgba(0,229,255,0.3); border-radius:10px; padding:12px 16px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
+.clue-card { background:rgba(255,140,0,0.06); border:1px solid rgba(255,140,0,0.28); border-radius:10px; padding:14px 16px; margin-bottom:12px; }
+
+/* Design notes */
+.note-card { background:#0c0c1a; border:1px solid #1e1e2e; border-radius:8px; padding:14px 16px; }
+.note-title { color:var(--cyan); font-size:11px; font-weight:700; margin-bottom:6px; }
+.note-body  { color:#888; font-size:11px; line-height:1.7; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">Runstrike — Story Mode: Ben's Apartment</div>
+  <div class="header-sub">App UI → top-down → point-and-click → cat interaction → quest started</div>
+</div>
+
+<div class="screen-nav">
+  <button class="nav-btn active" onclick="show(0,this)">① Story prompt</button>
+  <button class="nav-btn"        onclick="show(1,this)">② Top-down: street</button>
+  <button class="nav-btn"        onclick="show(2,this)">③ Top-down: hallway</button>
+  <button class="nav-btn"        onclick="show(3,this)">④ P&amp;C: apartment</button>
+  <button class="nav-btn"        onclick="show(4,this)">⑤ Cat: tap dialog</button>
+  <button class="nav-btn"        onclick="show(5,this)">⑥ Top-down: chase</button>
+  <button class="nav-btn"        onclick="show(6,this)">⑦ Quest unlocked</button>
+  <button class="nav-btn"        onclick="show(7,this)">⑧ Story tab</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 0 · STORY PROMPT
+       Play now or save for later
+       ════════════════════════════════════════════ -->
+  <div class="screen active" id="s0">
+    <div class="status-bar">
+      <span class="status-time">4:02</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="story-prompt-wrap">
+      <div class="sp-eyebrow">⚡ NEW STORY BEAT AVAILABLE</div>
+      <div class="sp-chapter">CHAPTER 1 · LEG 2</div>
+      <div class="sp-title">BEN'S<br>APARTMENT</div>
+      <div class="sp-divider"></div>
+      <div class="sp-desc">Something happened in there. The mess, the open window, the headphones left behind. Go back and look around.</div>
+      <div class="sp-time">~10–15 min to play</div>
+
+      <button class="cta-btn cta-pink" style="margin-bottom:10px;" onclick="show(1,document.querySelectorAll('.nav-btn')[1])">
+        INVESTIGATE NOW →
+      </button>
+      <button class="cta-btn cta-ghost">
+        Save for later
+      </button>
+      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6;">
+        Available anytime from your Story tab.
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 1 · TOP-DOWN: EXTERIOR STREET
+       Walking to Ben's building
+       ════════════════════════════════════════════ -->
+  <div class="screen" id="s1">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:40;background:rgba(6,6,14,0.9);">
+      <span class="status-time">4:03</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+
+    <div class="mode-badge" style="position:absolute;top:44px;left:0;right:0;z-index:40;background:rgba(6,6,14,0.92);">
+      <div class="mode-dot" style="background:#00ff88;box-shadow:0 0 6px #00ff88;"></div>
+      <div class="mode-name" style="color:#00ff88;">TOP-DOWN</div>
+      <div class="mode-sub">Tap to move · Explore freely</div>
+    </div>
+
+    <div class="td-wrap">
+      <!-- Top-down pixel art map: exterior street -->
+      <svg width="390" height="680" viewBox="0 0 390 680" style="display:block;position:absolute;top:0;left:0;">
+
+        <!-- Sky/void -->
+        <rect width="390" height="680" fill="#0A0818"/>
+
+        <!-- Ground: sidewalk tiles (24×24 grid) -->
+        <!-- Main sidewalk area: rows 3-21 -->
+        <rect x="0"   y="72"  width="390" height="508" fill="#1A1626"/>
+
+        <!-- Road strip at top of visible map -->
+        <rect x="0" y="72" width="390" height="48" fill="#12101C"/>
+        <!-- Road markings -->
+        <rect x="90"  y="91" width="30" height="8" fill="#1E1C28" rx="1"/>
+        <rect x="180" y="91" width="30" height="8" fill="#1E1C28" rx="1"/>
+        <rect x="270" y="91" width="30" height="8" fill="#1E1C28" rx="1"/>
+
+        <!-- Left building block (Jane's side) -->
+        <rect x="0" y="120" width="110" height="200" fill="#201E30"/>
+        <rect x="4" y="124" width="102" height="192" fill="#1A1828"/>
+        <!-- Windows -->
+        <rect x="16" y="136" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="44" y="136" width="20" height="14" fill="#3A2060" rx="1"/><!-- lit -->
+        <rect x="72" y="136" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="16" y="162" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="44" y="162" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="72" y="162" width="20" height="14" fill="#3A2060" rx="1"/>
+        <rect x="16" y="188" width="20" height="14" fill="#3A2060" rx="1"/>
+        <rect x="44" y="188" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="72" y="188" width="20" height="14" fill="#2A2840" rx="1"/>
+
+        <!-- SIDE ALLEY (between buildings) — optional path, glowing item -->
+        <rect x="110" y="120" width="36" height="200" fill="#14121E"/>
+        <!-- Alley ground tiles -->
+        <rect x="114" y="126" width="28" height="6" fill="#1C1A28" rx="1" opacity="0.6"/>
+        <rect x="114" y="138" width="28" height="6" fill="#1C1A28" rx="1" opacity="0.6"/>
+        <rect x="114" y="150" width="28" height="6" fill="#1C1A28" rx="1" opacity="0.6"/>
+        <!-- Glowing item in alley (side quest seed) -->
+        <circle cx="128" cy="200" r="8" fill="rgba(255,224,102,0.15)" stroke="rgba(255,224,102,0.6)" stroke-width="1.5"/>
+        <text x="128" y="204" text-anchor="middle" font-size="8" fill="#ffe066">⬟</text>
+        <rect x="104" y="212" width="48" height="12" rx="3" fill="rgba(6,6,14,0.88)" stroke="rgba(255,224,102,0.4)" stroke-width="1"/>
+        <text x="128" y="221" text-anchor="middle" font-family="'Share Tech Mono'" font-size="7" fill="rgba(255,224,102,0.7)">SIDE ALLEY</text>
+
+        <!-- BEN'S BUILDING (right side, destination) -->
+        <rect x="146" y="120" width="244" height="240" fill="#201E30"/>
+        <rect x="150" y="124" width="236" height="232" fill="#1A1828"/>
+        <!-- Windows across Ben's building -->
+        <rect x="162" y="136" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="194" y="136" width="20" height="14" fill="#3A2060" rx="1"/>
+        <rect x="226" y="136" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="258" y="136" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="290" y="136" width="20" height="14" fill="#3A2060" rx="1"/>
+        <rect x="322" y="136" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="354" y="136" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="162" y="162" width="20" height="14" fill="#3A2060" rx="1"/>
+        <rect x="194" y="162" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="226" y="162" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="258" y="162" width="20" height="14" fill="#3A2060" rx="1"/>
+        <rect x="290" y="162" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="322" y="162" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="354" y="162" width="20" height="14" fill="#3A2060" rx="1"/>
+        <rect x="162" y="188" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="194" y="188" width="20" height="14" fill="#2A2840" rx="1"/>
+        <rect x="226" y="188" width="20" height="14" fill="#3A2060" rx="1"/>
+
+        <!-- BUILDING ENTRANCE — glowing cyan -->
+        <rect x="230" y="316" width="56" height="44" fill="#0E1826" rx="2"/>
+        <rect x="234" y="320" width="48" height="36" fill="rgba(0,229,255,0.07)" rx="2"
+              stroke="rgba(0,229,255,0.5)" stroke-width="1.5"/>
+        <text x="258" y="341" text-anchor="middle" font-family="'Share Tech Mono'" font-size="8" fill="rgba(0,229,255,0.6)">ENTER</text>
+        <!-- Entrance glow -->
+        <ellipse cx="258" cy="360" rx="30" ry="8" fill="rgba(0,229,255,0.06)"/>
+
+        <!-- Destination indicator arrow -->
+        <g transform="translate(258, 290)" class="td-interact">
+          <polygon points="0,-12 8,0 -8,0" fill="var(--cyan)" opacity="0.8"/>
+          <rect x="-4" y="0" width="8" height="6" fill="var(--cyan)" opacity="0.8"/>
+        </g>
+
+        <!-- Sidewalk seam lines -->
+        <line x1="0" y1="264" x2="390" y2="264" stroke="#1E1C2A" stroke-width="1" opacity="0.5"/>
+        <line x1="0" y1="312" x2="390" y2="312" stroke="#1E1C2A" stroke-width="1" opacity="0.5"/>
+        <line x1="0" y1="360" x2="390" y2="360" stroke="#1E1C2A" stroke-width="1" opacity="0.5"/>
+        <line x1="96" y1="120" x2="96" y2="580" stroke="#1E1C2A" stroke-width="1" opacity="0.4"/>
+        <line x1="192" y1="120" x2="192" y2="580" stroke="#1E1C2A" stroke-width="1" opacity="0.4"/>
+        <line x1="288" y1="120" x2="288" y2="580" stroke="#1E1C2A" stroke-width="1" opacity="0.4"/>
+
+        <!-- Jane character sprite (top-down) at bottom center -->
+        <g id="jane-td" transform="translate(195, 490)">
+          <!-- Shadow -->
+          <ellipse cx="0" cy="14" rx="9" ry="4" fill="rgba(0,0,0,0.4)"/>
+          <!-- Legs -->
+          <rect x="-6" y="6" width="5" height="9" fill="#1A1828" rx="1"/>
+          <rect x="1" y="6" width="5" height="9" fill="#1A1828" rx="1"/>
+          <!-- Body (jacket) -->
+          <rect x="-8" y="-3" width="16" height="10" fill="#3A4060" rx="2"/>
+          <!-- Arms -->
+          <rect x="-12" y="-2" width="4" height="8" fill="#D4A080" rx="1"/>
+          <rect x="8"  y="-2" width="4" height="8" fill="#D4A080" rx="1"/>
+          <!-- Neck -->
+          <rect x="-3" y="-6" width="6" height="4" fill="#D4A080"/>
+          <!-- Head -->
+          <circle cx="0" cy="-13" r="8" fill="#E0B090"/>
+          <!-- Hair -->
+          <ellipse cx="0" cy="-19" rx="8" ry="5" fill="#2A1810"/>
+          <rect x="-8" y="-18" width="5" height="7" fill="#2A1810" rx="1"/>
+          <!-- Headphones! (equipped) -->
+          <path d="M -8 -13 Q -11 -20 0 -21 Q 11 -20 8 -13" stroke="#FFE066" stroke-width="2" fill="none"/>
+          <rect x="-10" y="-16" width="4" height="6" fill="#FFE066" rx="2"/>
+          <rect x="6" y="-16" width="4" height="6" fill="#FFE066" rx="2"/>
+        </g>
+
+        <!-- Movement path indicator (dashed line toward entrance) -->
+        <path d="M 195 476 L 195 400 L 258 400 L 258 360"
+              stroke="rgba(0,229,255,0.3)" stroke-width="2" fill="none"
+              stroke-dasharray="6,4" stroke-linecap="round"/>
+
+      </svg>
+
+      <!-- Side alley hint tooltip -->
+      <div class="td-hint" style="top:198px;left:76px;transform:none;">
+        <div class="td-hint-txt">⬟ Side alley — optional</div>
+      </div>
+    </div>
+
+    <!-- HUD bar -->
+    <div class="td-hud">
+      <div class="td-location">
+        <div class="td-loc-label">Heading to</div>
+        <div class="td-loc-name">Ben's Building · #301</div>
+      </div>
+      <!-- D-pad -->
+      <div class="td-dpad" style="position:relative;width:72px;height:72px;flex-shrink:0;">
+        <div class="td-dpad-btn" style="top:0;left:26px;">▲</div>
+        <div class="td-dpad-btn" style="top:26px;left:0;">◀</div>
+        <div class="td-dpad-btn" style="top:26px;left:52px;">▶</div>
+        <div class="td-dpad-btn" style="top:52px;left:26px;">▼</div>
+        <div style="position:absolute;top:26px;left:26px;width:20px;height:20px;background:#101020;border-radius:50%;border:1px solid #2a2a3a;"></div>
+      </div>
+      <button class="cta-btn cta-cyan" style="width:auto;padding:10px 16px;margin-left:8px;font-size:10px;" onclick="show(2,document.querySelectorAll('.nav-btn')[2])">ENTER →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 2 · TOP-DOWN: BUILDING HALLWAY
+       Interior corridor, apartment doors
+       ════════════════════════════════════════════ -->
+  <div class="screen" id="s2">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:40;background:rgba(6,6,14,0.9);">
+      <span class="status-time">4:04</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="mode-badge" style="position:absolute;top:44px;left:0;right:0;z-index:40;background:rgba(6,6,14,0.92);">
+      <div class="mode-dot" style="background:#00ff88;box-shadow:0 0 6px #00ff88;"></div>
+      <div class="mode-name" style="color:#00ff88;">TOP-DOWN</div>
+      <div class="mode-sub">3rd Floor · Apartment 301</div>
+    </div>
+
+    <div class="td-wrap">
+      <svg width="390" height="680" viewBox="0 0 390 680" style="display:block;position:absolute;top:0;left:0;">
+        <rect width="390" height="680" fill="#0A0818"/>
+
+        <!-- Hallway floor -->
+        <rect x="80" y="72" width="230" height="560" fill="#1C1A2C"/>
+        <!-- Hallway tile lines -->
+        <line x1="80" y1="120" x2="310" y2="120" stroke="#221E30" stroke-width="1"/>
+        <line x1="80" y1="168" x2="310" y2="168" stroke="#221E30" stroke-width="1"/>
+        <line x1="80" y1="216" x2="310" y2="216" stroke="#221E30" stroke-width="1"/>
+        <line x1="80" y1="264" x2="310" y2="264" stroke="#221E30" stroke-width="1"/>
+        <line x1="80" y1="312" x2="310" y2="312" stroke="#221E30" stroke-width="1"/>
+        <line x1="80" y1="360" x2="310" y2="360" stroke="#221E30" stroke-width="1"/>
+        <line x1="80" y1="408" x2="310" y2="408" stroke="#221E30" stroke-width="1"/>
+        <line x1="80" y1="456" x2="310" y2="456" stroke="#221E30" stroke-width="1"/>
+        <line x1="195" y1="72" x2="195" y2="632" stroke="#221E30" stroke-width="1"/>
+
+        <!-- Left wall -->
+        <rect x="0" y="72" width="80" height="560" fill="#201E30"/>
+        <!-- Left wall doors -->
+        <rect x="8" y="140" width="64" height="56" fill="#181626" rx="2"/><!-- 302 -->
+        <rect x="10" y="142" width="60" height="52" fill="#141222" rx="1"/>
+        <text x="40" y="173" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="#2A2840">302</text>
+        <rect x="8" y="250" width="64" height="56" fill="#181626" rx="2"/><!-- 304 -->
+        <rect x="10" y="252" width="60" height="52" fill="#141222" rx="1"/>
+        <text x="40" y="283" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="#2A2840">304</text>
+        <rect x="8" y="360" width="64" height="56" fill="#181626" rx="2"/><!-- 306 -->
+        <rect x="10" y="362" width="60" height="52" fill="#141222" rx="1"/>
+        <text x="40" y="393" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="#2A2840">306</text>
+
+        <!-- Right wall -->
+        <rect x="310" y="72" width="80" height="560" fill="#201E30"/>
+        <!-- Right wall doors -->
+        <rect x="318" y="140" width="64" height="56" fill="#181626" rx="2"/><!-- 303 -->
+        <rect x="320" y="142" width="60" height="52" fill="#141222" rx="1"/>
+        <text x="350" y="173" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="#2A2840">303</text>
+        <!-- BEN'S DOOR — 301 — GLOWING -->
+        <rect x="318" y="250" width="64" height="56" fill="#0E1826" rx="2" stroke="rgba(0,229,255,0.55)" stroke-width="2"/>
+        <rect x="320" y="252" width="60" height="52" fill="rgba(0,229,255,0.05)" rx="1"/>
+        <text x="350" y="281" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="var(--cyan)">301</text>
+        <text x="350" y="294" text-anchor="middle" font-family="'Press Start 2P'" font-size="5" fill="rgba(0,229,255,0.6)">BEN</text>
+        <!-- Ajar indicator: slightly open door hint -->
+        <line x1="318" y1="252" x2="306" y2="260" stroke="rgba(0,229,255,0.4)" stroke-width="2"/>
+        <!-- Destination arrow above Ben's door -->
+        <g transform="translate(350, 236)" class="td-interact">
+          <polygon points="0,-10 7,0 -7,0" fill="var(--cyan)" opacity="0.8"/>
+          <rect x="-3" y="0" width="6" height="5" fill="var(--cyan)" opacity="0.8"/>
+        </g>
+        <rect x="318" y="360" width="64" height="56" fill="#181626" rx="2"/>
+        <rect x="320" y="362" width="60" height="52" fill="#141222" rx="1"/>
+        <text x="350" y="393" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="#2A2840">305</text>
+
+        <!-- Notice board (side quest seed) -->
+        <rect x="84" y="460" width="50" height="40" fill="#1E1C2E" stroke="#2A2838" stroke-width="1" rx="2"/>
+        <rect x="87" y="463" width="44" height="34" fill="#181628" rx="1"/>
+        <text x="109" y="477" text-anchor="middle" font-family="'Share Tech Mono'" font-size="6" fill="#3A3858">NOTICE</text>
+        <text x="109" y="487" text-anchor="middle" font-family="'Share Tech Mono'" font-size="6" fill="#3A3858">BOARD</text>
+        <!-- Pin on notice board with a yellow glow (optional clue) -->
+        <circle cx="116" cy="471" r="3" fill="rgba(255,224,102,0.7)"/>
+
+        <!-- Elevator indicator at bottom of hallway -->
+        <rect x="148" y="590" width="94" height="36" fill="#181628" stroke="#2A2838" stroke-width="1" rx="2"/>
+        <text x="195" y="612" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="#3A3858">ELEVATOR ▲</text>
+
+        <!-- Jane in hallway, walking toward 301 -->
+        <g id="jane-hallway" transform="translate(195, 420)">
+          <ellipse cx="0" cy="14" rx="9" ry="4" fill="rgba(0,0,0,0.4)"/>
+          <rect x="-6" y="6" width="5" height="9" fill="#1A1828" rx="1"/>
+          <rect x="1" y="6" width="5" height="9" fill="#1A1828" rx="1"/>
+          <rect x="-8" y="-3" width="16" height="10" fill="#3A4060" rx="2"/>
+          <rect x="-12" y="-2" width="4" height="8" fill="#D4A080" rx="1"/>
+          <rect x="8"  y="-2" width="4" height="8" fill="#D4A080" rx="1"/>
+          <rect x="-3" y="-6" width="6" height="4" fill="#D4A080"/>
+          <circle cx="0" cy="-13" r="8" fill="#E0B090"/>
+          <ellipse cx="0" cy="-19" rx="8" ry="5" fill="#2A1810"/>
+          <rect x="-8" y="-18" width="5" height="7" fill="#2A1810" rx="1"/>
+          <path d="M -8 -13 Q -11 -20 0 -21 Q 11 -20 8 -13" stroke="#FFE066" stroke-width="2" fill="none"/>
+          <rect x="-10" y="-16" width="4" height="6" fill="#FFE066" rx="2"/>
+          <rect x="6" y="-16" width="4" height="6" fill="#FFE066" rx="2"/>
+        </g>
+        <!-- Path toward 301 -->
+        <path d="M 195 406 L 195 340 L 310 340"
+              stroke="rgba(0,229,255,0.25)" stroke-width="2" fill="none" stroke-dasharray="5,4"/>
+      </svg>
+    </div>
+
+    <div class="td-hud">
+      <div class="td-location">
+        <div class="td-loc-label">3rd Floor · Corridor</div>
+        <div class="td-loc-name">Apt 301 is Ben's. Door is ajar.</div>
+      </div>
+      <div class="td-dpad" style="position:relative;width:72px;height:72px;flex-shrink:0;">
+        <div class="td-dpad-btn" style="top:0;left:26px;">▲</div>
+        <div class="td-dpad-btn" style="top:26px;left:0;">◀</div>
+        <div class="td-dpad-btn" style="top:26px;left:52px;">▶</div>
+        <div class="td-dpad-btn" style="top:52px;left:26px;">▼</div>
+        <div style="position:absolute;top:26px;left:26px;width:20px;height:20px;background:#101020;border-radius:50%;border:1px solid #2a2a3a;"></div>
+      </div>
+      <button class="cta-btn cta-cyan" style="width:auto;padding:10px 14px;margin-left:8px;font-size:10px;" onclick="show(3,document.querySelectorAll('.nav-btn')[3])">ENTER 301 →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 3 · POINT-AND-CLICK: APARTMENT
+       Ben's apartment interior — mess + cat visible
+       ════════════════════════════════════════════ -->
+  <div class="screen" id="s3">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:40;background:rgba(6,6,14,0.88);">
+      <span class="status-time">4:05</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+
+    <div class="mode-badge" style="position:absolute;top:44px;left:0;right:0;z-index:40;background:rgba(6,6,14,0.9);">
+      <div class="mode-dot" style="background:var(--yellow);box-shadow:0 0 6px var(--yellow);"></div>
+      <div class="mode-name" style="color:var(--yellow);">POINT-AND-CLICK</div>
+      <div class="mode-sub">Tap to examine · Ben's Apartment</div>
+    </div>
+
+    <div class="pc-wrap">
+      <!-- P&C Scene: Ben's Apartment Interior -->
+      <svg width="390" height="580" viewBox="0 0 390 580" style="display:block;position:absolute;top:0;left:0;">
+
+        <!-- Back wall -->
+        <rect width="390" height="580" fill="#100E1C"/>
+        <rect x="0" y="0" width="390" height="260" fill="#161422"/>
+
+        <!-- Ceiling -->
+        <rect x="0" y="0" width="390" height="20" fill="#0E0C1A"/>
+
+        <!-- Window (left) — dark outside, slight purple sky glow -->
+        <rect x="20" y="30" width="100" height="140" fill="#0A0818" rx="3" stroke="#2A2838" stroke-width="2"/>
+        <rect x="24" y="34" width="92" height="132" fill="#12101E" rx="2"/>
+        <!-- Window glow (city lights outside) -->
+        <rect x="24" y="34" width="92" height="132" fill="rgba(80,40,120,0.2)" rx="2"/>
+        <!-- Window pane -->
+        <line x1="70" y1="34" x2="70" y2="166" stroke="#2A2838" stroke-width="2"/>
+        <line x1="24" y1="100" x2="116" y2="100" stroke="#2A2838" stroke-width="2"/>
+        <!-- Cracked open! Key detail -->
+        <rect x="20" y="30" width="44" height="140" fill="#12101E" rx="3" stroke="#2A2838" stroke-width="1"
+              transform="skewX(3) translateX(-2)"/>
+        <text x="68" y="185" text-anchor="middle" font-family="'Share Tech Mono'" font-size="8" fill="rgba(255,224,102,0.6)">open</text>
+
+        <!-- Poster on back wall (right of window) -->
+        <rect x="150" y="30" width="70" height="90" fill="#1A1628" rx="2" stroke="#2A2838" stroke-width="1"/>
+        <rect x="154" y="34" width="62" height="82" fill="#201830" rx="1"/>
+        <text x="185" y="76" text-anchor="middle" font-family="'Share Tech Mono'" font-size="7" fill="#3A3058">POSTER</text>
+
+        <!-- Computer desk (right side) — still on, glowing -->
+        <rect x="280" y="170" width="100" height="80" fill="#1A1828" rx="3"/>
+        <rect x="284" y="174" width="92" height="72" fill="#141224" rx="2"/>
+        <!-- Monitor glow -->
+        <rect x="300" y="60" width="74" height="50" fill="#0C1426" rx="3" stroke="#1E2034" stroke-width="2"/>
+        <rect x="304" y="64" width="66" height="42" fill="rgba(0,80,180,0.3)" rx="2"/>
+        <rect x="304" y="64" width="66" height="42" fill="rgba(0,180,255,0.05)" rx="2"/>
+        <text x="337" y="88" text-anchor="middle" font-family="'Share Tech Mono'" font-size="7" fill="rgba(100,160,255,0.5)">...</text>
+        <!-- Monitor neck -->
+        <rect x="333" y="110" width="8" height="20" fill="#161426"/>
+        <rect x="322" y="126" width="30" height="4" fill="#161426"/>
+
+        <!-- Overturned table / mess -->
+        <rect x="130" y="220" width="140" height="16" fill="#241E30" rx="2" transform="rotate(-8 200 228)"/>
+        <!-- Scattered papers -->
+        <rect x="100" y="280" width="40" height="28" fill="#1E1C2C" rx="2" transform="rotate(-15 120 294)"/>
+        <rect x="155" y="290" width="32" height="22" fill="#1E1C2C" rx="2" transform="rotate(5 171 301)"/>
+        <rect x="200" y="275" width="36" height="26" fill="#201E2E" rx="2" transform="rotate(-5 218 288)"/>
+        <rect x="240" y="285" width="28" height="20" fill="#1E1C2C" rx="2" transform="rotate(12 254 295)"/>
+        <!-- Keys on floor -->
+        <ellipse cx="170" cy="310" rx="12" ry="6" fill="rgba(255,200,60,0.4)" stroke="rgba(255,200,60,0.6)" stroke-width="1" transform="rotate(-20 170 310)"/>
+
+        <!-- Couch (center-left) -->
+        <rect x="30" y="240" width="160" height="70" fill="#241E38" rx="6"/>
+        <rect x="34" y="244" width="152" height="62" fill="#2A2440" rx="5"/>
+        <!-- Couch cushions -->
+        <rect x="38" y="250" width="68" height="50" fill="#302850" rx="4"/>
+        <rect x="114" y="250" width="68" height="50" fill="#2E2648" rx="4"/>
+        <!-- Couch back -->
+        <rect x="30" y="220" width="160" height="24" fill="#281E3C" rx="4"/>
+
+        <!-- Floor -->
+        <rect x="0" y="330" width="390" height="250" fill="#140E1E"/>
+        <!-- Floor boards -->
+        <rect x="0" y="330" width="390" height="4" fill="#1A1428"/>
+        <line x1="0" y1="370" x2="390" y2="370" stroke="#1A1428" stroke-width="2"/>
+        <line x1="0" y1="410" x2="390" y2="410" stroke="#1A1428" stroke-width="2"/>
+        <line x1="0" y1="450" x2="390" y2="450" stroke="#1A1428" stroke-width="2"/>
+        <line x1="130" y1="330" x2="130" y2="580" stroke="#1A1428" stroke-width="1"/>
+        <line x1="260" y1="330" x2="260" y2="580" stroke="#1A1428" stroke-width="1"/>
+
+        <!-- CAT! — sitting on couch cushion, right side -->
+        <g id="cat-pc" transform="translate(148, 258)" class="cat-sprite" onclick="show(4,document.querySelectorAll('.nav-btn')[4])">
+          <!-- Tail -->
+          <g class="cat-tail-anim" transform="translate(-18, 4)">
+            <path d="M 0 0 Q -18 -12 -14 -26" stroke="#C8B090" stroke-width="5" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- Body -->
+          <g class="cat-body">
+            <ellipse cx="0" cy="4" rx="18" ry="12" fill="#C8B090"/>
+            <!-- Head -->
+            <circle cx="16" cy="-6" r="13" fill="#C8B090"/>
+            <!-- Ears -->
+            <polygon points="8,-18 20,-8 6,-8" fill="#C8B090"/>
+            <polygon points="20,-18 30,-8 18,-8" fill="#C8B090"/>
+            <!-- Inner ear -->
+            <polygon points="10,-15 18,-9 9,-9" fill="#E8C0A8"/>
+            <polygon points="22,-15 28,-9 19,-9" fill="#E8C0A8"/>
+            <!-- Eyes (looking at Jane/player) -->
+            <ellipse cx="12" cy="-7" rx="3" ry="3.5" fill="#1A1010"/>
+            <ellipse cx="20" cy="-7" rx="3" ry="3.5" fill="#1A1010"/>
+            <!-- Pupils -->
+            <ellipse cx="12" cy="-7" rx="1.5" ry="2.5" fill="#0A0606"/>
+            <ellipse cx="20" cy="-7" rx="1.5" ry="2.5" fill="#0A0606"/>
+            <!-- Eye highlight -->
+            <circle cx="13" cy="-8.5" r="1" fill="rgba(255,255,255,0.6)"/>
+            <circle cx="21" cy="-8.5" r="1" fill="rgba(255,255,255,0.6)"/>
+            <!-- Nose -->
+            <polygon points="16,-3 14,-1 18,-1" fill="#D090A0"/>
+            <!-- Mouth -->
+            <path d="M 14 -1 Q 16 1 18 -1" stroke="#C070A0" stroke-width="0.8" fill="none"/>
+            <!-- Whiskers left -->
+            <line x1="10" y1="-5" x2="-2" y2="-4" stroke="#888" stroke-width="1" opacity="0.7"/>
+            <line x1="10" y1="-3" x2="-1" y2="-2" stroke="#888" stroke-width="1" opacity="0.7"/>
+            <!-- Whiskers right -->
+            <line x1="22" y1="-5" x2="34" y2="-4" stroke="#888" stroke-width="1" opacity="0.7"/>
+            <line x1="22" y1="-3" x2="33" y2="-2" stroke="#888" stroke-width="1" opacity="0.7"/>
+          </g>
+          <!-- Tap indicator -->
+          <circle cx="16" cy="-6" r="28" fill="rgba(0,229,255,0.06)" stroke="rgba(0,229,255,0.35)" stroke-width="1.5" stroke-dasharray="3,3"/>
+        </g>
+
+      </svg>
+
+      <!-- Hotspots -->
+      <div class="hotspot" style="width:44px;height:44px;left:26px;top:90px;" onclick="alert('Window: cracked open. The cat could have fit through here.')">
+        <span style="font-size:14px;">🪟</span>
+        <div class="hotspot-label">Window</div>
+      </div>
+      <div class="hotspot" style="width:44px;height:44px;left:300px;top:68px;" onclick="alert('Computer: still on. Desktop cluttered but one window left open — an Arthur Morgan post.')">
+        <span style="font-size:14px;">💻</span>
+        <div class="hotspot-label">Computer</div>
+      </div>
+      <div class="hotspot" style="width:44px;height:44px;left:145px;top:276px;" onclick="alert('Scattered papers: research notes. Something about signal frequencies.')">
+        <span style="font-size:14px;">📄</span>
+        <div class="hotspot-label">Papers</div>
+      </div>
+
+      <!-- P&C toolbar -->
+      <div class="pc-toolbar">
+        <div class="pc-actions">
+          <div class="pc-action-btn active">👁 Look</div>
+          <div class="pc-action-btn">🖐 Touch</div>
+          <div class="pc-action-btn">🗣 Talk</div>
+          <div class="pc-action-btn" onclick="show(4,document.querySelectorAll('.nav-btn')[4])">→ Next scene</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 4 · CAT INTERACTION
+       Tap cat → "Approach the cat?"
+       ════════════════════════════════════════════ -->
+  <div class="screen" id="s4">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:40;background:rgba(6,6,14,0.88);">
+      <span class="status-time">4:05</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="mode-badge" style="position:absolute;top:44px;left:0;right:0;z-index:40;background:rgba(6,6,14,0.9);">
+      <div class="mode-dot" style="background:var(--yellow);box-shadow:0 0 6px var(--yellow);"></div>
+      <div class="mode-name" style="color:var(--yellow);">POINT-AND-CLICK</div>
+      <div class="mode-sub">Tap to examine · Ben's Apartment</div>
+    </div>
+
+    <div class="pc-wrap">
+      <!-- Same scene but cat is highlighted -->
+      <svg width="390" height="510" viewBox="0 0 390 510" style="display:block;position:absolute;top:0;left:0;opacity:0.5;">
+        <rect width="390" height="510" fill="#100E1C"/>
+        <rect x="0" y="0" width="390" height="260" fill="#161422"/>
+        <rect x="20" y="30" width="100" height="140" fill="#0A0818" rx="3" stroke="#2A2838" stroke-width="2"/>
+        <rect x="280" y="170" width="100" height="80" fill="#1A1828" rx="3"/>
+        <rect x="130" y="220" width="140" height="16" fill="#241E30" rx="2" transform="rotate(-8 200 228)"/>
+        <rect x="100" y="280" width="40" height="28" fill="#1E1C2C" rx="2" transform="rotate(-15 120 294)"/>
+        <rect x="155" y="290" width="32" height="22" fill="#1E1C2C" rx="2" transform="rotate(5 171 301)"/>
+        <rect x="30" y="240" width="160" height="70" fill="#241E38" rx="6"/>
+        <rect x="34" y="244" width="152" height="62" fill="#2A2440" rx="5"/>
+        <rect x="38" y="250" width="68" height="50" fill="#302850" rx="4"/>
+        <rect x="114" y="250" width="68" height="50" fill="#2E2648" rx="4"/>
+        <rect x="30" y="220" width="160" height="24" fill="#281E3C" rx="4"/>
+        <rect x="0" y="330" width="390" height="180" fill="#140E1E"/>
+      </svg>
+
+      <!-- Cat focused, full opacity -->
+      <div style="position:absolute;top:180px;left:100px;z-index:20;">
+        <svg width="190" height="160" viewBox="-30 -50 200 160">
+          <!-- Glow ring around cat -->
+          <circle cx="46" cy="-2" r="52" fill="rgba(0,229,255,0.08)" stroke="rgba(0,229,255,0.4)" stroke-width="2"/>
+          <!-- Cat (same as before, larger effective) -->
+          <g class="cat-tail-anim" transform="translate(-18, 4)">
+            <path d="M 0 0 Q -18 -12 -14 -26" stroke="#C8B090" stroke-width="5" fill="none" stroke-linecap="round"/>
+          </g>
+          <g class="cat-body">
+            <ellipse cx="0" cy="4" rx="18" ry="12" fill="#C8B090"/>
+            <circle cx="16" cy="-6" r="13" fill="#C8B090"/>
+            <polygon points="8,-18 20,-8 6,-8" fill="#C8B090"/>
+            <polygon points="20,-18 30,-8 18,-8" fill="#C8B090"/>
+            <polygon points="10,-15 18,-9 9,-9" fill="#E8C0A8"/>
+            <polygon points="22,-15 28,-9 19,-9" fill="#E8C0A8"/>
+            <ellipse cx="12" cy="-7" rx="3.5" ry="4" fill="#1A1010"/>
+            <ellipse cx="20" cy="-7" rx="3.5" ry="4" fill="#1A1010"/>
+            <ellipse cx="12" cy="-7" rx="2" ry="3" fill="#0A0606"/>
+            <ellipse cx="20" cy="-7" rx="2" ry="3" fill="#0A0606"/>
+            <circle cx="13.5" cy="-8.5" r="1.2" fill="rgba(255,255,255,0.7)"/>
+            <circle cx="21.5" cy="-8.5" r="1.2" fill="rgba(255,255,255,0.7)"/>
+            <polygon points="16,-3 14,-1 18,-1" fill="#D090A0"/>
+            <path d="M 14 -1 Q 16 1 18 -1" stroke="#C070A0" stroke-width="0.8" fill="none"/>
+            <line x1="10" y1="-5" x2="-4" y2="-4" stroke="#999" stroke-width="1.2" opacity="0.8"/>
+            <line x1="10" y1="-3" x2="-3" y2="-2" stroke="#999" stroke-width="1.2" opacity="0.8"/>
+            <line x1="22" y1="-5" x2="36" y2="-4" stroke="#999" stroke-width="1.2" opacity="0.8"/>
+            <line x1="22" y1="-3" x2="35" y2="-2" stroke="#999" stroke-width="1.2" opacity="0.8"/>
+          </g>
+          <!-- Cat name badge -->
+          <rect x="-10" y="-44" width="112" height="14" rx="3" fill="rgba(0,229,255,0.15)" stroke="rgba(0,229,255,0.5)" stroke-width="1"/>
+          <text x="46" y="-33" text-anchor="middle" font-family="'Share Tech Mono'" font-size="8" fill="var(--cyan)">BEN'S CAT</text>
+        </svg>
+      </div>
+
+      <!-- Dialog box -->
+      <div class="dialog-overlay">
+        <div class="dialog-box">
+          <div class="dialog-speaker">BEN'S CAT</div>
+          <div class="dialog-text">She's watching you from the couch. Her tail is moving. She doesn't run — she's waiting to see what you do.</div>
+          <div style="font-family:var(--pixel);font-size:7px;color:var(--yellow);letter-spacing:0.1em;margin-bottom:12px;">Approach the cat?</div>
+          <div class="dialog-choices">
+            <button class="dialog-choice choice-yes" onclick="show(5,document.querySelectorAll('.nav-btn')[5])">Yes</button>
+            <button class="dialog-choice choice-no"  onclick="show(3,document.querySelectorAll('.nav-btn')[3])">Not yet</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 5 · TOP-DOWN: CAT CHASE
+       Back in top-down — cat bolts, pathfinds to door
+       ════════════════════════════════════════════ -->
+  <div class="screen" id="s5">
+    <div class="status-bar" style="position:absolute;top:0;left:0;right:0;z-index:40;background:rgba(6,6,14,0.9);">
+      <span class="status-time">4:06</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="mode-badge" style="position:absolute;top:44px;left:0;right:0;z-index:40;background:rgba(6,6,14,0.92);">
+      <div class="mode-dot" style="background:#00ff88;box-shadow:0 0 6px #00ff88;"></div>
+      <div class="mode-name" style="color:#00ff88;">TOP-DOWN</div>
+      <div class="mode-sub">Chase the cat!</div>
+    </div>
+
+    <div class="td-wrap">
+      <svg width="390" height="680" viewBox="0 0 390 680" style="display:block;position:absolute;top:0;left:0;">
+        <!-- Apartment interior (overhead) -->
+        <rect width="390" height="680" fill="#0A0818"/>
+        <!-- Room floor -->
+        <rect x="20" y="72" width="350" height="440" fill="#1C1A2C"/>
+        <!-- Walls -->
+        <rect x="0"   y="72"  width="20"  height="440" fill="#201E30"/>
+        <rect x="370" y="72"  width="20"  height="440" fill="#201E30"/>
+        <rect x="20"  y="72"  width="350" height="20"  fill="#201E30"/>
+        <rect x="20"  y="492" width="350" height="20"  fill="#201E30"/>
+        <!-- Room features (overhead view) -->
+        <!-- Couch (top-left of room) -->
+        <rect x="40"  y="100" width="120" height="50" fill="#2A2440" rx="3"/>
+        <!-- Table (overturned, diagonal) -->
+        <rect x="180" y="160" width="80"  height="40" fill="#241E30" rx="2" transform="rotate(-12 220 180)"/>
+        <!-- Computer desk (right side) -->
+        <rect x="310" y="100" width="55"  height="80" fill="#1A1828" rx="2"/>
+        <rect x="318" y="108" width="39"  height="30" fill="#0C1426" rx="1" stroke="#1E2034" stroke-width="1"/>
+        <!-- Papers scattered -->
+        <rect x="150" y="250" width="30" height="22" fill="#1E1C2C" rx="1" transform="rotate(-10 165 261)"/>
+        <rect x="200" y="260" width="24" height="18" fill="#1E1C2C" rx="1" transform="rotate(8 212 269)"/>
+        <rect x="240" y="245" width="28" height="20" fill="#201E2E" rx="1" transform="rotate(-5 254 255)"/>
+        <!-- Window (left wall) -->
+        <rect x="20"  y="140" width="20" height="80" fill="#12101E" stroke="rgba(80,60,140,0.4)" stroke-width="1"/>
+
+        <!-- DOOR (open, bottom right of room) -->
+        <rect x="310" y="490" width="60" height="20" fill="#201E30"/>
+        <rect x="310" y="472" width="60" height="20" fill="#0E0C1A" stroke="rgba(0,229,255,0.4)" stroke-width="1"/>
+        <text x="340" y="485" text-anchor="middle" font-family="'Share Tech Mono'" font-size="7" fill="rgba(0,229,255,0.6)">DOOR</text>
+
+        <!-- Cat escape path (pathfinding dotted line) -->
+        <path d="M 155 245 L 90 200 L 90 380 L 200 400 L 310 400 L 340 480"
+              stroke="rgba(200,176,144,0.5)" stroke-width="2" fill="none"
+              stroke-dasharray="5,3" stroke-linecap="round"/>
+        <!-- Path direction arrows -->
+        <polygon points="90,196 84,210 96,210" fill="rgba(200,176,144,0.5)"/>
+        <polygon points="200,396 194,410 206,410" fill="rgba(200,176,144,0.5)"/>
+        <polygon points="336,476 330,490 342,490" fill="rgba(200,176,144,0.5)"/>
+
+        <!-- CAT sprite (mid-chase, near left wall) -->
+        <g id="cat-chase" transform="translate(88, 195)">
+          <!-- Simple overhead cat sprite -->
+          <ellipse cx="0" cy="2" rx="10" ry="7" fill="#C8B090"/>
+          <circle cx="10" cy="-2" r="7" fill="#C8B090"/>
+          <!-- Ears -->
+          <polygon points="6,-8 13,-2 4,-2" fill="#C8B090"/>
+          <polygon points="12,-8 18,-2 11,-2" fill="#C8B090"/>
+          <!-- Eyes -->
+          <circle cx="8" cy="-3" r="2" fill="#1A1010"/>
+          <circle cx="13" cy="-3" r="2" fill="#1A1010"/>
+          <!-- Tail (running pose — straight back) -->
+          <path d="M -10 2 Q -20 -5 -18 -14" stroke="#C8B090" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <!-- Speed lines -->
+          <line x1="-22" y1="0"  x2="-14" y2="0"  stroke="rgba(200,176,144,0.4)" stroke-width="1.5"/>
+          <line x1="-24" y1="4"  x2="-16" y2="3"  stroke="rgba(200,176,144,0.3)" stroke-width="1"/>
+          <line x1="-24" y1="-4" x2="-16" y2="-3" stroke="rgba(200,176,144,0.3)" stroke-width="1"/>
+        </g>
+
+        <!-- Jane (chasing, slightly behind) -->
+        <g transform="translate(160, 258)">
+          <ellipse cx="0" cy="14" rx="9" ry="4" fill="rgba(0,0,0,0.4)"/>
+          <rect x="-6" y="6" width="5" height="9" fill="#1A1828" rx="1"/>
+          <rect x="1" y="6" width="5" height="9" fill="#1A1828" rx="1"/>
+          <rect x="-8" y="-3" width="16" height="10" fill="#3A4060" rx="2"/>
+          <rect x="-12" y="-2" width="4" height="8" fill="#D4A080" rx="1"/>
+          <rect x="8" y="-2" width="4" height="8" fill="#D4A080" rx="1"/>
+          <rect x="-3" y="-6" width="6" height="4" fill="#D4A080"/>
+          <circle cx="0" cy="-13" r="8" fill="#E0B090"/>
+          <ellipse cx="0" cy="-19" rx="8" ry="5" fill="#2A1810"/>
+          <rect x="-8" y="-18" width="5" height="7" fill="#2A1810" rx="1"/>
+          <path d="M -8 -13 Q -11 -20 0 -21 Q 11 -20 8 -13" stroke="#FFE066" stroke-width="2" fill="none"/>
+          <rect x="-10" y="-16" width="4" height="6" fill="#FFE066" rx="2"/>
+          <rect x="6" y="-16" width="4" height="6" fill="#FFE066" rx="2"/>
+          <!-- Speed lines -->
+          <line x1="-14" y1="2"  x2="-22" y2="1"  stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <line x1="-14" y1="6"  x2="-22" y2="5"  stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        </g>
+
+        <!-- Quest pop-in label -->
+        <rect x="32" y="530" width="200" height="30" rx="4" fill="rgba(0,229,255,0.1)" stroke="rgba(0,229,255,0.4)" stroke-width="1"/>
+        <text x="42" y="548" font-family="'Share Tech Mono'" font-size="9" fill="var(--cyan)">Cat headed for the door...</text>
+
+      </svg>
+    </div>
+
+    <div class="td-hud" style="pointer-events:auto;">
+      <div class="td-location" style="flex:1;">
+        <div class="td-loc-label" style="color:var(--pink);">STORY EVENT</div>
+        <div class="td-loc-name" style="color:var(--pink);">Cat is getting away!</div>
+      </div>
+      <button class="cta-btn cta-pink" style="width:auto;padding:10px 16px;font-size:10px;" onclick="show(6,document.querySelectorAll('.nav-btn')[6])">
+        CAT ESCAPES →
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 6 · QUEST UNLOCKED
+       "Find Ben's Cat" quest starts
+       ════════════════════════════════════════════ -->
+  <div class="screen" id="s6">
+    <div class="status-bar">
+      <span class="status-time">4:06</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div class="quest-wrap">
+      <div style="font-family:var(--pixel);font-size:6px;color:var(--cyan);letter-spacing:0.15em;margin-bottom:14px;animation:pulse-txt 2s ease-in-out infinite;">NEW QUEST STARTED</div>
+      <div style="font-size:48px;margin-bottom:16px;">🐈</div>
+      <div style="font-family:var(--pixel);font-size:11px;color:var(--text);letter-spacing:0.08em;line-height:1.8;text-align:center;margin-bottom:12px;">FIND<br>BEN'S CAT</div>
+      <div style="width:60px;height:1px;background:rgba(0,229,255,0.3);margin:0 auto 16px;"></div>
+      <div style="font-size:12px;color:#9090b0;line-height:1.8;text-align:center;max-width:290px;margin-bottom:28px;">She got out. She could be anywhere in the grid.<br><br>First — scout the neighborhood to find which area she's in. Then run there to catch her.</div>
+
+      <!-- Two-step quest breakdown -->
+      <div style="width:100%;max-width:310px;display:flex;flex-direction:column;gap:10px;margin-bottom:28px;">
+        <div style="background:rgba(0,229,255,0.07);border:1px solid rgba(0,229,255,0.3);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
+          <div style="font-family:var(--pixel);font-size:10px;color:var(--cyan);flex-shrink:0;">1</div>
+          <div>
+            <div style="font-family:var(--pixel);font-size:7px;color:var(--cyan);letter-spacing:0.08em;margin-bottom:3px;">SCOUT</div>
+            <div style="font-size:11px;color:#9090b0;line-height:1.4;">Run the area to find her. Seeded items will hint at her location.</div>
+          </div>
+        </div>
+        <div style="background:rgba(255,45,107,0.07);border:1px solid rgba(255,45,107,0.25);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;opacity:0.5;">
+          <div style="font-family:var(--pixel);font-size:10px;color:var(--pink);flex-shrink:0;">2</div>
+          <div>
+            <div style="font-family:var(--pixel);font-size:7px;color:var(--pink);letter-spacing:0.08em;margin-bottom:3px;">CAPTURE</div>
+            <div style="font-size:11px;color:#9090b0;line-height:1.4;">Run to where she is. Approach slowly. Don't spook her.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="cta-btn cta-cyan" onclick="show(7,document.querySelectorAll('.nav-btn')[7])">GO TO STORY TAB →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 7 · STORY TAB UPDATE
+       Back in app — new quest visible
+       ════════════════════════════════════════════ -->
+  <div class="screen" id="s7">
+    <div class="status-bar">
+      <span class="status-time">4:07</span>
+      <div class="status-right"><span>▂▄▆</span><span>⬛</span></div>
+    </div>
+    <div style="padding:16px 20px 8px;font-family:var(--pixel);font-size:8px;color:var(--text);flex-shrink:0;border-bottom:1px solid #0e0e1e;">📻 Story</div>
+
+    <div style="flex:1;overflow-y:auto;padding:16px 20px 24px;">
+      <div class="here-card">
+        <div>
+          <div style="font-family:var(--pixel);font-size:7px;color:var(--cyan);letter-spacing:0.1em;">YOU ARE HERE</div>
+          <div style="font-family:var(--pixel);font-size:9px;color:var(--cyan);margin-top:4px;line-height:1.5;">HOME · THE MERIDIAN</div>
+        </div>
+        <div style="font-size:22px;">🏠</div>
+      </div>
+
+      <!-- New active quest: Find the cat (scout phase) -->
+      <div class="mission-card">
+        <div class="mission-eyebrow">Active quest · Chapter 1</div>
+        <div class="mission-title">Find Ben's Cat · Step 1</div>
+        <div class="mission-sub">She got out. Scout the surrounding blocks to find which area she's in. Seeded items will give you clues.</div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <div style="flex:1;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);border-radius:4px;padding:7px 8px;text-align:center;">
+            <div style="font-family:var(--pixel);font-size:6px;color:var(--cyan);">SCOUT RUN</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">~1.5 mi</div>
+          </div>
+          <div style="flex:1;background:rgba(255,45,107,0.05);border:1px solid rgba(255,45,107,0.15);border-radius:4px;padding:7px 8px;text-align:center;opacity:0.5;">
+            <div style="font-family:var(--pixel);font-size:6px;color:var(--muted);">CAPTURE RUN</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">locked</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed: headphones -->
+      <div style="background:rgba(255,224,102,0.06);border:1px solid rgba(255,224,102,0.22);border-radius:10px;padding:12px 16px;margin-bottom:12px;opacity:0.8;">
+        <div style="font-size:9px;color:rgba(255,224,102,0.5);letter-spacing:0.12em;margin-bottom:4px;text-transform:uppercase;">✓ Story item collected</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:20px;">🎧</div>
+          <div style="font-family:var(--pixel);font-size:7px;color:rgba(255,224,102,0.6);line-height:1.5;">BEN'S HEADPHONES</div>
+        </div>
+      </div>
+
+      <!-- Clue cards -->
+      <div class="clue-card">
+        <div style="font-size:9px;color:rgba(255,140,0,0.7);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Clue · Ben's apartment</div>
+        <div style="font-family:var(--pixel);font-size:7px;color:var(--orange);line-height:1.6;margin-bottom:5px;">WINDOW LEFT OPEN</div>
+        <div style="font-size:11px;color:#9090b0;line-height:1.5;">The bedroom window was cracked open. That's how she got out. She could be on the lower rooftops or in the alley below.</div>
+      </div>
+
+      <div style="background:#0c0c1a;border:1px solid #1e1e2e;border-radius:8px;padding:12px 14px;margin-bottom:16px;">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:0.1em;margin-bottom:5px;text-transform:uppercase;">Seeded en route — collect run available</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:18px;">⬟</div>
+          <div>
+            <div style="font-family:var(--pixel);font-size:7px;color:var(--text);line-height:1.5;">CASSETTE TAPE</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;">0.4 mi from home. Ben's voice?</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="cta-btn cta-cyan">START SCOUT RUN →</button>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><div class="nav-icon">📋</div><div class="nav-label">Feed</div></div>
+      <div class="nav-item"><div class="nav-icon">🗺</div><div class="nav-label">Map</div></div>
+      <div class="nav-item active"><div class="nav-icon">📻</div><div class="nav-label">Story</div></div>
+      <div class="nav-item"><div class="nav-icon">🏃</div><div class="nav-label">Run</div></div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<!-- Design notes -->
+<div style="max-width:390px;width:100%;display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+  <div style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Design notes</div>
+
+  <div class="note-card">
+    <div class="note-title">① Story prompt — play now or later</div>
+    <div class="note-body">Two equal choices — "Investigate Now" is primary only because the player is already in context. Both lead to the same place; saving for later just dismisses to the Story tab where the chapter stays available. Estimated time shown (10-15 min) respects player autonomy.</div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-title">② ③ Mode indicators — colored dot badge</div>
+    <div class="note-body">A persistent colored dot badge tells the player which mode they're in at all times: green = top-down, yellow = point-and-click. This handles the transition between modes without a full-screen cut. The badge sits just below the status bar and stays fixed while the game layer scrolls beneath it.</div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-title">② Top-down: side alley is optional</div>
+    <div class="note-body">The alley between buildings is clearly accessible but not required. The glowing ⬟ item hints at something collectible — entering the alley could reveal a passcode or clue that seeds a side quest. Players who explore are rewarded; players who go straight to Ben's door miss nothing critical. This pattern scales to the rest of the game world.</div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-title">④ Cat dialog — "Not yet" not "No"</div>
+    <div class="note-body">The second choice says "Not yet" rather than "No" or "Cancel" — it returns to the point-and-click scene so the player can examine other hotspots first. The cat can always be approached on a second tap. This makes the player feel like they chose a different order, not that they rejected the game.</div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-title">⑤ Cat chase — pathfinding visible</div>
+    <div class="note-body">The cat's escape route is shown as a dotted trail with direction arrows while it's happening — the player can see the cat making decisions (left wall → across room → door). This makes the cat feel like a character with agency, not a scripted object. Three approach attempts before escape is a reasonable middle ground between too easy and too frustrating.</div>
+  </div>
+
+  <div class="note-card">
+    <div class="note-title">⑦ Back to app — two-step quest visible</div>
+    <div class="note-body">The quest in the Story tab shows both steps (Scout → Capture) but step 2 is locked/dimmed until step 1 is complete. The player immediately sees what's next. The cassette tape seeded on the first run now shows a distance and a tease ("Ben's voice?") — creating tension between the new quest and the old breadcrumb.</div>
+  </div>
+</div>
+
+<script>
+function show(n, btn) {
+  document.querySelectorAll('.screen').forEach(s => { s.style.display='none'; s.classList.remove('active'); });
+  const s = document.getElementById('s'+n);
+  s.style.display='flex'; s.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+</script>
+</body>
+</html>
