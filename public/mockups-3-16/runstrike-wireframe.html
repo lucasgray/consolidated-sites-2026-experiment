@@ -8,7 +8,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  background: #0d0d1a;
+  background: #0D0920;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -19,7 +19,7 @@ body {
 }
 
 .header { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.header-title { color: #00d4b8; font-size: 12px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
+.header-title { color: #00D896; font-size: 12px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
 .header-sub { color: #555; font-size: 12px; }
 
 .screen-nav {
@@ -47,7 +47,7 @@ body {
   white-space: nowrap;
 }
 .nav-btn:hover { color: #aaa; }
-.nav-btn.active { background: #00d4b8; color: #000; font-weight: 600; }
+.nav-btn.active { background: #00D896; color: #000; font-weight: 600; }
 
 /* Phone */
 .phone {
@@ -57,7 +57,7 @@ body {
   border-radius: 50px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 0 0 2px #2a2a2a, 0 0 0 4px #1a1a1a, 0 40px 100px rgba(0,0,0,0.7);
+  box-shadow: 0 0 0 2px #1E1438, 0 0 0 4px #0F0820, 0 40px 100px rgba(0,0,0,0.7);
   flex-shrink: 0;
 }
 .notch {
@@ -162,7 +162,7 @@ body {
   transform: translate(-50%, -50%);
   width: 6px;
   height: 6px;
-  background: #00d4b8;
+  background: #00D896;
   border-radius: 50%;
 }
 
@@ -182,7 +182,7 @@ body {
 .pin-head {
   width: 28px;
   height: 28px;
-  background: #00d4b8;
+  background: #00D896;
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
   display: flex;
@@ -225,20 +225,20 @@ body {
 
 /* Confirm destination sheet */
 .confirm-sheet {
-  background: #1c1c1e;
+  background: #140C28;
   border-radius: 24px 24px 0 0;
   padding: 10px 20px 44px;
-  border-top: 1px solid #2c2c2e;
+  border-top: 1px solid #201640;
   flex-shrink: 0;
   z-index: 20;
 }
-.sheet-handle { width: 36px; height: 4px; background: #3a3a3a; border-radius: 2px; margin: 0 auto 14px; }
+.sheet-handle { width: 36px; height: 4px; background: #2A1E44; border-radius: 2px; margin: 0 auto 14px; }
 
 .dest-row {
   display: flex;
   align-items: center;
   gap: 13px;
-  background: #2a2a2c;
+  background: #1E1438;
   border-radius: 14px;
   padding: 13px 14px;
   margin-bottom: 12px;
@@ -268,7 +268,7 @@ body {
 .confirm-btn {
   width: 100%;
   padding: 17px;
-  background: #00d4b8;
+  background: #00D896;
   border-radius: 16px;
   color: #000;
   font-weight: 700;
@@ -282,10 +282,10 @@ body {
    ============================== */
 
 .bottom-sheet {
-  background: #1c1c1e;
+  background: #140C28;
   border-radius: 24px 24px 0 0;
   padding: 10px 20px 44px;
-  border-top: 1px solid #2c2c2e;
+  border-top: 1px solid #201640;
   flex-shrink: 0;
 }
 .sheet-title { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 13px; }
@@ -311,12 +311,12 @@ body {
 
 .companion-row { display: flex; gap: 8px; margin-bottom: 16px; }
 .companion-card {
-  flex: 1; background: #2a2a2c; border-radius: 14px; padding: 12px 6px 10px;
+  flex: 1; background: #1E1438; border-radius: 14px; padding: 12px 6px 10px;
   text-align: center; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; position: relative;
 }
-.companion-card:hover { border-color: #3a3a3a; }
-.companion-card.selected { border-color: #00d4b8; background: rgba(0,212,184,0.07); }
-.companion-check { position: absolute; top: 7px; right: 9px; color: #00d4b8; font-size: 10px; font-weight: 700; display: none; }
+.companion-card:hover { border-color: #2A1E44; }
+.companion-card.selected { border-color: #00D896; background: rgba(0,212,184,0.07); }
+.companion-check { position: absolute; top: 7px; right: 9px; color: #00D896; font-size: 10px; font-weight: 700; display: none; }
 .companion-card.selected .companion-check { display: block; }
 .companion-emoji { font-size: 28px; display: block; margin-bottom: 6px; }
 .companion-name { color: #fff; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
@@ -324,7 +324,7 @@ body {
 .companion-card.selected .companion-ability { color: #888; }
 
 .start-btn {
-  width: 100%; padding: 17px; background: #00d4b8; border-radius: 16px;
+  width: 100%; padding: 17px; background: #00D896; border-radius: 16px;
   color: #000; font-weight: 700; font-size: 17px; text-align: center; cursor: pointer;
 }
 
@@ -378,7 +378,7 @@ body {
 .obj-prog-label { color: #9364ff; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
 .obj-prog-main { color: #fff; font-size: 13px; font-weight: 600; }
 .obj-prog-dist { margin-left: auto; text-align: right; flex-shrink: 0; }
-.obj-prog-dist-val { color: #00d4b8; font-size: 16px; font-weight: 700; }
+.obj-prog-dist-val { color: #00D896; font-size: 16px; font-weight: 700; }
 .obj-prog-dist-label { color: #666; font-size: 9px; display: block; }
 
 /* Out-and-back indicator */
@@ -422,7 +422,7 @@ body {
 }
 .pause-btn {
   width: 54px; height: 54px; border-radius: 50%;
-  background: #2a2a2c; border: 2px solid #3a3a3a;
+  background: #1E1438; border: 2px solid #2A1E44;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; font-size: 20px;
 }
@@ -432,13 +432,13 @@ body {
    ============================== */
 
 .post-run { flex: 1; overflow-y: auto; padding: 56px 20px 40px; }
-.pr-eyebrow { color: #00d4b8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; margin-bottom: 6px; }
+.pr-eyebrow { color: #00D896; font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; margin-bottom: 6px; }
 .pr-title { color: #fff; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
 .pr-subtitle { color: #666; font-size: 14px; margin-bottom: 26px; }
 .pr-stats-row { display: flex; gap: 8px; margin-bottom: 28px; }
 .pr-stat-box {
-  flex: 1; background: #1c1c1e; border-radius: 14px; padding: 14px 10px;
-  text-align: center; border: 1px solid #2a2a2a;
+  flex: 1; background: #140C28; border-radius: 14px; padding: 14px 10px;
+  text-align: center; border: 1px solid #1E1438;
 }
 .pr-stat-value { color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 3px; }
 .pr-stat-label { color: #666; font-size: 9px; text-transform: uppercase; letter-spacing: 0.07em; }
@@ -446,24 +446,24 @@ body {
 
 .loot-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
 .loot-item {
-  background: #1c1c1e; border-radius: 14px; padding: 14px 16px;
-  display: flex; align-items: center; gap: 14px; border: 1px solid #2a2a2a;
+  background: #140C28; border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px; border: 1px solid #1E1438;
 }
 .loot-icon {
-  width: 44px; height: 44px; background: #2a2a2a; border-radius: 10px;
+  width: 44px; height: 44px; background: #1E1438; border-radius: 10px;
   display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
 }
 .loot-info { flex: 1; }
 .loot-name { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
 .loot-desc { color: #666; font-size: 11px; }
 .loot-badge {
-  background: rgba(0,212,184,0.12); color: #00d4b8; font-size: 9px; font-weight: 700;
+  background: rgba(0,212,184,0.12); color: #00D896; font-size: 9px; font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; flex-shrink: 0;
 }
 
 .intel-item {
-  background: #1c1c1e; border-radius: 14px; padding: 14px 16px;
-  display: flex; align-items: center; gap: 14px; border: 1px solid #2a2a2a; margin-bottom: 24px;
+  background: #140C28; border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px; border: 1px solid #1E1438; margin-bottom: 24px;
 }
 .intel-icon {
   width: 44px; height: 44px; background: rgba(147,100,255,0.12); border-radius: 10px;
@@ -474,22 +474,22 @@ body {
   background: linear-gradient(135deg, rgba(0,212,184,0.05) 0%, rgba(147,100,255,0.05) 100%);
   border: 1px solid rgba(0,212,184,0.22); border-radius: 16px; padding: 18px; margin-bottom: 24px;
 }
-.story-eyebrow { color: #00d4b8; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
+.story-eyebrow { color: #00D896; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
 .story-title { color: #fff; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
 .story-desc { color: #888; font-size: 13px; line-height: 1.5; }
 
 .pr-continue {
-  width: 100%; padding: 18px; background: #00d4b8; border-radius: 16px;
+  width: 100%; padding: 18px; background: #00D896; border-radius: 16px;
   color: #000; font-weight: 700; font-size: 17px; text-align: center; cursor: pointer;
 }
 
 /* Design note cards below phone */
 .note-card {
-  background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 14px 16px;
+  background: #0F0820; border: 1px solid #1E1438; border-radius: 12px; padding: 14px 16px;
   display: none;
 }
 .note-card.visible { display: block; }
-.note-title { color: #00d4b8; font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+.note-title { color: #00D896; font-size: 11px; font-weight: 600; margin-bottom: 6px; }
 .note-body { color: #888; font-size: 12px; line-height: 1.6; }
 </style>
 </head>
@@ -524,32 +524,32 @@ body {
     <!-- Map (background, "panning" is implied) -->
     <div class="map-area">
       <svg viewBox="0 0 375 530" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <rect width="375" height="530" fill="#1a1a1a"/>
+        <rect width="375" height="530" fill="#0F0820"/>
         <!-- Blocks -->
-        <rect x="0"   y="0"   width="55"  height="70"  fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="0"   width="95"  height="70"  fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="0"   width="110" height="70"  fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="0"   width="70"  height="70"  fill="#1e1e1e" rx="2"/>
-        <rect x="0"   y="85"  width="55"  height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="85"  width="95"  height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="85"  width="110" height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="85"  width="70"  height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="0"   y="205" width="55"  height="115" fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="205" width="95"  height="115" fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="205" width="110" height="115" fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="205" width="70"  height="115" fill="#1e1e1e" rx="2"/>
-        <rect x="0"   y="335" width="55"  height="195" fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="335" width="95"  height="195" fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="335" width="110" height="195" fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="335" width="70"  height="195" fill="#1e1e1e" rx="2"/>
+        <rect x="0"   y="0"   width="55"  height="70"  fill="#130B26" rx="2"/>
+        <rect x="70"  y="0"   width="95"  height="70"  fill="#130B26" rx="2"/>
+        <rect x="180" y="0"   width="110" height="70"  fill="#130B26" rx="2"/>
+        <rect x="305" y="0"   width="70"  height="70"  fill="#130B26" rx="2"/>
+        <rect x="0"   y="85"  width="55"  height="105" fill="#130B26" rx="2"/>
+        <rect x="70"  y="85"  width="95"  height="105" fill="#130B26" rx="2"/>
+        <rect x="180" y="85"  width="110" height="105" fill="#130B26" rx="2"/>
+        <rect x="305" y="85"  width="70"  height="105" fill="#130B26" rx="2"/>
+        <rect x="0"   y="205" width="55"  height="115" fill="#130B26" rx="2"/>
+        <rect x="70"  y="205" width="95"  height="115" fill="#130B26" rx="2"/>
+        <rect x="180" y="205" width="110" height="115" fill="#130B26" rx="2"/>
+        <rect x="305" y="205" width="70"  height="115" fill="#130B26" rx="2"/>
+        <rect x="0"   y="335" width="55"  height="195" fill="#130B26" rx="2"/>
+        <rect x="70"  y="335" width="95"  height="195" fill="#130B26" rx="2"/>
+        <rect x="180" y="335" width="110" height="195" fill="#130B26" rx="2"/>
+        <rect x="305" y="335" width="70"  height="195" fill="#130B26" rx="2"/>
         <!-- Streets horizontal -->
-        <rect x="0" y="70"  width="375" height="15" fill="#252525"/>
-        <rect x="0" y="190" width="375" height="15" fill="#252525"/>
-        <rect x="0" y="320" width="375" height="15" fill="#252525"/>
+        <rect x="0" y="70"  width="375" height="15" fill="#1A1030"/>
+        <rect x="0" y="190" width="375" height="15" fill="#1A1030"/>
+        <rect x="0" y="320" width="375" height="15" fill="#1A1030"/>
         <!-- Streets vertical -->
-        <rect x="55"  y="0" width="15" height="530" fill="#252525"/>
-        <rect x="165" y="0" width="15" height="530" fill="#252525"/>
-        <rect x="290" y="0" width="15" height="530" fill="#252525"/>
+        <rect x="55"  y="0" width="15" height="530" fill="#1A1030"/>
+        <rect x="165" y="0" width="15" height="530" fill="#1A1030"/>
+        <rect x="290" y="0" width="15" height="530" fill="#1A1030"/>
 
         <!-- Dim overlay to focus on crosshair -->
         <rect width="375" height="530" fill="rgba(0,0,0,0.25)"/>
@@ -562,7 +562,7 @@ body {
         <circle cx="172" cy="440" r="16" fill="rgba(255,255,255,0.06)"/>
         <circle cx="172" cy="440" r="8"  fill="rgba(255,255,255,0.14)"/>
         <circle cx="172" cy="440" r="5"  fill="white"/>
-        <circle cx="172" cy="440" r="2"  fill="#1a1a1a"/>
+        <circle cx="172" cy="440" r="2"  fill="#0F0820"/>
 
         <!-- Dashed line from player to crosshair center (suggested route) -->
         <line x1="172" y1="440" x2="235" y2="265"
@@ -591,7 +591,7 @@ body {
     </div>
 
     <!-- Objective card overlay on map -->
-    <div class="objective-card" style="position:relative;top:auto;left:auto;right:auto;margin:0;border-radius:0;background:#111;border:none;border-bottom:1px solid #2a2a2a;padding:12px 20px 14px;">
+    <div class="objective-card" style="position:relative;top:auto;left:auto;right:auto;margin:0;border-radius:0;background:#111;border:none;border-bottom:1px solid #1E1438;padding:12px 20px 14px;">
       <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:transparent;"></div>
       <div class="obj-eyebrow">Episode 1 · Part 2</div>
       <div class="obj-title">Where is your friend's apartment?</div>
@@ -636,29 +636,29 @@ body {
 
     <div class="map-area">
       <svg viewBox="0 0 375 490" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <rect width="375" height="490" fill="#1a1a1a"/>
-        <rect x="0"   y="0"   width="55"  height="65"  fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="0"   width="95"  height="65"  fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="0"   width="110" height="65"  fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="0"   width="70"  height="65"  fill="#1e1e1e" rx="2"/>
-        <rect x="0"   y="80"  width="55"  height="95"  fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="80"  width="95"  height="95"  fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="80"  width="110" height="95"  fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="80"  width="70"  height="95"  fill="#1e1e1e" rx="2"/>
-        <rect x="0"   y="190" width="55"  height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="190" width="95"  height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="190" width="110" height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="190" width="70"  height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="0"   y="310" width="55"  height="180" fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="310" width="95"  height="180" fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="310" width="110" height="180" fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="310" width="70"  height="180" fill="#1e1e1e" rx="2"/>
-        <rect x="0" y="65"  width="375" height="15" fill="#252525"/>
-        <rect x="0" y="175" width="375" height="15" fill="#252525"/>
-        <rect x="0" y="295" width="375" height="15" fill="#252525"/>
-        <rect x="55"  y="0" width="15" height="490" fill="#252525"/>
-        <rect x="165" y="0" width="15" height="490" fill="#252525"/>
-        <rect x="290" y="0" width="15" height="490" fill="#252525"/>
+        <rect width="375" height="490" fill="#0F0820"/>
+        <rect x="0"   y="0"   width="55"  height="65"  fill="#130B26" rx="2"/>
+        <rect x="70"  y="0"   width="95"  height="65"  fill="#130B26" rx="2"/>
+        <rect x="180" y="0"   width="110" height="65"  fill="#130B26" rx="2"/>
+        <rect x="305" y="0"   width="70"  height="65"  fill="#130B26" rx="2"/>
+        <rect x="0"   y="80"  width="55"  height="95"  fill="#130B26" rx="2"/>
+        <rect x="70"  y="80"  width="95"  height="95"  fill="#130B26" rx="2"/>
+        <rect x="180" y="80"  width="110" height="95"  fill="#130B26" rx="2"/>
+        <rect x="305" y="80"  width="70"  height="95"  fill="#130B26" rx="2"/>
+        <rect x="0"   y="190" width="55"  height="105" fill="#130B26" rx="2"/>
+        <rect x="70"  y="190" width="95"  height="105" fill="#130B26" rx="2"/>
+        <rect x="180" y="190" width="110" height="105" fill="#130B26" rx="2"/>
+        <rect x="305" y="190" width="70"  height="105" fill="#130B26" rx="2"/>
+        <rect x="0"   y="310" width="55"  height="180" fill="#130B26" rx="2"/>
+        <rect x="70"  y="310" width="95"  height="180" fill="#130B26" rx="2"/>
+        <rect x="180" y="310" width="110" height="180" fill="#130B26" rx="2"/>
+        <rect x="305" y="310" width="70"  height="180" fill="#130B26" rx="2"/>
+        <rect x="0" y="65"  width="375" height="15" fill="#1A1030"/>
+        <rect x="0" y="175" width="375" height="15" fill="#1A1030"/>
+        <rect x="0" y="295" width="375" height="15" fill="#1A1030"/>
+        <rect x="55"  y="0" width="15" height="490" fill="#1A1030"/>
+        <rect x="165" y="0" width="15" height="490" fill="#1A1030"/>
+        <rect x="290" y="0" width="15" height="490" fill="#1A1030"/>
 
         <!-- Route suggestions (faint) -->
         <path d="M 172 310 L 172 183 L 235 183" stroke="rgba(0,212,184,0.1)" stroke-width="12"
@@ -666,20 +666,20 @@ body {
 
         <!-- Pickups along route -->
         <circle cx="172" cy="183" r="22" fill="rgba(0,212,184,0.12)"/>
-        <circle cx="172" cy="183" r="9" fill="#00d4b8"/>
+        <circle cx="172" cy="183" r="9" fill="#00D896"/>
         <circle cx="172" cy="183" r="4" fill="white"/>
 
         <circle cx="62" cy="295" r="18" fill="rgba(0,212,184,0.08)"/>
-        <circle cx="62" cy="295" r="7" fill="#00d4b8" opacity="0.55"/>
+        <circle cx="62" cy="295" r="7" fill="#00D896" opacity="0.55"/>
         <circle cx="62" cy="295" r="3" fill="white" opacity="0.55"/>
 
         <!-- Destination pin -->
         <!-- Pin head -->
         <circle cx="235" cy="130" r="18" fill="rgba(0,212,184,0.18)"/>
-        <circle cx="235" cy="130" r="9" fill="#00d4b8"/>
+        <circle cx="235" cy="130" r="9" fill="#00D896"/>
         <circle cx="235" cy="130" r="4" fill="#111"/>
         <!-- Pin tail -->
-        <polygon points="235,148 230,138 240,138" fill="#00d4b8"/>
+        <polygon points="235,148 230,138 240,138" fill="#00D896"/>
 
         <!-- Destination label -->
         <rect x="248" y="118" width="96" height="26" rx="8" fill="rgba(0,0,0,0.75)"/>
@@ -697,7 +697,7 @@ body {
         <circle cx="172" cy="310" r="18" fill="rgba(255,255,255,0.06)"/>
         <circle cx="172" cy="310" r="9"  fill="rgba(255,255,255,0.13)"/>
         <circle cx="172" cy="310" r="6"  fill="white"/>
-        <circle cx="172" cy="310" r="2"  fill="#1a1a1a"/>
+        <circle cx="172" cy="310" r="2"  fill="#0F0820"/>
 
         <!-- Companion radius ring -->
         <circle cx="172" cy="310" r="48" fill="rgba(0,212,184,0.03)"
@@ -706,7 +706,7 @@ body {
 
       <div class="map-legend">
         <div class="legend-item">
-          <div class="legend-dot" style="background:#00d4b8;"></div>
+          <div class="legend-dot" style="background:#00D896;"></div>
           <span>Ready to collect</span>
         </div>
         <div class="legend-item">
@@ -764,34 +764,34 @@ body {
   <div class="screen" id="screen-2">
     <div class="status-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;z-index:20;">
       <span class="status-time">10:14</span>
-      <div class="status-icons"><span style="color:#00d4b8;">🐕</span><span>⬛</span></div>
+      <div class="status-icons"><span style="color:#00D896;">🐕</span><span>⬛</span></div>
     </div>
 
     <div class="run-map-wrap">
       <svg viewBox="0 0 375 812" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <rect width="375" height="812" fill="#1a1a1a"/>
-        <rect x="0"   y="0"   width="55"  height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="0"   width="95"  height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="0"   width="110" height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="0"   width="70"  height="105" fill="#1e1e1e" rx="2"/>
-        <rect x="0"   y="120" width="55"  height="145" fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="120" width="95"  height="145" fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="120" width="110" height="145" fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="120" width="70"  height="145" fill="#1e1e1e" rx="2"/>
-        <rect x="0"   y="280" width="55"  height="145" fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="280" width="95"  height="145" fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="280" width="110" height="145" fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="280" width="70"  height="145" fill="#1e1e1e" rx="2"/>
-        <rect x="0"   y="440" width="55"  height="372" fill="#1e1e1e" rx="2"/>
-        <rect x="70"  y="440" width="95"  height="372" fill="#1e1e1e" rx="2"/>
-        <rect x="180" y="440" width="110" height="372" fill="#1e1e1e" rx="2"/>
-        <rect x="305" y="440" width="70"  height="372" fill="#1e1e1e" rx="2"/>
-        <rect x="0" y="105" width="375" height="15" fill="#252525"/>
-        <rect x="0" y="265" width="375" height="15" fill="#252525"/>
-        <rect x="0" y="425" width="375" height="15" fill="#252525"/>
-        <rect x="55"  y="0" width="15" height="812" fill="#252525"/>
-        <rect x="165" y="0" width="15" height="812" fill="#252525"/>
-        <rect x="290" y="0" width="15" height="812" fill="#252525"/>
+        <rect width="375" height="812" fill="#0F0820"/>
+        <rect x="0"   y="0"   width="55"  height="105" fill="#130B26" rx="2"/>
+        <rect x="70"  y="0"   width="95"  height="105" fill="#130B26" rx="2"/>
+        <rect x="180" y="0"   width="110" height="105" fill="#130B26" rx="2"/>
+        <rect x="305" y="0"   width="70"  height="105" fill="#130B26" rx="2"/>
+        <rect x="0"   y="120" width="55"  height="145" fill="#130B26" rx="2"/>
+        <rect x="70"  y="120" width="95"  height="145" fill="#130B26" rx="2"/>
+        <rect x="180" y="120" width="110" height="145" fill="#130B26" rx="2"/>
+        <rect x="305" y="120" width="70"  height="145" fill="#130B26" rx="2"/>
+        <rect x="0"   y="280" width="55"  height="145" fill="#130B26" rx="2"/>
+        <rect x="70"  y="280" width="95"  height="145" fill="#130B26" rx="2"/>
+        <rect x="180" y="280" width="110" height="145" fill="#130B26" rx="2"/>
+        <rect x="305" y="280" width="70"  height="145" fill="#130B26" rx="2"/>
+        <rect x="0"   y="440" width="55"  height="372" fill="#130B26" rx="2"/>
+        <rect x="70"  y="440" width="95"  height="372" fill="#130B26" rx="2"/>
+        <rect x="180" y="440" width="110" height="372" fill="#130B26" rx="2"/>
+        <rect x="305" y="440" width="70"  height="372" fill="#130B26" rx="2"/>
+        <rect x="0" y="105" width="375" height="15" fill="#1A1030"/>
+        <rect x="0" y="265" width="375" height="15" fill="#1A1030"/>
+        <rect x="0" y="425" width="375" height="15" fill="#1A1030"/>
+        <rect x="55"  y="0" width="15" height="812" fill="#1A1030"/>
+        <rect x="165" y="0" width="15" height="812" fill="#1A1030"/>
+        <rect x="290" y="0" width="15" height="812" fill="#1A1030"/>
 
         <!-- Breadcrumb trail (where you've been) -->
         <path d="M 172 812 L 172 433 L 62 433 L 62 273"
@@ -799,19 +799,19 @@ body {
               stroke-linecap="round" stroke-linejoin="round"/>
 
         <!-- Collected pickup (greyed) -->
-        <circle cx="172" cy="433" r="9" fill="#2a2a2a"/>
+        <circle cx="172" cy="433" r="9" fill="#1E1438"/>
         <text x="172" y="437" text-anchor="middle" fill="#555" font-size="11" font-weight="700">✓</text>
 
         <!-- Next pickup -->
         <circle cx="62" cy="273" r="26" fill="rgba(0,212,184,0.13)"/>
-        <circle cx="62" cy="273" r="11" fill="#00d4b8"/>
+        <circle cx="62" cy="273" r="11" fill="#00D896"/>
         <circle cx="62" cy="273" r="5"  fill="white"/>
 
         <!-- Destination pin (the apartment) -->
         <circle cx="235" cy="130" r="22" fill="rgba(0,212,184,0.2)"/>
-        <circle cx="235" cy="130" r="11" fill="#00d4b8"/>
+        <circle cx="235" cy="130" r="11" fill="#00D896"/>
         <circle cx="235" cy="130" r="5"  fill="#111"/>
-        <polygon points="235,152 229,140 241,140" fill="#00d4b8"/>
+        <polygon points="235,152 229,140 241,140" fill="#00D896"/>
         <rect x="248" y="118" width="96" height="26" rx="8" fill="rgba(0,0,0,0.75)"/>
         <text x="296" y="135" text-anchor="middle" fill="#fff" font-size="11" font-family="-apple-system,sans-serif" font-weight="600">Apartment B</text>
 
@@ -824,7 +824,7 @@ body {
         <circle cx="62" cy="368" r="20" fill="rgba(255,255,255,0.05)"/>
         <circle cx="62" cy="368" r="10" fill="rgba(255,255,255,0.12)"/>
         <circle cx="62" cy="368" r="7" fill="white"/>
-        <circle cx="62" cy="368" r="3" fill="#1a1a1a"/>
+        <circle cx="62" cy="368" r="3" fill="#0F0820"/>
       </svg>
     </div>
 
@@ -861,7 +861,7 @@ body {
       <div class="oab-track">
         <div class="oab-dot" style="background:white;"></div>
         <div class="oab-line done"></div>
-        <div class="oab-dot" style="background:#333;border:2px solid #00d4b8;"></div>
+        <div class="oab-dot" style="background:#333;border:2px solid #00D896;"></div>
         <div class="oab-line"></div>
         <div class="oab-dot" style="background:#333;"></div>
       </div>
@@ -955,13 +955,13 @@ body {
 
       <!-- Travel progress (replaces story unlock in position) -->
       <div class="pr-section-label">Journey progress</div>
-      <div style="background:#1c1c1e;border-radius:14px;padding:16px;margin-bottom:24px;border:1px solid #2a2a2a;">
+      <div style="background:#140C28;border-radius:14px;padding:16px;margin-bottom:24px;border:1px solid #1E1438;">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
           <div style="color:#fff;font-size:15px;font-weight:700;">The Hollows</div>
           <div style="color:#ff8c00;font-size:13px;font-weight:700;">35%</div>
         </div>
         <!-- Progress bar -->
-        <div style="height:6px;background:#2a2a2a;border-radius:3px;overflow:hidden;margin-bottom:8px;">
+        <div style="height:6px;background:#1E1438;border-radius:3px;overflow:hidden;margin-bottom:8px;">
           <div style="height:100%;width:35%;background:linear-gradient(90deg,#ff8c00,rgba(255,140,0,0.6));border-radius:3px;"></div>
         </div>
         <div style="display:flex;justify-content:space-between;">
@@ -976,7 +976,7 @@ body {
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
 
         <!-- Encounter 1: subway car -->
-        <div style="background:#1c1c1e;border-radius:14px;padding:14px 16px;border:1px solid #2a2a2a;">
+        <div style="background:#140C28;border-radius:14px;padding:14px 16px;border:1px solid #1E1438;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
             <div style="width:36px;height:36px;background:rgba(255,140,0,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚇</div>
             <div style="flex:1;">
@@ -986,18 +986,18 @@ body {
           </div>
           <div style="color:#888;font-size:12px;line-height:1.6;">You heard it before you saw it. Pressed into a maintenance alcove off the eastbound tunnel. The car passed within a foot.</div>
           <!-- Discovery from the alcove -->
-          <div style="margin-top:10px;padding:10px 12px;background:#242424;border-radius:8px;border-left:2px solid #00d4b8;display:flex;align-items:center;gap:10px;">
+          <div style="margin-top:10px;padding:10px 12px;background:#242424;border-radius:8px;border-left:2px solid #00D896;display:flex;align-items:center;gap:10px;">
             <div style="font-size:16px;">🗝</div>
             <div>
-              <div style="color:#00d4b8;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;">Found in the alcove</div>
+              <div style="color:#00D896;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;">Found in the alcove</div>
               <div style="color:#ddd;font-size:12px;font-weight:600;">Maintenance key — Bay 7</div>
             </div>
-            <div style="margin-left:auto;background:rgba(0,212,184,0.12);color:#00d4b8;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase;flex-shrink:0;">New</div>
+            <div style="margin-left:auto;background:rgba(0,212,184,0.12);color:#00D896;font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.06em;text-transform:uppercase;flex-shrink:0;">New</div>
           </div>
         </div>
 
         <!-- Encounter 2: something quieter, environmental -->
-        <div style="background:#1c1c1e;border-radius:14px;padding:14px 16px;border:1px solid #2a2a2a;">
+        <div style="background:#140C28;border-radius:14px;padding:14px 16px;border:1px solid #1E1438;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
             <div style="width:36px;height:36px;background:rgba(176,96,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🕯</div>
             <div>

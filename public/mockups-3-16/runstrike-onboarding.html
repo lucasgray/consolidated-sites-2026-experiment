@@ -8,20 +8,20 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
-  --pink:   #ff2d6b;
-  --cyan:   #00e5ff;
+  --pink:   #FF1060;
+  --cyan:   #00D896;
   --orange: #ff8c00;
   --green:  #00ff88;
   --yellow: #ffe066;
-  --bg:     #06060e;
-  --card:   #0c0c1a;
+  --bg:     #0D0920;
+  --card:   #130B26;
   --text:   #e0e0f0;
-  --muted:  #444460;
+  --muted:  #4A3868;
   --mono:   'Share Tech Mono', 'Courier New', monospace;
   --pixel:  'Press Start 2P', monospace;
 }
 body {
-  background: #04040c; min-height: 100vh;
+  background: #0D0920; min-height: 100vh;
   display: flex; flex-direction: column; align-items: center;
   padding: 40px 20px 60px; font-family: var(--mono); gap: 22px;
 }
@@ -32,7 +32,7 @@ body {
 .screen-nav {
   display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;
   background: rgba(255,255,255,0.03); padding: 4px;
-  border-radius: 20px; border: 1px solid #181828; max-width: 540px;
+  border-radius: 20px; border: 1px solid #1E1438; max-width: 540px;
 }
 .nav-btn {
   background: transparent; border: none; color: var(--muted);
@@ -46,7 +46,7 @@ body {
 .phone {
   width: 390px; height: 844px; background: var(--bg);
   border-radius: 50px; overflow: hidden; position: relative;
-  box-shadow: 0 0 0 2px #181828, 0 0 0 4px #0c0c1a, 0 40px 100px rgba(0,0,0,0.9);
+  box-shadow: 0 0 0 2px #1E1438, 0 0 0 4px #130B26, 0 40px 100px rgba(0,0,0,0.9);
   flex-shrink: 0;
 }
 .notch {
@@ -72,7 +72,7 @@ body {
 /* Bottom nav */
 .bottom-nav {
   height: 80px; background: rgba(6,6,14,0.97);
-  border-top: 1px solid #181828;
+  border-top: 1px solid #1E1438;
   display: flex; align-items: flex-start;
   padding-top: 10px; flex-shrink: 0; z-index: 20;
 }
@@ -92,13 +92,13 @@ body {
 .cta-cyan   { background: var(--cyan);   color: #000; }
 .cta-pink   { background: var(--pink);   color: #000; }
 .cta-green  { background: var(--green);  color: #000; }
-.cta-ghost  { background: transparent; color: var(--muted); border: 1px solid #252535; }
+.cta-ghost  { background: transparent; color: var(--muted); border: 1px solid #2A1E44; }
 .cta-note   { font-size: 10px; color: var(--muted); text-align: center; margin-top: 10px; line-height: 1.6; }
 .section-label {
   font-size: 9px; color: var(--muted); letter-spacing: 0.15em;
   text-transform: uppercase; margin: 20px 0 10px;
 }
-.divider { width: 100%; height: 1px; background: #1a1a2a; margin: 18px 0; }
+.divider { width: 100%; height: 1px; background: #1E1438; margin: 18px 0; }
 
 /* Pixel art placeholder */
 .px-placeholder {
@@ -118,29 +118,29 @@ body {
 .boot-scan {
   position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(0deg, transparent, transparent 2px,
-    rgba(0,229,255,0.012) 2px, rgba(0,229,255,0.012) 4px);
+    rgba(0,216,150,0.012) 2px, rgba(0,216,150,0.012) 4px);
 }
 .boot-logo {
   font-family: var(--pixel); font-size: 22px; color: var(--cyan);
   letter-spacing: 0.15em; text-align: center; line-height: 1.6;
-  text-shadow: 0 0 30px rgba(0,229,255,0.5), 0 0 60px rgba(0,229,255,0.2);
+  text-shadow: 0 0 30px rgba(0,216,150,0.5), 0 0 60px rgba(0,216,150,0.2);
 }
-.boot-sub { font-size: 9px; color: rgba(0,229,255,0.4); letter-spacing: 0.2em; text-align: center; margin-top: 10px; }
-.boot-log { margin-top: 44px; width: 100%; font-size: 10px; color: rgba(0,229,255,0.5); line-height: 2.1; }
+.boot-sub { font-size: 9px; color: rgba(0,216,150,0.4); letter-spacing: 0.2em; text-align: center; margin-top: 10px; }
+.boot-log { margin-top: 44px; width: 100%; font-size: 10px; color: rgba(0,216,150,0.5); line-height: 2.1; }
 .boot-log-line { display: flex; justify-content: space-between; }
 .ok  { color: #00ff88; } .err { color: var(--pink); } .pnd { color: var(--yellow); }
-.boot-bar-track { height: 4px; background: #1a1a2a; border-radius: 2px; margin-top: 8px; }
-.boot-bar-fill  { height: 100%; width: 68%; background: linear-gradient(90deg, var(--cyan), rgba(0,229,255,0.3)); border-radius: 2px; }
+.boot-bar-track { height: 4px; background: #1E1438; border-radius: 2px; margin-top: 8px; }
+.boot-bar-fill  { height: 100%; width: 68%; background: linear-gradient(90deg, var(--cyan), rgba(0,216,150,0.3)); border-radius: 2px; }
 .boot-tap {
   margin-top: 40px; font-family: var(--pixel); font-size: 7px;
-  color: rgba(0,229,255,0.45); letter-spacing: 0.15em; text-align: center;
+  color: rgba(0,216,150,0.45); letter-spacing: 0.15em; text-align: center;
   animation: blink 1.2s step-end infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
 /* ── SCREEN 1: CALLSIGN ── */
 .tx-frame {
-  background: rgba(255,45,107,0.06); border: 1px solid rgba(255,45,107,0.3);
+  background: rgba(255,16,96,0.06); border: 1px solid rgba(255,16,96,0.3);
   border-radius: 10px; padding: 16px; margin-bottom: 20px;
 }
 .tx-urgent { font-family: var(--pixel); font-size: 6px; color: var(--pink); letter-spacing: 0.1em; }
@@ -150,7 +150,7 @@ body {
 .tx-body   { font-size: 12px; color: #c0c0d8; line-height: 1.7; }
 .callsign-label { font-size: 9px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
 .callsign-field {
-  width: 100%; background: #0c0c1c; border: 1px solid rgba(0,229,255,0.35);
+  width: 100%; background: #0c0c1c; border: 1px solid rgba(0,216,150,0.35);
   border-radius: 4px; padding: 14px 16px;
   font-family: var(--pixel); font-size: 11px; color: var(--cyan); letter-spacing: 0.1em;
   display: flex; align-items: center;
@@ -160,18 +160,18 @@ body {
 
 /* ── SCREEN 2: ACTIVITY SETUP ── */
 .activity-card {
-  border: 2px solid #1e1e2e; border-radius: 12px; padding: 14px 16px;
-  margin-bottom: 10px; cursor: pointer; transition: all 0.15s; background: #0c0c1a;
+  border: 2px solid #241840; border-radius: 12px; padding: 14px 16px;
+  margin-bottom: 10px; cursor: pointer; transition: all 0.15s; background: #130B26;
   display: flex; align-items: center; gap: 14px;
 }
-.activity-card.selected { border-color: var(--cyan); background: rgba(0,229,255,0.07); }
+.activity-card.selected { border-color: var(--cyan); background: rgba(0,216,150,0.07); }
 .activity-card.selected .ac-name { color: var(--cyan); }
 .activity-emoji { font-size: 26px; flex-shrink: 0; }
 .ac-name  { font-family: var(--pixel); font-size: 8px; color: var(--text); letter-spacing: 0.08em; margin-bottom: 5px; }
 .ac-desc  { font-size: 11px; color: var(--muted); line-height: 1.5; }
 .ac-check {
   margin-left: auto; width: 20px; height: 20px; border-radius: 50%;
-  border: 1.5px solid #2a2a3a; flex-shrink: 0;
+  border: 1.5px solid #2E2248; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
 }
 .activity-card.selected .ac-check { background: var(--cyan); border-color: var(--cyan); }
@@ -179,17 +179,17 @@ body {
 
 .level-row { display: flex; gap: 8px; }
 .level-card {
-  flex: 1; border: 2px solid #1e1e2e; border-radius: 10px; padding: 12px 10px;
-  cursor: pointer; transition: all 0.15s; background: #0c0c1a; text-align: center;
+  flex: 1; border: 2px solid #241840; border-radius: 10px; padding: 12px 10px;
+  cursor: pointer; transition: all 0.15s; background: #130B26; text-align: center;
 }
-.level-card.selected { border-color: var(--pink); background: rgba(255,45,107,0.07); }
+.level-card.selected { border-color: var(--pink); background: rgba(255,16,96,0.07); }
 .level-card.selected .lv-name { color: var(--pink); }
 .lv-icon { font-size: 18px; margin-bottom: 6px; }
 .lv-name { font-family: var(--pixel); font-size: 7px; color: var(--text); letter-spacing: 0.06em; margin-bottom: 4px; }
 .lv-desc { font-size: 10px; color: var(--muted); line-height: 1.4; }
 
 .mileage-preview {
-  background: #0c0c1a; border: 1px solid #1e1e2e; border-radius: 8px;
+  background: #130B26; border: 1px solid #241840; border-radius: 8px;
   padding: 12px 14px; margin-top: 14px;
 }
 .mp-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 8px; text-transform: uppercase; }
@@ -216,7 +216,7 @@ body {
   width: 100%; height: 100%;
 }
 .vn-dialogue {
-  background: rgba(8,8,20,0.97); border-top: 1px solid #1e1e2e;
+  background: rgba(8,8,20,0.97); border-top: 1px solid #241840;
   padding: 14px 18px 16px; flex-shrink: 0; min-height: 140px; position: relative;
 }
 .vn-speaker { font-family: var(--pixel); font-size: 7px; letter-spacing: 0.1em; margin-bottom: 8px; }
@@ -240,13 +240,13 @@ body {
 .doom-name { font-size: 11px; color: var(--text); font-weight: 700; margin-bottom: 2px; }
 .doom-title { font-size: 10px; color: var(--muted); margin-bottom: 6px; }
 .doom-content { font-size: 11px; color: #9090b0; line-height: 1.5; }
-.doom-content.red { color: rgba(255,45,107,0.7); }
+.doom-content.red { color: rgba(255,16,96,0.7); }
 .doom-content.yellow { color: rgba(255,224,102,0.7); }
 .doom-blur { filter: blur(2px); opacity: 0.5; }
 
 .notif-overlay {
   position: absolute; top: 50px; left: 14px; right: 14px; z-index: 50;
-  background: rgba(12,12,26,0.97); border: 1px solid rgba(0,229,255,0.4);
+  background: rgba(12,12,26,0.97); border: 1px solid rgba(0,216,150,0.4);
   border-radius: 12px; padding: 12px 14px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.8);
 }
@@ -257,17 +257,17 @@ body {
 /* ── SCREEN 5: STORY TAB ── */
 .tab-header { padding: 16px 20px 8px; font-family: var(--pixel); font-size: 8px; color: var(--text); flex-shrink: 0; border-bottom: 1px solid #0e0e1e; }
 .here-card {
-  background: rgba(0,229,255,0.06); border: 1px solid rgba(0,229,255,0.3);
+  background: rgba(0,216,150,0.06); border: 1px solid rgba(0,216,150,0.3);
   border-radius: 10px; padding: 12px 16px; margin-bottom: 12px;
   display: flex; align-items: center; justify-content: space-between;
 }
 .here-label { font-family: var(--pixel); font-size: 7px; color: var(--cyan); letter-spacing: 0.1em; }
 .here-name  { font-family: var(--pixel); font-size: 9px; color: var(--cyan); margin-top: 4px; line-height: 1.5; }
 .mission-card {
-  background: rgba(255,45,107,0.06); border: 1px solid rgba(255,45,107,0.3);
+  background: rgba(255,16,96,0.06); border: 1px solid rgba(255,16,96,0.3);
   border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; cursor: pointer;
 }
-.mission-eyebrow { font-size: 9px; color: rgba(255,45,107,0.7); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+.mission-eyebrow { font-size: 9px; color: rgba(255,16,96,0.7); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
 .mission-title { font-family: var(--pixel); font-size: 9px; color: var(--pink); line-height: 1.6; margin-bottom: 5px; }
 .mission-sub { font-size: 11px; color: #9090b0; line-height: 1.5; }
 .clue-card {
@@ -303,25 +303,25 @@ body {
 
 /* ── SCREEN 6: MAP / PLACE DESTINATION ── */
 .map-toggle {
-  display: flex; background: #0c0c1a; border-bottom: 1px solid #181828;
+  display: flex; background: #130B26; border-bottom: 1px solid #1E1438;
   flex-shrink: 0; padding: 8px 16px; gap: 8px;
 }
 .toggle-btn {
   flex: 1; padding: 9px 8px; text-align: center; font-family: var(--mono);
   font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
   cursor: pointer; border-radius: 4px; color: var(--muted);
-  background: transparent; border: 1px solid #1a1a2a; transition: all 0.15s;
+  background: transparent; border: 1px solid #1E1438; transition: all 0.15s;
 }
 .toggle-btn.active { background: var(--cyan); color: #000; border-color: var(--cyan); }
 .map-area { flex: 1; position: relative; overflow: hidden; }
 .map-confirm {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 12px 16px; background: rgba(6,6,14,0.96); border-top: 1px solid #181828; z-index: 30;
+  padding: 12px 16px; background: rgba(6,6,14,0.96); border-top: 1px solid #1E1438; z-index: 30;
 }
 .map-confirm-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 .dest-pin-preview {
-  width: 36px; height: 36px; background: rgba(255,45,107,0.15);
-  border: 1.5px solid rgba(255,45,107,0.5); border-radius: 50%;
+  width: 36px; height: 36px; background: rgba(255,16,96,0.15);
+  border: 1.5px solid rgba(255,16,96,0.5); border-radius: 50%;
   display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
 }
 .dest-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
@@ -333,16 +333,16 @@ body {
   padding: 10px 20px; text-align: center; flex-shrink: 0;
   font-family: var(--pixel); font-size: 7px; letter-spacing: 0.15em; text-transform: uppercase;
 }
-.run-banner.story { background: rgba(255,45,107,0.12); color: var(--pink); border-bottom: 1px solid rgba(255,45,107,0.2); }
+.run-banner.story { background: rgba(255,16,96,0.12); color: var(--pink); border-bottom: 1px solid rgba(255,16,96,0.2); }
 .loadout-mission {
-  background: rgba(255,45,107,0.05); border: 1px solid rgba(255,45,107,0.2);
+  background: rgba(255,16,96,0.05); border: 1px solid rgba(255,16,96,0.2);
   border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;
 }
-.loadout-mission-label { font-size: 9px; color: rgba(255,45,107,0.6); letter-spacing: 0.1em; margin-bottom: 4px; }
+.loadout-mission-label { font-size: 9px; color: rgba(255,16,96,0.6); letter-spacing: 0.1em; margin-bottom: 4px; }
 .loadout-mission-name  { font-family: var(--pixel); font-size: 8px; color: var(--pink); line-height: 1.5; }
 .companion-row { display: flex; gap: 10px; margin-bottom: 16px; }
 .companion-card {
-  flex: 1; background: #0c0c1a; border: 1px solid #1e1e2e;
+  flex: 1; background: #130B26; border: 1px solid #241840;
   border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer;
 }
 .companion-card.locked   { opacity: 0.38; cursor: default; }
@@ -350,7 +350,7 @@ body {
 .companion-name  { font-family: var(--pixel); font-size: 6px; color: var(--text); }
 .companion-bonus { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
 .loadout-row { display: flex; gap: 10px; margin-bottom: 10px; }
-.loadout-item { flex: 1; background: #0c0c1a; border: 1px solid #1e1e2e; border-radius: 8px; padding: 10px 12px; }
+.loadout-item { flex: 1; background: #130B26; border: 1px solid #241840; border-radius: 8px; padding: 10px 12px; }
 .loadout-item-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 4px; }
 .loadout-item-val   { font-family: var(--pixel); font-size: 7px; color: var(--text); line-height: 1.5; }
 
@@ -363,14 +363,14 @@ body {
 }
 .hud-top { display: flex; justify-content: space-between; align-items: flex-start; }
 .hud-badge {
-  background: rgba(6,6,14,0.88); border: 1px solid #1e1e2e;
+  background: rgba(6,6,14,0.88); border: 1px solid #241840;
   border-radius: 8px; padding: 8px 12px;
 }
 .hud-badge-label { font-size: 8px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 3px; }
 .hud-badge-val   { font-family: var(--pixel); font-size: 9px; color: var(--text); line-height: 1.5; }
 .hud-bottom { pointer-events: auto; }
 .hud-toast {
-  background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.4);
+  background: rgba(0,216,150,0.1); border: 1px solid rgba(0,216,150,0.4);
   border-radius: 8px; padding: 10px 14px; margin-bottom: 10px;
   display: flex; align-items: center; gap: 10px;
 }
@@ -382,7 +382,7 @@ body {
   width: 100%; padding: 14px; text-align: center;
   font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
   border: none; cursor: pointer; border-radius: 4px; pointer-events: auto;
-  background: rgba(6,6,14,0.9); color: var(--muted); border: 1px solid #252535;
+  background: rgba(6,6,14,0.9); color: var(--muted); border: 1px solid #2A1E44;
 }
 
 /* ── SCREEN 9: POST-RUN ── */
@@ -393,15 +393,15 @@ body {
 .postrun-status { font-family: var(--pixel); font-size: 8px; color: var(--green); letter-spacing: 0.15em; margin-bottom: 8px; }
 .postrun-dist   { font-family: var(--pixel); font-size: 28px; color: var(--text); line-height: 1.2; }
 .postrun-unit   { font-family: var(--pixel); font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.1em; }
-.postrun-stats-row { display: flex; border-top: 1px solid #1e1e2e; flex-shrink: 0; }
-.postrun-stat { flex: 1; padding: 12px 10px; text-align: center; border-right: 1px solid #1e1e2e; }
+.postrun-stats-row { display: flex; border-top: 1px solid #241840; flex-shrink: 0; }
+.postrun-stat { flex: 1; padding: 12px 10px; text-align: center; border-right: 1px solid #241840; }
 .postrun-stat:last-child { border-right: none; }
 .ps-val   { font-family: var(--pixel); font-size: 10px; color: var(--text); }
 .ps-label { font-size: 9px; color: var(--muted); margin-top: 4px; }
 .unlock-card {
   border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; position: relative; overflow: hidden;
 }
-.unlock-card.cat  { background: rgba(0,229,255,0.07); border: 1px solid rgba(0,229,255,0.35); }
+.unlock-card.cat  { background: rgba(0,216,150,0.07); border: 1px solid rgba(0,216,150,0.35); }
 .unlock-card.item { background: rgba(255,224,102,0.07); border: 1px solid rgba(255,224,102,0.3); }
 .unlock-badge {
   position: absolute; top: 10px; right: 12px;
@@ -414,7 +414,7 @@ body {
 .unlock-body    { font-size: 11px; color: #9090b0; line-height: 1.6; }
 
 /* Design notes */
-.note-card { background: #0c0c1a; border: 1px solid #1e1e2e; border-radius: 8px; padding: 14px 16px; }
+.note-card { background: #130B26; border: 1px solid #241840; border-radius: 8px; padding: 14px 16px; }
 .note-title { color: var(--cyan); font-size: 11px; font-weight: 700; margin-bottom: 6px; }
 .note-body  { color: #888; font-size: 11px; line-height: 1.7; }
 </style>
@@ -455,7 +455,7 @@ body {
         <div class="boot-log-line"><span>RUNNER ID</span><span class="err">[ NOT FOUND ]</span></div>
       </div>
       <div style="width:100%;margin-top:16px;">
-        <div style="font-size:9px;color:rgba(0,229,255,0.45);letter-spacing:0.1em;">INITIALIZING...</div>
+        <div style="font-size:9px;color:rgba(0,216,150,0.45);letter-spacing:0.1em;">INITIALIZING...</div>
         <div class="boot-bar-track"><div class="boot-bar-fill"></div></div>
       </div>
       <div class="boot-tap">TAP TO BEGIN</div>
@@ -567,23 +567,23 @@ body {
       </div>
       <div style="display:flex;justify-content:center;margin:16px 0;">
         <svg width="160" height="160" viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="74" fill="none" stroke="rgba(0,229,255,0.12)" stroke-width="1.5"/>
-          <circle cx="80" cy="80" r="52" fill="none" stroke="rgba(0,229,255,0.10)" stroke-width="1"/>
-          <circle cx="80" cy="80" r="30" fill="none" stroke="rgba(0,229,255,0.10)" stroke-width="1"/>
-          <circle cx="80" cy="80" r="6" fill="rgba(0,229,255,0.6)"/>
-          <line x1="80" y1="6"   x2="80" y2="22"  stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
-          <line x1="80" y1="138" x2="80" y2="154" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
-          <line x1="6"  y1="80"  x2="22"  y2="80" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
-          <line x1="138" y1="80" x2="154" y2="80" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+          <circle cx="80" cy="80" r="74" fill="none" stroke="rgba(0,216,150,0.12)" stroke-width="1.5"/>
+          <circle cx="80" cy="80" r="52" fill="none" stroke="rgba(0,216,150,0.10)" stroke-width="1"/>
+          <circle cx="80" cy="80" r="30" fill="none" stroke="rgba(0,216,150,0.10)" stroke-width="1"/>
+          <circle cx="80" cy="80" r="6" fill="rgba(0,216,150,0.6)"/>
+          <line x1="80" y1="6"   x2="80" y2="22"  stroke="rgba(0,216,150,0.2)" stroke-width="1"/>
+          <line x1="80" y1="138" x2="80" y2="154" stroke="rgba(0,216,150,0.2)" stroke-width="1"/>
+          <line x1="6"  y1="80"  x2="22"  y2="80" stroke="rgba(0,216,150,0.2)" stroke-width="1"/>
+          <line x1="138" y1="80" x2="154" y2="80" stroke="rgba(0,216,150,0.2)" stroke-width="1"/>
           <g class="radar-sweep">
-            <path d="M 80 80 L 80 6" stroke="rgba(0,229,255,0.7)" stroke-width="2" stroke-linecap="round"/>
-            <path d="M 80 80 L 80 6" stroke="rgba(0,229,255,0.12)" stroke-width="28" stroke-linecap="round" transform="rotate(-30 80 80)"/>
+            <path d="M 80 80 L 80 6" stroke="rgba(0,216,150,0.7)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M 80 80 L 80 6" stroke="rgba(0,216,150,0.12)" stroke-width="28" stroke-linecap="round" transform="rotate(-30 80 80)"/>
           </g>
-          <circle cx="112" cy="54" r="3" fill="rgba(0,229,255,0.8)"/>
-          <circle cx="48"  cy="98" r="2" fill="rgba(0,229,255,0.5)"/>
+          <circle cx="112" cy="54" r="3" fill="rgba(0,216,150,0.8)"/>
+          <circle cx="48"  cy="98" r="2" fill="rgba(0,216,150,0.5)"/>
         </svg>
       </div>
-      <div style="background:#0c0c1a;border:1px solid #1e1e2e;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+      <div style="background:#130B26;border:1px solid #241840;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
         <div style="font-size:20px;margin-bottom:8px;">📍</div>
         <div style="font-family:var(--pixel);font-size:8px;color:var(--text);letter-spacing:0.06em;margin-bottom:6px;line-height:1.6;">LOCATION ACCESS</div>
         <div style="font-size:11px;color:#8080a0;line-height:1.6;">Runstrike tracks your runs to detect nearby items, calculate mission routes, and log distance. Location is only active while the app is open.</div>
@@ -629,7 +629,7 @@ body {
         <div class="px-icon">📱</div>
         <div>PIXEL ART · PHONE SCREEN · CALLING BEN...</div>
       </div>
-      <div style="background:#0c0c1a;border-bottom:1px solid #1e1e2e;padding:12px 18px;flex-shrink:0;">
+      <div style="background:#130B26;border-bottom:1px solid #241840;padding:12px 18px;flex-shrink:0;">
         <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">CALL LOG</div>
         <div style="display:flex;justify-content:space-between;font-size:11px;color:#9090b0;">
           <span>Ben</span><span style="color:var(--pink);">The number you dialed is not in service</span>
@@ -721,11 +721,11 @@ body {
       <svg width="390" height="420" viewBox="0 0 390 420" style="display:block;">
         <defs>
           <radialGradient id="rg2" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="rgba(0,229,255,0.14)"/>
-            <stop offset="100%" stop-color="rgba(0,229,255,0)"/>
+            <stop offset="0%" stop-color="rgba(0,216,150,0.14)"/>
+            <stop offset="100%" stop-color="rgba(0,216,150,0)"/>
           </radialGradient>
         </defs>
-        <rect width="390" height="420" fill="#08081a"/>
+        <rect width="390" height="420" fill="#110D28"/>
         <!-- Streets -->
         <rect x="0"   y="120" width="390" height="12" fill="#0e0e22"/>
         <rect x="0"   y="250" width="390" height="12" fill="#0e0e22"/>
@@ -743,26 +743,26 @@ body {
         <rect x="0"   y="262" width="390" height="158" fill="#0c0c1c" rx="2"/>
         <!-- Player -->
         <circle cx="141" cy="200" r="36" fill="url(#rg2)"/>
-        <circle cx="141" cy="200" r="38" fill="none" stroke="rgba(0,229,255,0.22)" stroke-width="1.5" stroke-dasharray="4,3"/>
-        <circle cx="141" cy="200" r="7" fill="#00e5ff"/>
-        <circle cx="141" cy="200" r="3" fill="#06060e"/>
+        <circle cx="141" cy="200" r="38" fill="none" stroke="rgba(0,216,150,0.22)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <circle cx="141" cy="200" r="7" fill="#00D896"/>
+        <circle cx="141" cy="200" r="3" fill="#0D0920"/>
         <!-- Route line -->
         <path d="M 141 200 L 141 170 L 200 170 L 256 120"
-              stroke="rgba(255,45,107,0.55)" stroke-width="2" fill="none" stroke-dasharray="6,4" stroke-linecap="round"/>
+              stroke="rgba(255,16,96,0.55)" stroke-width="2" fill="none" stroke-dasharray="6,4" stroke-linecap="round"/>
         <!-- Destination pin (Ben's apt) -->
         <g transform="translate(256,108)">
-          <circle cx="0" cy="0" r="20" fill="rgba(255,45,107,0.14)" stroke="rgba(255,45,107,0.55)" stroke-width="1.5"/>
+          <circle cx="0" cy="0" r="20" fill="rgba(255,16,96,0.14)" stroke="rgba(255,16,96,0.55)" stroke-width="1.5"/>
           <line x1="-12" y1="0" x2="-5" y2="0" stroke="var(--pink)" stroke-width="1.5"/>
           <line x1="5" y1="0" x2="12" y2="0" stroke="var(--pink)" stroke-width="1.5"/>
           <line x1="0" y1="-12" x2="0" y2="-5" stroke="var(--pink)" stroke-width="1.5"/>
           <line x1="0" y1="5" x2="0" y2="12" stroke="var(--pink)" stroke-width="1.5"/>
           <circle cx="0" cy="0" r="3" fill="var(--pink)"/>
-          <rect x="-32" y="-44" width="64" height="16" rx="3" fill="rgba(255,45,107,0.9)"/>
+          <rect x="-32" y="-44" width="64" height="16" rx="3" fill="rgba(255,16,96,0.9)"/>
           <text x="0" y="-32" text-anchor="middle" font-family="'Share Tech Mono'" font-size="8" fill="#000" font-weight="700">BEN'S APARTMENT</text>
         </g>
         <!-- Distance label -->
-        <rect x="160" y="163" width="50" height="13" rx="3" fill="rgba(6,6,14,0.9)" stroke="rgba(255,45,107,0.3)" stroke-width="1"/>
-        <text x="185" y="173" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="rgba(255,45,107,0.8)">0.8 MI</text>
+        <rect x="160" y="163" width="50" height="13" rx="3" fill="rgba(6,6,14,0.9)" stroke="rgba(255,16,96,0.3)" stroke-width="1"/>
+        <text x="185" y="173" text-anchor="middle" font-family="'Share Tech Mono'" font-size="9" fill="rgba(255,16,96,0.8)">0.8 MI</text>
         <!-- Pickup nearby -->
         <circle cx="100" cy="170" r="5" fill="rgba(0,255,136,0.35)" stroke="#00ff88" stroke-width="1.5"/>
       </svg>
@@ -800,13 +800,13 @@ body {
       </div>
 
       <div class="section-label">Companion</div>
-      <div style="background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
-        <div style="font-size:10px;color:rgba(0,229,255,0.6);line-height:1.6;">No companion yet. You'll find one on this run.</div>
+      <div style="background:rgba(0,216,150,0.05);border:1px solid rgba(0,216,150,0.15);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+        <div style="font-size:10px;color:rgba(0,216,150,0.6);line-height:1.6;">No companion yet. You'll find one on this run.</div>
       </div>
 
       <div class="section-label">Loadout type</div>
       <div class="loadout-row">
-        <div class="loadout-item" style="border-color:rgba(0,229,255,0.35);background:rgba(0,229,255,0.05);">
+        <div class="loadout-item" style="border-color:rgba(0,216,150,0.35);background:rgba(0,216,150,0.05);">
           <div class="loadout-item-label">Mode</div>
           <div class="loadout-item-val" style="color:var(--cyan);">SEEDING RUN</div>
         </div>
@@ -849,8 +849,8 @@ body {
       <div class="run-hud-overlay">
         <!-- Top badges -->
         <div class="hud-top">
-          <div class="hud-badge" style="border-color:rgba(255,45,107,0.3);">
-            <div class="hud-badge-label" style="color:rgba(255,45,107,0.7);">DESTINATION</div>
+          <div class="hud-badge" style="border-color:rgba(255,16,96,0.3);">
+            <div class="hud-badge-label" style="color:rgba(255,16,96,0.7);">DESTINATION</div>
             <div class="hud-badge-val" style="color:var(--pink);">REACHED ✓</div>
           </div>
           <div class="hud-badge">
@@ -867,7 +867,7 @@ body {
           </div>
 
           <!-- Item in range toast -->
-          <div class="hud-toast" style="border-color:rgba(0,229,255,0.35);">
+          <div class="hud-toast" style="border-color:rgba(0,216,150,0.35);">
             <div class="hud-toast-icon">⬟</div>
             <div>
               <div class="hud-toast-label">ITEM SEEDED NEARBY</div>
@@ -916,14 +916,14 @@ body {
       </div>
 
       <!-- Hint: something else in the apartment -->
-      <div style="background:rgba(255,45,107,0.07);border:1px solid rgba(255,45,107,0.28);border-radius:10px;padding:14px 16px;margin-bottom:12px;">
+      <div style="background:rgba(255,16,96,0.07);border:1px solid rgba(255,16,96,0.28);border-radius:10px;padding:14px 16px;margin-bottom:12px;">
         <div style="font-family:var(--pixel);font-size:7px;color:var(--pink);letter-spacing:0.1em;margin-bottom:6px;">⚡ STORY BEAT AVAILABLE</div>
         <div style="font-size:12px;color:#c0c0d8;line-height:1.7;">The apartment is a mess. Something happened here. There's more to find — if you want to look.</div>
         <div style="font-size:10px;color:var(--muted);margin-top:8px;">Available whenever you're ready. Tap below to investigate now, or come back from the Story tab.</div>
       </div>
 
       <!-- Seeded item note -->
-      <div style="background:#0c0c1a;border:1px solid #1e1e2e;border-radius:8px;padding:12px 14px;margin-bottom:16px;">
+      <div style="background:#130B26;border:1px solid #241840;border-radius:8px;padding:12px 14px;margin-bottom:16px;">
         <div style="font-size:9px;color:var(--muted);letter-spacing:0.1em;margin-bottom:5px;text-transform:uppercase;">Seeded en route</div>
         <div style="display:flex;align-items:center;gap:10px;">
           <div style="font-size:18px;">⬟</div>

@@ -10,14 +10,14 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --pink:   #ff2d6b;
-  --cyan:   #00e5ff;
+  --pink:   #FF1060;
+  --cyan:   #00D896;
   --orange: #ff8c00;
   --green:  #00ff88;
   --purple: #b060ff;
   --bg:     #080810;
   --card:   #0d0d18;
-  --border: #1e1e2e;
+  --border: #241840;
   --text:   #e0e0f0;
   --muted:  #555570;
   --mono: 'Share Tech Mono', 'Courier New', monospace;
@@ -43,7 +43,7 @@ body {
   display: flex; gap: 4px;
   background: rgba(255,255,255,0.03);
   padding: 4px; border-radius: 20px;
-  border: 1px solid #1a1a2a;
+  border: 1px solid #1E1438;
   flex-wrap: wrap; justify-content: center;
 }
 .nav-btn {
@@ -139,12 +139,12 @@ body {
   background: var(--card);
 }
 
-.card-cyan   { border: 1.5px solid var(--cyan);   background: rgba(0,229,255,0.04); }
+.card-cyan   { border: 1.5px solid var(--cyan);   background: rgba(0,216,150,0.04); }
 .card-orange { border: 1.5px solid var(--orange); background: rgba(255,140,0,0.04); }
-.card-pink   { border: 1.5px solid var(--pink);   background: rgba(255,45,107,0.04); }
+.card-pink   { border: 1.5px solid var(--pink);   background: rgba(255,16,96,0.04); }
 .card-green  { border: 1.5px solid var(--green);  background: rgba(0,255,136,0.04); }
 .card-purple { border: 1.5px solid var(--purple); background: rgba(176,96,255,0.04); }
-.card-muted  { border: 1.5px solid #2a2a3a; background: rgba(255,255,255,0.02); }
+.card-muted  { border: 1.5px solid #2E2248; background: rgba(255,255,255,0.02); }
 
 .card-label {
   font-family: var(--mono); font-size: 10px;
@@ -210,12 +210,12 @@ body {
   color: var(--muted); margin-bottom: 5px;
 }
 .travel-progress-track {
-  height: 6px; background: #1a1a2a;
+  height: 6px; background: #1E1438;
   border-radius: 3px; overflow: hidden;
 }
 .travel-progress-fill {
   height: 100%; border-radius: 3px;
-  background: linear-gradient(90deg, var(--cyan), rgba(0,229,255,0.7));
+  background: linear-gradient(90deg, var(--cyan), rgba(0,216,150,0.7));
   transition: width 0.3s ease;
 }
 .travel-est {
@@ -261,7 +261,7 @@ body {
 .btn-cyan   { background: var(--cyan);   color: #000; }
 .btn-ghost  {
   background: transparent; color: var(--muted);
-  border: 1px solid #2a2a3a;
+  border: 1px solid #2E2248;
 }
 .btn-ghost:hover { color: #888; border-color: #444; }
 
@@ -292,7 +292,7 @@ body {
   padding: 4px 0;
 }
 .section-divider::after {
-  content: ''; flex: 1; height: 1px; background: #1a1a2a;
+  content: ''; flex: 1; height: 1px; background: #1E1438;
 }
 
 /* Cancel button (destructive, subtle) */
@@ -333,7 +333,7 @@ body {
 }
 .confirm-dist-box {
   border: 1.5px solid var(--cyan);
-  background: rgba(0,229,255,0.04);
+  background: rgba(0,216,150,0.04);
   border-radius: 4px; padding: 20px;
   text-align: center; margin-bottom: 20px;
 }
@@ -387,7 +387,7 @@ body {
 /* Bottom nav */
 .bottom-nav {
   height: 80px; background: rgba(8,8,16,0.95);
-  border-top: 1px solid #1a1a2a;
+  border-top: 1px solid #1E1438;
   display: flex; align-items: flex-start;
   padding-top: 10px;
   flex-shrink: 0; z-index: 20;
@@ -757,25 +757,25 @@ body {
   <div style="color:var(--muted);font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.1em;">Design notes</div>
 
   <div class="note-card visible" id="note-0"
-       style="background:#0d0d18;border:1px solid #1e1e2e;border-radius:8px;padding:14px 16px;display:block;">
+       style="background:#0d0d18;border:1px solid #241840;border-radius:8px;padding:14px 16px;display:block;">
     <div style="color:var(--cyan);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:6px;">① At location</div>
     <div style="color:#888;font-family:var(--mono);font-size:11px;line-height:1.7;">YOU ARE HERE card (cyan) anchors the tab — always first, always tells you where you are in the story world. Active mission below it with clear objective checklist. Side quests are visually separate (divider + purple accent). Locked quests show their unlock condition — players always know what's coming without being told what it is.</div>
   </div>
 
   <div class="note-card" id="note-1"
-       style="background:#0d0d18;border:1px solid #1e1e2e;border-radius:8px;padding:14px 16px;display:none;">
+       style="background:#0d0d18;border:1px solid #241840;border-radius:8px;padding:14px 16px;display:none;">
     <div style="color:var(--cyan);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:6px;">② Travel confirmation</div>
     <div style="color:#888;font-family:var(--mono);font-size:11px;line-height:1.7;">The distance is the hero element — large, prominent, unambiguous. The warning box makes the commitment clear without being preachy. "What this means" bullets explain the mechanic without a tutorial. "Not yet" instead of "Cancel" keeps the tone low-pressure. This screen earns the weight of the decision.</div>
   </div>
 
   <div class="note-card" id="note-2"
-       style="background:#0d0d18;border:1px solid #1e1e2e;border-radius:8px;padding:14px 16px;display:none;">
+       style="background:#0d0d18;border:1px solid #241840;border-radius:8px;padding:14px 16px;display:none;">
     <div style="color:var(--cyan);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:6px;">③ Traveling</div>
     <div style="color:#888;font-family:var(--mono);font-size:11px;line-height:1.7;">YOU ARE HERE becomes TRAVELING — same position, same cyan card, pulsing dot. Progress bar uses the same style as the weekly mileage bar on the Feed tab. Cancel is present but de-emphasized (small, red, below the fold). The active mission remains fully accessible — being on a journey doesn't block your main quest.</div>
   </div>
 
   <div class="note-card" id="note-3"
-       style="background:#0d0d18;border:1px solid #1e1e2e;border-radius:8px;padding:14px 16px;display:none;">
+       style="background:#0d0d18;border:1px solid #241840;border-radius:8px;padding:14px 16px;display:none;">
     <div style="color:var(--cyan);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:6px;">④ Just arrived</div>
     <div style="color:#888;font-family:var(--mono);font-size:11px;line-height:1.7;">Arrival fires a new transmission (pink, NEW badge) — this is the "little something" when you complete a journey. It's in the same format as the existing story transmissions, so it fits naturally. YOU ARE HERE updates to the new location. The completed side quest immediately becomes actionable. Main mission de-emphasized while you're away from it — not blocked, just quieted.</div>
   </div>

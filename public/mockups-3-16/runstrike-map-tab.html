@@ -9,14 +9,14 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --pink:   #ff2d6b;
-  --cyan:   #00e5ff;
+  --pink:   #FF1060;
+  --cyan:   #00D896;
   --orange: #ff8c00;
   --green:  #00ff88;
   --purple: #b060ff;
   --bg:     #080810;
   --card:   #0d0d18;
-  --border: #1e1e2e;
+  --border: #241840;
   --text:   #e0e0f0;
   --muted:  #555570;
   --mono:   'Share Tech Mono', 'Courier New', monospace;
@@ -41,7 +41,7 @@ body {
   display: flex; gap: 4px;
   background: rgba(255,255,255,0.03);
   padding: 4px; border-radius: 20px;
-  border: 1px solid #1a1a2a;
+  border: 1px solid #1E1438;
 }
 .nav-btn {
   background: transparent; border: none;
@@ -84,7 +84,7 @@ body {
 /* Map tab internal toggle */
 .map-toggle {
   display: flex; background: #0d0d18;
-  border-bottom: 1px solid #1a1a2a;
+  border-bottom: 1px solid #1E1438;
   flex-shrink: 0; padding: 8px 16px; gap: 8px;
 }
 .toggle-btn {
@@ -94,7 +94,7 @@ body {
   text-transform: uppercase; cursor: pointer;
   border-radius: 4px; transition: all 0.15s;
   color: var(--muted); background: transparent;
-  border: 1px solid #1a1a2a;
+  border: 1px solid #1E1438;
 }
 .toggle-btn.active { background: var(--cyan); color: #000; border-color: var(--cyan); }
 
@@ -135,7 +135,7 @@ body {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: #0d0d18;
   border-radius: 16px 16px 0 0;
-  border-top: 1px solid #1e1e2e;
+  border-top: 1px solid #241840;
   padding: 10px 18px 44px;
   z-index: 100;
   transform: translateY(100%);
@@ -143,7 +143,7 @@ body {
 }
 .loc-sheet.open { transform: translateY(0); }
 
-.sheet-handle { width: 36px; height: 4px; background: #2a2a3a; border-radius: 2px; margin: 0 auto 14px; cursor: pointer; }
+.sheet-handle { width: 36px; height: 4px; background: #2E2248; border-radius: 2px; margin: 0 auto 14px; cursor: pointer; }
 .loc-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 5px; }
 .loc-name { font-family: var(--pixel); font-size: 13px; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
 .loc-sub { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
@@ -158,8 +158,8 @@ body {
   display: flex; justify-content: space-between;
   font-size: 10px; color: var(--muted); margin-bottom: 4px;
 }
-.travel-bar-track { height: 5px; background: #1a1a2a; border-radius: 2px; overflow: hidden; }
-.travel-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--cyan), rgba(0,229,255,0.6)); }
+.travel-bar-track { height: 5px; background: #1E1438; border-radius: 2px; overflow: hidden; }
+.travel-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--cyan), rgba(0,216,150,0.6)); }
 
 .quest-pill {
   display: inline-flex; align-items: center; gap: 6px;
@@ -177,7 +177,7 @@ body {
 }
 .cta-cyan   { background: var(--cyan);   color: #000; }
 .cta-orange { background: var(--orange); color: #000; }
-.cta-ghost  { background: transparent; color: var(--muted); border: 1px solid #2a2a3a; }
+.cta-ghost  { background: transparent; color: var(--muted); border: 1px solid #2E2248; }
 
 .loc-dismiss {
   text-align: center; font-size: 10px; color: var(--muted);
@@ -188,7 +188,7 @@ body {
 /* Bottom nav */
 .bottom-nav {
   height: 80px; background: rgba(8,8,16,0.97);
-  border-top: 1px solid #1a1a2a;
+  border-top: 1px solid #1E1438;
   display: flex; align-items: flex-start;
   padding-top: 10px; flex-shrink: 0; z-index: 20;
 }
@@ -218,7 +218,7 @@ body {
 
 /* Design notes */
 .note-card {
-  background: #0d0d18; border: 1px solid #1e1e2e;
+  background: #0d0d18; border: 1px solid #241840;
   border-radius: 8px; padding: 14px 16px; display: none;
 }
 .note-card.visible { display: block; }
@@ -288,18 +288,18 @@ body {
 
         <!-- Scouted route glow -->
         <path d="M 166 680 L 166 312 L 59 312 L 59 189"
-              stroke="rgba(0,229,255,0.12)" stroke-width="14" fill="none"
+              stroke="rgba(0,216,150,0.12)" stroke-width="14" fill="none"
               stroke-linecap="round" stroke-linejoin="round"/>
 
         <!-- Pickups -->
-        <circle cx="166" cy="189" r="24" fill="rgba(0,229,255,0.12)"/>
-        <circle cx="166" cy="189" r="10" fill="#00e5ff"/>
+        <circle cx="166" cy="189" r="24" fill="rgba(0,216,150,0.12)"/>
+        <circle cx="166" cy="189" r="10" fill="#00D896"/>
         <circle cx="166" cy="189" r="4"  fill="white"/>
-        <circle cx="59"  cy="312" r="24" fill="rgba(0,229,255,0.12)"/>
-        <circle cx="59"  cy="312" r="10" fill="#00e5ff"/>
+        <circle cx="59"  cy="312" r="24" fill="rgba(0,216,150,0.12)"/>
+        <circle cx="59"  cy="312" r="10" fill="#00D896"/>
         <circle cx="59"  cy="312" r="4"  fill="white"/>
-        <circle cx="289" cy="189" r="18" fill="rgba(0,229,255,0.07)"/>
-        <circle cx="289" cy="189" r="7"  fill="#00e5ff" opacity="0.5"/>
+        <circle cx="289" cy="189" r="18" fill="rgba(0,216,150,0.07)"/>
+        <circle cx="289" cy="189" r="7"  fill="#00D896" opacity="0.5"/>
 
         <!-- Arboreal item -->
         <circle cx="289" cy="75" r="12" fill="rgba(0,180,80,0.1)" stroke="rgba(0,180,80,0.4)" stroke-width="1.5" stroke-dasharray="3,3"/>
@@ -314,8 +314,8 @@ body {
         <circle cx="289" cy="75" r="6"  fill="#b060ff" opacity="0.9"/>
 
         <!-- Companion radius -->
-        <circle cx="166" cy="312" r="50" fill="rgba(0,229,255,0.04)"
-                stroke="rgba(0,229,255,0.2)" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <circle cx="166" cy="312" r="50" fill="rgba(0,216,150,0.04)"
+                stroke="rgba(0,216,150,0.2)" stroke-width="1.5" stroke-dasharray="5,4"/>
         <!-- Player -->
         <circle cx="166" cy="312" r="18" fill="rgba(255,255,255,0.05)"/>
         <circle cx="166" cy="312" r="9"  fill="rgba(255,255,255,0.13)"/>
@@ -324,7 +324,7 @@ body {
       </svg>
 
       <div class="radar-legend">
-        <div class="legend-row"><div class="legend-dot" style="background:#00e5ff;"></div><span>Ready to collect</span></div>
+        <div class="legend-row"><div class="legend-dot" style="background:#00D896;"></div><span>Ready to collect</span></div>
         <div class="legend-row"><div class="legend-dot" style="background:transparent;border:1.5px dashed #555;"></div><span>Unscouted</span></div>
         <div class="legend-row"><div class="legend-dot" style="background:#b060ff;"></div><span>Friend activity</span></div>
         <div class="legend-row"><div class="legend-dot" style="background:rgba(0,180,80,0.7);"></div><span>Arboreal item</span></div>
@@ -401,19 +401,19 @@ body {
           <!-- ── PATHS / ROADS between locations ── -->
           <!-- Traveled path (solid, glowing): HOME → APT A → APT B -->
           <path d="M 130 800 L 180 680 L 250 560"
-                stroke="rgba(0,229,255,0.15)" stroke-width="8" fill="none"
+                stroke="rgba(0,216,150,0.15)" stroke-width="8" fill="none"
                 stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M 130 800 L 180 680 L 250 560"
-                stroke="rgba(0,229,255,0.5)" stroke-width="2.5" fill="none"
+                stroke="rgba(0,216,150,0.5)" stroke-width="2.5" fill="none"
                 stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="none"/>
 
           <!-- Known path: APT B → PARK (dotted) -->
           <path d="M 250 560 L 420 460"
-                stroke="rgba(0,229,255,0.25)" stroke-width="2" fill="none"
+                stroke="rgba(0,216,150,0.25)" stroke-width="2" fill="none"
                 stroke-linecap="round" stroke-dasharray="6,5"/>
           <!-- Known path: APT B → DOWNTOWN (dotted) -->
           <path d="M 250 560 L 340 300"
-                stroke="rgba(0,229,255,0.25)" stroke-width="2" fill="none"
+                stroke="rgba(0,216,150,0.25)" stroke-width="2" fill="none"
                 stroke-linecap="round" stroke-dasharray="6,5"/>
           <!-- Traveling path: APT B → WAREHOUSE (orange dotted with progress) -->
           <!-- Background path -->
@@ -430,11 +430,11 @@ body {
                 stroke-linecap="round" stroke-dasharray="5,5"/>
           <!-- PARK → WAREHOUSE (dotted) -->
           <path d="M 420 460 L 580 520"
-                stroke="rgba(0,229,255,0.15)" stroke-width="1.5" fill="none"
+                stroke="rgba(0,216,150,0.15)" stroke-width="1.5" fill="none"
                 stroke-dasharray="5,6"/>
           <!-- DOWNTOWN → ??? north (fades to fog) -->
           <path d="M 340 300 L 280 180"
-                stroke="rgba(0,229,255,0.15)" stroke-width="1.5" fill="none"
+                stroke="rgba(0,216,150,0.15)" stroke-width="1.5" fill="none"
                 stroke-dasharray="4,6" opacity="0.5"/>
           <!-- WAREHOUSE → ??? east (fades to fog) -->
           <path d="M 580 520 L 680 420"
@@ -495,49 +495,49 @@ body {
 
           <!-- HOME / YOUR APARTMENT (visited, south) -->
           <g id="loc-home" onclick="openSheet('home')" style="cursor:pointer;">
-            <circle cx="130" cy="800" r="22" fill="rgba(0,229,255,0.06)"/>
+            <circle cx="130" cy="800" r="22" fill="rgba(0,216,150,0.06)"/>
             <!-- Pixel house icon -->
             <rect x="120" y="794" width="20" height="14" fill="#2a2a4a" rx="1"/>
             <polygon points="130,786 120,796 140,796" fill="#3a3a5a"/>
-            <rect x="126" y="800" width="8" height="8" fill="#00e5ff" opacity="0.4"/>
+            <rect x="126" y="800" width="8" height="8" fill="#00D896" opacity="0.4"/>
             <text x="130" y="826"
                   font-family="'Press Start 2P', monospace"
-                  font-size="6" fill="rgba(0,229,255,0.6)"
+                  font-size="6" fill="rgba(0,216,150,0.6)"
                   text-anchor="middle" letter-spacing="0.5">HOME</text>
           </g>
 
           <!-- APARTMENT A (visited, mid-south) -->
           <g id="loc-apt-a" onclick="openSheet('apt-a')" style="cursor:pointer;">
-            <circle cx="180" cy="680" r="20" fill="rgba(0,229,255,0.06)"/>
+            <circle cx="180" cy="680" r="20" fill="rgba(0,216,150,0.06)"/>
             <rect x="171" y="673" width="18" height="13" fill="#2a2a4a" rx="1"/>
             <polygon points="180,666 171,675 189,675" fill="#3a3a5a"/>
-            <rect x="176" y="678" width="6" height="8" fill="#00e5ff" opacity="0.3"/>
+            <rect x="176" y="678" width="6" height="8" fill="#00D896" opacity="0.3"/>
             <text x="180" y="703"
                   font-family="'Press Start 2P', monospace"
-                  font-size="6" fill="rgba(0,229,255,0.55)"
+                  font-size="6" fill="rgba(0,216,150,0.55)"
                   text-anchor="middle" letter-spacing="0.5">APT A</text>
           </g>
 
           <!-- APARTMENT B — CURRENT LOCATION (bright, pulsing) -->
           <g id="loc-apt-b" onclick="openSheet('apt-b')" style="cursor:pointer;">
             <!-- Pulse rings -->
-            <circle cx="250" cy="560" r="30" fill="rgba(0,229,255,0.08)">
+            <circle cx="250" cy="560" r="30" fill="rgba(0,216,150,0.08)">
               <animate attributeName="r" values="20;34;20" dur="2.5s" repeatCount="indefinite"/>
               <animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite"/>
             </circle>
-            <circle cx="250" cy="560" r="24" fill="rgba(0,229,255,0.08)"/>
-            <rect x="240" y="552" width="20" height="15" fill="#003a44" stroke="#00e5ff" stroke-width="1.5" rx="1"/>
-            <polygon points="250,544 238,554 262,554" fill="#00e5ff" opacity="0.8"/>
-            <rect x="246" y="558" width="8" height="9" fill="#00e5ff" opacity="0.6"/>
+            <circle cx="250" cy="560" r="24" fill="rgba(0,216,150,0.08)"/>
+            <rect x="240" y="552" width="20" height="15" fill="#003a44" stroke="#00D896" stroke-width="1.5" rx="1"/>
+            <polygon points="250,544 238,554 262,554" fill="#00D896" opacity="0.8"/>
+            <rect x="246" y="558" width="8" height="9" fill="#00D896" opacity="0.6"/>
             <!-- YOU ARE HERE label -->
-            <rect x="214" y="530" width="72" height="11" rx="2" fill="rgba(0,229,255,0.15)" stroke="rgba(0,229,255,0.4)" stroke-width="1"/>
+            <rect x="214" y="530" width="72" height="11" rx="2" fill="rgba(0,216,150,0.15)" stroke="rgba(0,216,150,0.4)" stroke-width="1"/>
             <text x="250" y="538"
                   font-family="'Press Start 2P', monospace"
-                  font-size="5" fill="#00e5ff"
+                  font-size="5" fill="#00D896"
                   text-anchor="middle" letter-spacing="0.3">YOU ARE HERE</text>
             <text x="250" y="583"
                   font-family="'Press Start 2P', monospace"
-                  font-size="6.5" fill="#00e5ff"
+                  font-size="6.5" fill="#00D896"
                   text-anchor="middle" letter-spacing="0.5">APT B</text>
           </g>
 
@@ -557,23 +557,23 @@ body {
 
           <!-- DOWNTOWN (visible, quest active, need to travel) -->
           <g id="loc-downtown" onclick="openSheet('downtown')" style="cursor:pointer;">
-            <circle cx="340" cy="300" r="22" fill="rgba(255,45,107,0.08)"/>
+            <circle cx="340" cy="300" r="22" fill="rgba(255,16,96,0.08)"/>
             <!-- Pixel city buildings -->
-            <rect x="326" y="290" width="9"  height="18" fill="#2a1a28" stroke="#ff2d6b" stroke-width="1"/>
-            <rect x="338" y="284" width="10" height="24" fill="#2a1a28" stroke="#ff2d6b" stroke-width="1"/>
-            <rect x="351" y="292" width="8"  height="16" fill="#2a1a28" stroke="#ff2d6b" stroke-width="0.5"/>
+            <rect x="326" y="290" width="9"  height="18" fill="#2a1a28" stroke="#FF1060" stroke-width="1"/>
+            <rect x="338" y="284" width="10" height="24" fill="#2a1a28" stroke="#FF1060" stroke-width="1"/>
+            <rect x="351" y="292" width="8"  height="16" fill="#2a1a28" stroke="#FF1060" stroke-width="0.5"/>
             <!-- Windows -->
-            <rect x="329" y="293" width="3" height="2" fill="#ff2d6b" opacity="0.5"/>
-            <rect x="329" y="298" width="3" height="2" fill="#ff2d6b" opacity="0.5"/>
-            <rect x="341" y="287" width="3" height="2" fill="#ff2d6b" opacity="0.8"/>
-            <rect x="341" y="292" width="3" height="2" fill="#ff2d6b" opacity="0.6"/>
-            <rect x="346" y="289" width="3" height="2" fill="#ff2d6b" opacity="0.4"/>
+            <rect x="329" y="293" width="3" height="2" fill="#FF1060" opacity="0.5"/>
+            <rect x="329" y="298" width="3" height="2" fill="#FF1060" opacity="0.5"/>
+            <rect x="341" y="287" width="3" height="2" fill="#FF1060" opacity="0.8"/>
+            <rect x="341" y="292" width="3" height="2" fill="#FF1060" opacity="0.6"/>
+            <rect x="346" y="289" width="3" height="2" fill="#FF1060" opacity="0.4"/>
             <!-- Quest indicator -->
-            <circle cx="355" cy="286" r="5" fill="#ff2d6b"/>
+            <circle cx="355" cy="286" r="5" fill="#FF1060"/>
             <text x="355" y="289" text-anchor="middle" font-size="6" fill="white" font-weight="bold">!</text>
             <text x="340" y="325"
                   font-family="'Press Start 2P', monospace"
-                  font-size="6" fill="rgba(255,45,107,0.85)"
+                  font-size="6" fill="rgba(255,16,96,0.85)"
                   text-anchor="middle" letter-spacing="0.5">DOWNTOWN</text>
           </g>
 
